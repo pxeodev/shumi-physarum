@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHUMI Physarum — Slime Intelligence Network</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root { --d:#141413; --l:#faf9f5; --mg:#b0aea5; --lg:#e8e6dc; --o:#d97757; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Poppins',sans-serif; background:linear-gradient(135deg,var(--l),#f5f3ee); min-height:100vh; color:var(--d); }
+        .container { display:flex; min-height:100vh; padding:20px; gap:20px; }
+        .sidebar { width:300px; flex-shrink:0; background:rgba(255,255,255,.95); backdrop-filter:blur(10px); padding:20px; border-radius:12px; box-shadow:0 10px 30px rgba(20,20,19,.1); overflow-y:auto; overflow-x:hidden; }
+        .sidebar h1 { font-family:'Lora',serif; font-size:22px; font-weight:500; margin-bottom:6px; }
+        .sidebar .subtitle { color:var(--mg); font-size:13px; margin-bottom:24px; line-height:1.4; }
+        .cs { margin-bottom:22px; }
+        .cs h3 { font-size:14px; font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+        .cs h3::before { content:'•'; color:var(--o); font-weight:bold; }
+        .si { width:100%; background:var(--l); padding:10px; border-radius:8px; font-family:'Courier New',monospace; font-size:13px; margin-bottom:10px; border:1px solid var(--lg); text-align:center; }
+        .si:focus { outline:none; border-color:var(--o); box-shadow:0 0 0 2px rgba(217,119,87,.1); background:#fff; }
+        .sc { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:6px; }
+        .cg { margin-bottom:14px; }
+        .cg label { display:block; font-size:12px; font-weight:500; margin-bottom:5px; }
+        .sl { display:flex; align-items:center; gap:8px; }
+        .sl input[type="range"] { flex:1; height:3px; background:var(--lg); border-radius:2px; outline:none; -webkit-appearance:none; }
+        .sl input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:13px; height:13px; background:var(--o); border-radius:50%; cursor:pointer; }
+        .sl input[type="range"]::-moz-range-thumb { width:13px; height:13px; background:var(--o); border-radius:50%; border:none; cursor:pointer; }
+        .vd { font-family:'Courier New',monospace; font-size:10px; color:var(--mg); min-width:40px; text-align:right; }
+        .clg { margin-bottom:12px; }
+        .clg label { display:block; font-size:11px; color:var(--mg); margin-bottom:3px; }
+        .cpc { display:flex; align-items:center; gap:6px; }
+        .cpc input[type="color"] { width:26px; height:26px; border:none; border-radius:5px; cursor:pointer; background:none; padding:0; }
+        .cv { font-family:'Courier New',monospace; font-size:10px; color:var(--mg); }
+        .btn { padding:8px 12px; border:1px solid var(--lg); background:#fff; border-radius:8px; cursor:pointer; font-family:'Poppins',sans-serif; font-size:11px; color:var(--d); transition:all .2s; text-align:center; }
+        .btn:hover { border-color:var(--o); color:var(--o); }
+        .br { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+        .ca { flex:1; display:flex; justify-content:center; align-items:center; border-radius:12px; overflow:hidden; background:#0D0D0D; }
+        #cc { position:relative; }
+        .ld { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:'Lora',serif; color:var(--mg); font-size:16px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h1>Physarum Transport</h1>
+            <p class="subtitle">Thousands of independent agents crawl outward from the hub, depositing chemical trails that self-organize into an emergent mycorrhizal network — blind exploration producing intelligent infrastructure.</p>
+
+            <div class="cs">
+                <h3>Seed</h3>
+                <input type="text" class="si" id="seed-input" value="12345" onchange="updateSeed()">
+                <div class="sc">
+                    <button class="btn" onclick="previousSeed()">← Prev</button>
+                    <button class="btn" onclick="nextSeed()">Next →</button>
+                    <button class="btn" onclick="randomSeedAndUpdate()">Random</button>
+                    <button class="btn" onclick="updateSeed()">Jump</button>
+                </div>
+            </div>
+
+            <div class="cs">
+                <h3>Colony</h3>
+                <div class="cg"><label>Agent Count</label><div class="sl"><input type="range" id="agentCount" min="500" max="8000" step="100" value="6000" oninput="U('agentCount',this.value)"><span class="vd" id="agentCount-v">6000</span></div></div>
+                <div class="cg"><label>Speed</label><div class="sl"><input type="range" id="speed" min="0.5" max="4.0" step="0.1" value="2.8" oninput="UL('speed',this.value)"><span class="vd" id="speed-v">2.8</span></div></div>
+                <div class="cg"><label>Sensor Distance</label><div class="sl"><input type="range" id="sensorDist" min="5" max="40" step="1" value="22" oninput="UL('sensorDist',this.value)"><span class="vd" id="sensorDist-v">22</span></div></div>
+                <div class="cg"><label>Sensor Angle</label><div class="sl"><input type="range" id="sensorAngle" min="10" max="80" step="1" value="40" oninput="UL('sensorAngle',this.value)"><span class="vd" id="sensorAngle-v">40</span></div></div>
+                <div class="cg"><label>Turn Speed</label><div class="sl"><input type="range" id="turnSpeed" min="5" max="60" step="1" value="20" oninput="UL('turnSpeed',this.value)"><span class="vd" id="turnSpeed-v">20</span></div></div>
+            </div>
+
+            <div class="cs">
+                <h3>Chemistry</h3>
+                <div class="cg"><label>Deposit Strength</label><div class="sl"><input type="range" id="deposit" min="5" max="80" step="1" value="12" oninput="UL('deposit',this.value)"><span class="vd" id="deposit-v">12</span></div></div>
+                <div class="cg"><label>Decay Rate</label><div class="sl"><input type="range" id="decay" min="0.90" max="0.999" step="0.001" value="0.965" oninput="UL('decay',this.value)"><span class="vd" id="decay-v">0.965</span></div></div>
+                <div class="cg"><label>Diffusion</label><div class="sl"><input type="range" id="diffusion" min="0.0" max="1.0" step="0.05" value="0.25" oninput="UL('diffusion',this.value)"><span class="vd" id="diffusion-v">0.25</span></div></div>
+            </div>
+
+            <div class="cs">
+                <h3>Environment</h3>
+                <div class="cg"><label>Food Sources</label><div class="sl"><input type="range" id="foodCount" min="0" max="20" step="1" value="12" oninput="U('foodCount',this.value)"><span class="vd" id="foodCount-v">12</span></div></div>
+                <div class="cg"><label>Food Strength</label><div class="sl"><input type="range" id="foodStr" min="0" max="50" step="1" value="15" oninput="UL('foodStr',this.value)"><span class="vd" id="foodStr-v">15</span></div></div>
+                <div class="cg"><label>Spawn Radius</label><div class="sl"><input type="range" id="spawnR" min="5" max="100" step="5" value="20" oninput="U('spawnR',this.value)"><span class="vd" id="spawnR-v">20</span></div></div>
+            </div>
+
+            <div class="cs">
+                <h3>Rendering</h3>
+                <div class="cg"><label>Trail Brightness</label><div class="sl"><input type="range" id="trailBright" min="0.3" max="3.0" step="0.1" value="1.8" oninput="UL('trailBright',this.value)"><span class="vd" id="trailBright-v">1.8</span></div></div>
+                <div class="cg"><label>Agent Glow</label><div class="sl"><input type="range" id="agentGlow" min="0" max="2.0" step="0.1" value="0.5" oninput="UL('agentGlow',this.value)"><span class="vd" id="agentGlow-v">0.5</span></div></div>
+                <div class="cg"><label>Cursor Influence</label><div class="sl"><input type="range" id="cursorInf" min="0" max="150" step="10" value="0" oninput="UL('cursorInf',this.value)"><span class="vd" id="cursorInf-v">0</span></div></div>
+            </div>
+
+            <div class="cs">
+                <h3>Colors</h3>
+                <div class="clg"><label>Trail Base</label><div class="cpc"><input type="color" id="c1" value="#1A1408" onchange="UC('c1',this.value)"><span class="cv" id="c1-v">#1A1408</span></div></div>
+                <div class="clg"><label>Trail Bright</label><div class="cpc"><input type="color" id="c2" value="#D4A84B" onchange="UC('c2',this.value)"><span class="cv" id="c2-v">#D4A84B</span></div></div>
+                <div class="clg"><label>Hub / Hot</label><div class="cpc"><input type="color" id="c3" value="#D97757" onchange="UC('c3',this.value)"><span class="cv" id="c3-v">#D97757</span></div></div>
+            </div>
+
+            <div class="cs">
+                <h3>Actions</h3>
+                <div class="br">
+                    <button class="btn" onclick="resetParameters()">Reset</button>
+                    <button class="btn" onclick="exportImage()">Download PNG</button>
+                </div>
+                <div style="margin-top:6px;">
+                    <button class="btn" id="rec-btn" onclick="toggleRecord()" style="width:100%;background:#1a1a1a;color:#e8e8e8;border-color:#333;">● Record WebM</button>
+                </div>
+                <div style="margin-top:6px;">
+                    <button class="btn" id="audition-btn" onclick="auditionSeeds()" style="width:100%;">⚡ Preview Seeds</button>
+                </div>
+                <div style="margin-top:8px;">
+                    <div class="sl" style="margin-bottom:6px;">
+                        <label style="font-size:11px;min-width:65px;">Clip Length</label>
+                        <input type="range" id="clipLen" min="5" max="60" step="5" value="15" oninput="document.getElementById('clipLen-v').textContent=this.value+'s'">
+                        <span class="vd" id="clipLen-v">15s</span>
+                    </div>
+                    <button class="btn" id="batch-btn" onclick="batchRecord()" style="width:100%;background:#0D0D0D;color:#39FF14;border-color:#39FF14;">🎬 Batch Record Bookmarks</button>
+                </div>
+                <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--lg);">
+                    <button class="btn" id="fs-rec-btn" onclick="fullscreenRecord()" style="width:100%;background:#0D0D0D;color:#FFD700;border-color:#FFD700;font-weight:600;padding:10px 12px;">🖥 Fullscreen Record (1080p)</button>
+                    <div style="margin-top:4px;font-size:10px;color:var(--mg);text-align:center;">Hides UI, resizes to 1080x1080, records current seed</div>
+                </div>
+                <div id="batch-status" style="margin-top:6px;font-size:11px;color:#39FF14;line-height:1.6;"></div>
+                <div id="audition-results" style="margin-top:6px;font-size:11px;color:var(--mg);line-height:1.6;"></div>
+            </div>
+        </div>
+
+        <div class="ca">
+            <div id="cc">
+                <div class="ld">Spawning physarum colony...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ═══════════════════════════════════════════════════════════════
+    //  PARAMETERS
+    // ═══════════════════════════════════════════════════════════════
+
+    let P = {
+        seed: 12345,
+        agentCount: 6000,       // Dense web
+        speed: 2.8,             // Fast crawl — visible spread in seconds
+        sensorDist: 22,         // Wide sensing
+        sensorAngle: 40,        // Wide branching
+        turnSpeed: 20,          // Smooth curves
+        deposit: 12,            // Thin trails
+        decay: 0.968,           // Trails persist enough to see the web
+        diffusion: 0.25,        // Sharp lines
+        foodCount: 12,          // Radial structure
+        foodStr: 15,            // Moderate pull
+        spawnR: 15,             // Tight spawn = clean burst point
+        trailBright: 1.8,       // Bright enough for thin trails
+        agentGlow: 0.5,         // Subtle dots
+        cursorInf: 0,           // Off for recording
+        colors: ['#1A1408', '#D4A84B', '#D97757']
+    };
+    let DP = JSON.parse(JSON.stringify(P));
+    // Clear old seeds — will be populated by preview/bookmark
+
+
+    // ═══════════════════════════════════════════════════════════════
+    //  STATE
+    // ═══════════════════════════════════════════════════════════════
+
+    let agents = [];
+    let trail;          // Float32Array — the chemical trail map
+    let trailPrev;      // Double buffer for diffusion
+    let foods = [];
+    let W, H;           // canvas width, height
+    let S;              // kept for compat — set to W inside init
+    let cx, cy;         // spawn center
+    let fc = 0;
+    let mxS = 0, myS = 0;
+
+    // ═══════════════════════════════════════════════════════════════
+    //  AGENT — a single physarum cell
+    // ═══════════════════════════════════════════════════════════════
+
+    class Agent {
+        constructor(x, y, heading) {
+            this.x = x;
+            this.y = y;
+            this.h = heading; // radians
+        }
+
+        sense(angleOffset) {
+            let a = this.h + angleOffset;
+            let sx = this.x + cos(a) * P.sensorDist;
+            let sy = this.y + sin(a) * P.sensorDist;
+            return sampleTrail(sx, sy);
+        }
+
+        update() {
+            let sa = P.sensorAngle * PI / 180;
+            let ts = P.turnSpeed * PI / 180;
+
+            // Sense: left, center, right
+            let sL = this.sense(-sa);
+            let sC = this.sense(0);
+            let sR = this.sense(sa);
+
+            // Food attraction: add gradient toward nearest food
+            if (foods.length > 0 && P.foodStr > 0) {
+                let bestFD = Infinity, bestFA = 0;
+                for (let f of foods) {
+                    let fd = dist(this.x, this.y, f.x, f.y);
+                    if (fd < f.r * 3 && fd < bestFD) {
+                        bestFD = fd;
+                        bestFA = atan2(f.y - this.y, f.x - this.x);
+                    }
+                }
+                if (bestFD < Infinity) {
+                    let pull = P.foodStr * 0.01 * (1 - bestFD / (foods[0].r * 3));
+                    let diff = bestFA - this.h;
+                    // Normalize angle
+                    while (diff > PI) diff -= TWO_PI;
+                    while (diff < -PI) diff += TWO_PI;
+                    this.h += diff * pull;
+                }
+            }
+
+            // Cursor influence: agents near cursor turn toward it
+            if (P.cursorInf > 0) {
+                let cd = dist(this.x, this.y, mxS, myS);
+                if (cd < P.cursorInf && cd > 5) {
+                    let ca = atan2(myS - this.y, mxS - this.x);
+                    let diff = ca - this.h;
+                    while (diff > PI) diff -= TWO_PI;
+                    while (diff < -PI) diff += TWO_PI;
+                    let pull = pow(1 - cd / P.cursorInf, 2) * 0.15;
+                    this.h += diff * pull;
+                }
+            }
+
+            // Turn decision based on sensor readings
+            if (sC > sL && sC > sR) {
+                // Keep going straight
+            } else if (sC < sL && sC < sR) {
+                // Both sides stronger — randomly pick
+                this.h += (random() < 0.5 ? ts : -ts);
+            } else if (sL > sR) {
+                this.h -= ts;
+            } else if (sR > sL) {
+                this.h += ts;
+            }
+
+            // Add a tiny random jitter for organic feel
+            this.h += (random() - 0.5) * 0.1;
+
+            // Move
+            this.x += cos(this.h) * P.speed;
+            this.y += sin(this.h) * P.speed;
+
+            // Wrap at boundaries (toroidal)
+            if (this.x < 0) this.x += W;
+            if (this.x >= W) this.x -= W;
+            if (this.y < 0) this.y += H;
+            if (this.y >= H) this.y -= H;
+
+            // Deposit trail
+            let ix = floor(this.x);
+            let iy = floor(this.y);
+            if (ix >= 0 && ix < W && iy >= 0 && iy < H) {
+                trail[iy * W + ix] = min(trail[iy * W + ix] + P.deposit, 255);
+            }
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  TRAIL MAP OPERATIONS
+    // ═══════════════════════════════════════════════════════════════
+
+    function sampleTrail(x, y) {
+        let ix = floor(x), iy = floor(y);
+        if (ix < 0 || ix >= W || iy < 0 || iy >= H) return 0;
+        return trail[iy * W + ix];
+    }
+
+    function diffuseAndDecay() {
+        let d = P.diffusion;
+        let dk = P.decay;
+        let w = 1 / 9; // 3x3 box blur weight
+
+        for (let y = 1; y < H - 1; y++) {
+            for (let x = 1; x < W - 1; x++) {
+                let idx = y * W + x;
+                // 3x3 box blur
+                let sum = 0;
+                for (let dy = -1; dy <= 1; dy++) {
+                    for (let dx = -1; dx <= 1; dx++) {
+                        sum += trail[(y + dy) * W + (x + dx)];
+                    }
+                }
+                let blurred = sum * w;
+                trailPrev[idx] = (trail[idx] * (1 - d) + blurred * d) * dk;
+            }
+        }
+
+        let tmp = trail;
+        trail = trailPrev;
+        trailPrev = tmp;
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  FOOD SOURCES — attractors in the environment
+    // ═══════════════════════════════════════════════════════════════
+
+    function generateFoods() {
+        foods = [];
+        let spread = min(W, H) * 0.4;
+        for (let i = 0; i < P.foodCount; i++) {
+            let a = random(TWO_PI);
+            let r = random(spread * 0.3, spread);
+            foods.push({
+                x: cx + cos(a) * r,
+                y: cy + sin(a) * r,
+                r: random(30, 60),
+                str: random(0.5, 1.0)
+            });
+        }
+        for (let f of foods) {
+            for (let dy = -f.r; dy <= f.r; dy++) {
+                for (let dx = -f.r; dx <= f.r; dx++) {
+                    let dd = sqrt(dx * dx + dy * dy);
+                    if (dd < f.r) {
+                        let ix = floor(f.x + dx);
+                        let iy = floor(f.y + dy);
+                        if (ix >= 0 && ix < W && iy >= 0 && iy < H) {
+                            let v = (1 - dd / f.r) * P.foodStr * f.str;
+                            trail[iy * W + ix] = min(trail[iy * W + ix] + v, 255);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  COLONY INITIALIZATION
+    // ═══════════════════════════════════════════════════════════════
+
+    function spawnColony() {
+        agents = [];
+        // Larger initial burst so the web is visible immediately
+        let initialBatch = min(1000, P.agentCount);
+        for (let i = 0; i < initialBatch; i++) {
+            let a = random(TWO_PI);
+            let r = random() * P.spawnR;
+            let x = cx + cos(a) * r;
+            let y = cy + sin(a) * r;
+            let heading = a + (random() - 0.5) * 1.2;
+            agents.push(new Agent(x, y, heading));
+        }
+    }
+
+    function spawnNewAgents() {
+        // Continuously birth new agents from the hub until we hit the cap
+        if (agents.length >= P.agentCount) return;
+        // Spawn aggressively — fill the colony fast
+        let batch = min(50, P.agentCount - agents.length);
+        for (let i = 0; i < batch; i++) {
+            let a = random(TWO_PI);
+            let r = random() * P.spawnR * 0.5;
+            let x = cx + cos(a) * r;
+            let y = cy + sin(a) * r;
+            let heading = a + (random() - 0.5) * 1.5;
+            agents.push(new Agent(x, y, heading));
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  RENDERING
+    // ═══════════════════════════════════════════════════════════════
+
+    function renderTrail() {
+        let base = h2r(P.colors[0]);
+        let bright = h2r(P.colors[1]);
+        let hot = h2r(P.colors[2]);
+        let tb = P.trailBright;
+        let maxDist = sqrt(W * W + H * H) * 0.5;
+
+        loadPixels();
+        for (let y = 0; y < H; y++) {
+            for (let x = 0; x < W; x++) {
+                let idx = y * W + x;
+                let v = trail[idx] / 255;
+
+                let dx = x - cx, dy = y - cy;
+                let nd = sqrt(dx * dx + dy * dy) / maxDist;
+                nd = min(nd, 1);
+
+                let centerW = pow(max(0, 1 - nd), 2) * 0.3;
+                let intensity = min(v * tb, 1);
+
+                let cr, cg, cb;
+                if (intensity < 0.5) {
+                    let t = intensity * 2;
+                    cr = lerp(13, base.r + (bright.r - base.r) * 0.3, t);
+                    cg = lerp(13, base.g + (bright.g - base.g) * 0.3, t);
+                    cb = lerp(13, base.b + (bright.b - base.b) * 0.3, t);
+                } else {
+                    let t = (intensity - 0.5) * 2;
+                    cr = lerp(base.r + (bright.r - base.r) * 0.3, bright.r, t);
+                    cg = lerp(base.g + (bright.g - base.g) * 0.3, bright.g, t);
+                    cb = lerp(base.b + (bright.b - base.b) * 0.3, bright.b, t);
+                }
+
+                cr = lerp(cr, hot.r, centerW * intensity);
+                cg = lerp(cg, hot.g, centerW * intensity);
+                cb = lerp(cb, hot.b, centerW * intensity);
+
+                let pi = (y * W + x) * 4;
+                pixels[pi] = min(cr, 255);
+                pixels[pi + 1] = min(cg, 255);
+                pixels[pi + 2] = min(cb, 255);
+                pixels[pi + 3] = 255;
+            }
+        }
+        updatePixels();
+    }
+
+    function renderAgents() {
+        if (P.agentGlow <= 0) return;
+        blendMode(ADD);
+        let bright = h2r(P.colors[1]);
+        noStroke();
+
+        for (let agent of agents) {
+            let ix = floor(agent.x), iy = floor(agent.y);
+            if (ix < 0 || ix >= W || iy < 0 || iy >= H) continue;
+            let localTrail = trail[iy * W + ix];
+
+            // Brighter at low-trail areas (the exploring frontier)
+            let frontierGlow = map(localTrail, 0, 100, 1.0, 0.1);
+            frontierGlow = constrain(frontierGlow, 0.1, 1.0);
+
+            let a = frontierGlow * P.agentGlow * 25;
+            let sz = 1.5 + frontierGlow * 1.5;
+
+            fill(bright.r, bright.g, bright.b, a);
+            ellipse(agent.x, agent.y, sz, sz);
+        }
+        blendMode(BLEND);
+    }
+
+    function renderHub() {
+        // Pulsing center hub where agents originate
+        let pulse = (sin(fc * 0.03) * 0.3 + 0.7);
+        let hot = h2r(P.colors[2]);
+
+        blendMode(ADD);
+        noStroke();
+        // Soft glow rings
+        for (let r = 30; r > 0; r -= 3) {
+            let a = pulse * 3 * ((30 - r) / 30);
+            fill(hot.r, hot.g, hot.b, a);
+            ellipse(cx, cy, r, r);
+        }
+        // Micro-strokes
+        let n = floor(8 + pulse * 12);
+        for (let i = 0; i < n; i++) {
+            let a = random(TWO_PI);
+            let r1 = random(2, 8 + pulse * 10);
+            let r2 = r1 + random(2, 6);
+            stroke(hot.r, hot.g, hot.b, pulse * random(3, 12));
+            strokeWeight(random(0.1, 0.4));
+            line(cx + cos(a) * r1, cy + sin(a) * r1, cx + cos(a) * r2, cy + sin(a) * r2);
+        }
+        blendMode(BLEND);
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  SETUP & DRAW
+    // ═══════════════════════════════════════════════════════════════
+
+    function setup() {
+        // Fit a 16:9 rectangle in the available space
+        let availW = windowWidth - 360;
+        let availH = windowHeight - 40;
+        W = floor(min(availW, availH * (16/9)) / 2) * 2;
+        H = floor(W * 9 / 16 / 2) * 2;
+        W = max(W, 640); H = max(H, 360);
+        S = W; // compat alias for x-dimension in rendering
+        let c = createCanvas(W, H);
+        c.parent('cc');
+        document.querySelector('.ld').style.display = 'none';
+        pixelDensity(1);
+        init();
+    }
+
+    function windowResized() {
+        let availW = windowWidth - 360;
+        let availH = windowHeight - 40;
+        W = floor(min(availW, availH * (16/9)) / 2) * 2;
+        H = floor(W * 9 / 16 / 2) * 2;
+        W = max(W, 640); H = max(H, 360);
+        S = W;
+        resizeCanvas(W, H);
+        pixelDensity(1);
+        init();
+    }
+
+    function init() {
+        randomSeed(P.seed);
+        noiseSeed(P.seed);
+        cx = W / 2;
+        cy = H * 0.35;  // Spawn at 35% from top — matches mascot position
+        fc = 0;
+        mxS = cx;
+        myS = cy;
+
+        // Initialize trail buffers
+        trail = new Float32Array(W * H);
+        trailPrev = new Float32Array(W * H);
+
+        // Seed the center with a small trail deposit to get things started
+        for (let dy = -P.spawnR; dy <= P.spawnR; dy++) {
+            for (let dx = -P.spawnR; dx <= P.spawnR; dx++) {
+                let dd = sqrt(dx * dx + dy * dy);
+                if (dd < P.spawnR) {
+                    let ix = floor(cx + dx);
+                    let iy = floor(cy + dy);
+                    if (ix >= 0 && ix < W && iy >= 0 && iy < H) {
+                        trail[iy * W + ix] = (1 - dd / P.spawnR) * 40;
+                    }
+                }
+            }
+        }
+
+        generateFoods();
+        spawnColony();
+        background(13, 13, 13);
+    }
+
+    function draw() {
+        fc++;
+        mxS = lerp(mxS, mouseX, 0.06);
+        myS = lerp(myS, mouseY, 0.06);
+
+        // Gradually birth new agents from the hub
+        spawnNewAgents();
+
+        // Simulation steps
+        let steps = 4;
+        for (let s = 0; s < steps; s++) {
+            for (let agent of agents) {
+                agent.update();
+            }
+        }
+
+        diffuseAndDecay();
+
+        // Continuously re-seed food attractors
+        if (fc % 30 === 0) {
+            for (let f of foods) {
+                let ix = floor(f.x), iy = floor(f.y);
+                if (ix >= 0 && ix < W && iy >= 0 && iy < H) {
+                    for (let dy = -3; dy <= 3; dy++) {
+                        for (let dx = -3; dx <= 3; dx++) {
+                            let fx = ix + dx, fy = iy + dy;
+                            if (fx >= 0 && fx < W && fy >= 0 && fy < H) {
+                                trail[fy * W + fx] = min(trail[fy * W + fx] + f.str * 5, 255);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Render
+        renderTrail();
+        renderAgents();
+        renderHub();
+
+        // Seed label — always visible for screen recording
+        blendMode(BLEND);
+        noStroke();
+        fill(0, 0, 0, 120);
+        rect(8, H - 28, 140, 22, 4);
+        fill(212, 168, 75, 200);
+        textFont('monospace');
+        textSize(13);
+        textAlign(LEFT, CENTER);
+        text('SEED ' + P.seed, 14, H - 17);
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  UTILITY
+    // ═══════════════════════════════════════════════════════════════
+
+    function h2r(hex) {
+        let r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return r ? { r: parseInt(r[1], 16), g: parseInt(r[2], 16), b: parseInt(r[3], 16) } : { r: 100, g: 80, b: 30 };
+    }
+
+    function exportImage() { saveCanvas('shumi-physarum-' + P.seed, 'png'); }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  VIDEO RECORDING — captures canvas stream as WebM
+    // ═══════════════════════════════════════════════════════════════
+
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let isRecording = false;
+
+    function toggleRecord() {
+        if (isRecording) {
+            stopRecord();
+        } else {
+            startRecord();
+        }
+    }
+
+    function startRecord() {
+        let canvas = document.querySelector('canvas');
+        let stream = canvas.captureStream(60); // 60 fps
+        recordedChunks = [];
+
+        // Try VP9 first (better quality), fall back to VP8
+        let mimeType = 'video/webm;codecs=vp9';
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+            mimeType = 'video/webm;codecs=vp8';
+        }
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+            mimeType = 'video/webm';
+        }
+
+        mediaRecorder = new MediaRecorder(stream, {
+            mimeType: mimeType,
+            videoBitsPerSecond: 8000000 // 8 Mbps for quality
+        });
+
+        mediaRecorder.ondataavailable = (e) => {
+            if (e.data.size > 0) recordedChunks.push(e.data);
+        };
+
+        mediaRecorder.onstop = () => {
+            let blob = new Blob(recordedChunks, { type: 'video/webm' });
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = 'shumi-physarum-' + P.seed + '.webm';
+            a.click();
+            URL.revokeObjectURL(url);
+            recordedChunks = [];
+        };
+
+        mediaRecorder.start(100); // collect chunks every 100ms
+        isRecording = true;
+
+        let btn = document.getElementById('rec-btn');
+        btn.textContent = '■ Stop Recording';
+        btn.style.background = '#E74C3C';
+        btn.style.borderColor = '#E74C3C';
+    }
+
+    function stopRecord() {
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
+        }
+        isRecording = false;
+
+        let btn = document.getElementById('rec-btn');
+        btn.textContent = '● Record WebM';
+        btn.style.background = '#1a1a1a';
+        btn.style.borderColor = '#333';
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  SEED AUDITION — scores seeds by food placement drama
+    // ═══════════════════════════════════════════════════════════════
+
+    // ═══════════════════════════════════════════════════════════════
+    //  SEED PREVIEW CAROUSEL — watch them grow, tap to keep
+    // ═══════════════════════════════════════════════════════════════
+
+    let topSeeds = [];
+    let previewActive = false;
+    let previewTimer = null;
+    let previewSeed = 0;
+    let bookmarked = [];
+
+    function auditionSeeds() {
+        if (previewActive) {
+            stopPreview();
+            return;
+        }
+
+        bookmarked = [];
+        previewActive = true;
+
+        let btn = document.getElementById('audition-btn');
+        btn.textContent = '⏹ Stop Preview';
+        btn.style.background = '#E74C3C';
+        btn.style.color = '#fff';
+        btn.style.borderColor = '#E74C3C';
+
+        document.getElementById('audition-results').innerHTML =
+            '<strong>Watching seeds grow...</strong><br>Press <kbd style="background:#333;color:#39FF14;padding:1px 5px;border-radius:3px;">Space</kbd> to bookmark (max 10 for batch record)';
+
+        document.addEventListener('keydown', bookmarkHandler);
+        nextPreview();
+    }
+
+    function nextPreview() {
+        if (!previewActive) return;
+
+        previewSeed = floor(random(1, 100000));
+        P.seed = previewSeed;
+        updateSeedDisplay();
+        init();
+
+        document.getElementById('batch-status').innerHTML =
+            `👁 Seed <strong>${previewSeed}</strong> — bookmarked: ${bookmarked.length}`;
+
+        // Auto-advance after 4 seconds
+        previewTimer = setTimeout(() => nextPreview(), 4000);
+    }
+
+    function bookmarkHandler(e) {
+        if (e.code === 'Space' && previewActive) {
+            e.preventDefault();
+            if (!bookmarked.includes(previewSeed)) {
+                bookmarked.push(previewSeed);
+                document.getElementById('batch-status').innerHTML =
+                    `✅ Seed <strong>${previewSeed}</strong> bookmarked! (${bookmarked.length} total)`;
+
+                // Flash the border green briefly
+                let canvas = document.querySelector('canvas');
+                canvas.style.outline = '3px solid #39FF14';
+                setTimeout(() => canvas.style.outline = 'none', 300);
+            }
+            // Skip to next immediately
+            if (previewTimer) clearTimeout(previewTimer);
+            setTimeout(() => nextPreview(), 500);
+        }
+    }
+
+    function stopPreview() {
+        previewActive = false;
+        if (previewTimer) clearTimeout(previewTimer);
+        document.removeEventListener('keydown', bookmarkHandler);
+
+        topSeeds = bookmarked.map(s => ({ seed: s, score: 1 }));
+
+        let btn = document.getElementById('audition-btn');
+        btn.textContent = '⚡ Preview Seeds';
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.style.borderColor = '';
+
+        if (bookmarked.length > 0) {
+            let html = `<strong>${bookmarked.length} bookmarked:</strong><br>`;
+            for (let s of bookmarked) {
+                html += `<span style="cursor:pointer;text-decoration:underline;" onclick="P.seed=${s};updateSeedDisplay();init();">Seed ${s}</span> `;
+            }
+            html += '<br><em style="font-size:10px;">Hit 🎬 Batch Record to capture all</em>';
+            document.getElementById('audition-results').innerHTML = html;
+            document.getElementById('batch-status').innerHTML = `Ready to batch record ${bookmarked.length} seeds.`;
+
+            // Load the first bookmarked seed
+            P.seed = bookmarked[0];
+            updateSeedDisplay();
+            init();
+        } else {
+            document.getElementById('audition-results').innerHTML = 'No seeds bookmarked. Try again!';
+            document.getElementById('batch-status').innerHTML = '';
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  BATCH RECORD — auto-records top 5 seeds sequentially
+    // ═══════════════════════════════════════════════════════════════
+
+    let batchQueue = [];
+    let batchActive = false;
+    let batchRecorder = null;
+    let batchChunks = [];
+    let batchTimer = null;
+
+    function batchRecord() {
+        if (batchActive) {
+            cancelBatch();
+            return;
+        }
+
+        if (topSeeds.length === 0) {
+            document.getElementById('batch-status').innerHTML = 'No seeds bookmarked yet. Run ⚡ Preview first.';
+            return;
+        }
+
+        // Cap at 10 to prevent memory crash
+        let maxBatch = 10;
+        if (topSeeds.length > maxBatch) {
+            document.getElementById('batch-status').innerHTML =
+                `⚠️ ${topSeeds.length} bookmarked — recording first ${maxBatch} to avoid crash.`;
+            batchQueue = topSeeds.slice(0, maxBatch).map(s => s.seed);
+        } else {
+            batchQueue = topSeeds.map(s => s.seed);
+        }
+
+        batchActive = true;
+
+        let btn = document.getElementById('batch-btn');
+        btn.textContent = '⏹ Cancel Batch';
+        btn.style.background = '#E74C3C';
+        btn.style.borderColor = '#E74C3C';
+        btn.style.color = '#fff';
+
+        recordNextSeed();
+    }
+
+    function cancelBatch() {
+        batchActive = false;
+        batchQueue = [];
+        if (batchRecorder && batchRecorder.state !== 'inactive') {
+            batchRecorder.stop();
+        }
+        if (batchTimer) clearTimeout(batchTimer);
+        batchChunks = [];
+
+        let btn = document.getElementById('batch-btn');
+        btn.textContent = '🎬 Batch Record Bookmarks';
+        btn.style.background = '#0D0D0D';
+        btn.style.borderColor = '#39FF14';
+        btn.style.color = '#39FF14';
+
+        document.getElementById('batch-status').textContent = 'Cancelled.';
+    }
+
+    function recordNextSeed() {
+        if (!batchActive || batchQueue.length === 0) {
+            // All done
+            batchActive = false;
+            let btn = document.getElementById('batch-btn');
+            btn.textContent = '🎬 Batch Record Bookmarks';
+            btn.style.background = '#0D0D0D';
+            btn.style.borderColor = '#39FF14';
+            btn.style.color = '#39FF14';
+            document.getElementById('batch-status').innerHTML = '✅ All clips downloaded!';
+            return;
+        }
+
+        let seed = batchQueue.shift();
+        let clipSec = parseInt(document.getElementById('clipLen').value) || 20;
+        let remaining = batchQueue.length;
+
+        document.getElementById('batch-status').innerHTML =
+            `🔴 Recording seed <strong>${seed}</strong> (${clipSec}s)... ${remaining} remaining`;
+
+        // Load seed and reset
+        P.seed = seed;
+        updateSeedDisplay();
+        init();
+
+        // Start recording after a brief settle frame
+        setTimeout(() => {
+            if (!batchActive) return;
+
+            let canvas = document.querySelector('canvas');
+            let stream = canvas.captureStream(60);
+            batchChunks = [];
+
+            let mimeType = 'video/webm;codecs=vp9';
+            if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm;codecs=vp8';
+            if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm';
+
+            batchRecorder = new MediaRecorder(stream, {
+                mimeType: mimeType,
+                videoBitsPerSecond: 8000000
+            });
+
+            batchRecorder.ondataavailable = (e) => {
+                if (e.data.size > 0) batchChunks.push(e.data);
+            };
+
+            batchRecorder.onerror = (e) => {
+                console.error('Recording error:', e);
+                document.getElementById('batch-status').innerHTML =
+                    `❌ Recording failed on seed ${seed}. Skipping...`;
+                batchChunks = [];
+                setTimeout(() => recordNextSeed(), 1000);
+            };
+
+            batchRecorder.onstop = () => {
+                if (batchChunks.length > 0) {
+                    let blob = new Blob(batchChunks, { type: 'video/webm' });
+                    let url = URL.createObjectURL(blob);
+                    let a = document.createElement('a');
+                    a.href = url;
+                    a.download = `shumi-physarum-seed${seed}.webm`;
+                    a.click();
+                    // Clean up immediately
+                    setTimeout(() => URL.revokeObjectURL(url), 3000);
+                }
+                batchChunks = [];
+
+                setTimeout(() => recordNextSeed(), 2000);
+            };
+
+            batchRecorder.start(100);
+
+            // Stop after clip duration
+            batchTimer = setTimeout(() => {
+                if (batchRecorder && batchRecorder.state !== 'inactive') {
+                    batchRecorder.stop();
+                }
+            }, clipSec * 1000);
+
+        }, 200);
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  UI HANDLERS
+    // ═══════════════════════════════════════════════════════════════
+
+    let regenKeys = ['agentCount', 'foodCount', 'spawnR'];
+
+    function U(k, v) {
+        P[k] = parseFloat(v);
+        document.getElementById(k + '-v').textContent = v;
+        if (regenKeys.includes(k)) init();
+    }
+    function UL(k, v) {
+        P[k] = parseFloat(v);
+        document.getElementById(k + '-v').textContent = v;
+        // Live update — no regen needed
+    }
+    function UC(id, v) {
+        let i = parseInt(id.replace('c', '')) - 1;
+        P.colors[i] = v;
+        document.getElementById(id + '-v').textContent = v;
+    }
+
+    function updateSeedDisplay() { document.getElementById('seed-input').value = P.seed; }
+    function updateSeed() { let v = parseInt(document.getElementById('seed-input').value); if (v && v > 0) { P.seed = v; init(); } else updateSeedDisplay(); }
+    function previousSeed() { P.seed = Math.max(1, P.seed - 1); updateSeedDisplay(); init(); }
+    function nextSeed() { P.seed++; updateSeedDisplay(); init(); }
+    function randomSeedAndUpdate() { P.seed = Math.floor(Math.random() * 999999) + 1; updateSeedDisplay(); init(); }
+
+    let allP = ['agentCount', 'speed', 'sensorDist', 'sensorAngle', 'turnSpeed', 'deposit', 'decay', 'diffusion', 'foodCount', 'foodStr', 'spawnR', 'trailBright', 'agentGlow', 'cursorInf'];
+
+    function resetParameters() {
+        P = JSON.parse(JSON.stringify(DP));
+        allP.forEach(k => { document.getElementById(k).value = P[k]; document.getElementById(k + '-v').textContent = P[k]; });
+        P.colors.forEach((c, i) => { document.getElementById('c' + (i + 1)).value = c; document.getElementById('c' + (i + 1) + '-v').textContent = c; });
+        updateSeedDisplay();
+        init();
+    }
+
+    window.addEventListener('load', () => updateSeedDisplay());
+
+    // ═══════════════════════════════════════════════════════════════
+    //  BATCH FULLSCREEN 1080p RECORD — all 9 seeds, one click
+    // ═══════════════════════════════════════════════════════════════
+
+    let FS_SEEDS = [];  // Populated by preview/bookmark
+    let fsBatchActive = false;
+    let fsSeedQueue = [];
+    let fsHideSeedLabel = false;
+
+    // Override draw globally to conditionally hide seed label
+    let _origDraw = null;
+
+    function fullscreenRecord() {
+        if (fsBatchActive) return;
+
+        // Use bookmarked seeds, or current seed if none bookmarked
+        if (bookmarked.length > 0) {
+            FS_SEEDS = [...bookmarked];
+        } else if (FS_SEEDS.length === 0) {
+            FS_SEEDS = [P.seed];
+        }
+
+        fsBatchActive = true;
+        fsSeedQueue = [...FS_SEEDS];
+
+        let btn = document.getElementById('fs-rec-btn');
+
+        // Hide sidebar, expand canvas
+        let sidebar = document.querySelector('.sidebar');
+        let container = document.querySelector('.container');
+        let canvasArea = document.querySelector('.ca');
+
+        sidebar.style.display = 'none';
+        container.style.padding = '0';
+        container.style.gap = '0';
+        canvasArea.style.borderRadius = '0';
+        document.body.style.overflow = 'hidden';
+
+        // Resize to 1080
+        W = 1920; H = 1080; S = W;
+        resizeCanvas(W, H);
+        pixelDensity(1);
+        fsHideSeedLabel = true;
+
+        // Patch draw to hide seed label
+        window.draw = function() {
+            fc++;
+            mxS = lerp(mxS, mouseX, 0.06);
+            myS = lerp(myS, mouseY, 0.06);
+            spawnNewAgents();
+            let steps = 4;
+            for (let s = 0; s < steps; s++) {
+                for (let agent of agents) { agent.update(); }
+            }
+            diffuseAndDecay();
+            if (fc % 30 === 0) {
+                for (let f of foods) {
+                    let ix = floor(f.x), iy = floor(f.y);
+                    if (ix >= 0 && ix < W && iy >= 0 && iy < H) {
+                        for (let dy = -3; dy <= 3; dy++) {
+                            for (let dx = -3; dx <= 3; dx++) {
+                                let fx = ix + dx, fy = iy + dy;
+                                if (fx >= 0 && fx < W && fy >= 0 && fy < H) {
+                                    trail[fy * W + fx] = min(trail[fy * W + fx] + f.str * 5, 255);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            renderTrail();
+            renderAgents();
+            renderHub();
+            if (!fsHideSeedLabel) {
+                blendMode(BLEND); noStroke();
+                fill(0, 0, 0, 120); rect(8, H - 28, 140, 22, 4);
+                fill(212, 168, 75, 200); textFont('monospace'); textSize(13); textAlign(LEFT, CENTER);
+                text('SEED ' + P.seed, 14, H - 17);
+            }
+        };
+
+        processNextFsSeed();
+    }
+
+    function processNextFsSeed() {
+        if (fsSeedQueue.length === 0) {
+            // All done — restore UI
+            fsHideSeedLabel = false;
+            document.querySelector('.sidebar').style.display = '';
+            document.querySelector('.container').style.padding = '';
+            document.querySelector('.container').style.gap = '';
+            document.querySelector('.ca').style.borderRadius = '';
+            document.body.style.overflow = '';
+            windowResized();
+
+            let btn = document.getElementById('fs-rec-btn');
+            btn.textContent = '✅ All 9 seeds recorded!';
+            btn.style.background = '#0D0D0D';
+            btn.style.borderColor = '#39FF14';
+            btn.style.color = '#39FF14';
+            btn.disabled = false;
+            fsBatchActive = false;
+            return;
+        }
+
+        let seed = fsSeedQueue.shift();
+        let done = FS_SEEDS.length - fsSeedQueue.length - 1;
+        let total = FS_SEEDS.length;
+        let clipSec = parseInt(document.getElementById('clipLen').value) || 45;
+
+        let btn = document.getElementById('fs-rec-btn');
+        btn.disabled = true;
+
+        P.seed = seed;
+        updateSeedDisplay();
+        init();
+
+        // Record immediately from birth — no grow delay
+        setTimeout(() => {
+            if (!fsBatchActive) return;
+
+            btn.textContent = `🔴 [${done+1}/${total}] Seed ${seed} — recording from birth (${clipSec}s)...`;
+            btn.style.background = '#E74C3C';
+            btn.style.borderColor = '#E74C3C';
+
+            let canvas = document.querySelector('canvas');
+            let stream = canvas.captureStream(30);
+            let chunks = [];
+
+            let mimeType = 'video/webm;codecs=vp9';
+            if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm;codecs=vp8';
+            if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm';
+
+            let recorder = new MediaRecorder(stream, {
+                mimeType: mimeType,
+                videoBitsPerSecond: 8000000
+            });
+
+            recorder.ondataavailable = (e) => {
+                if (e.data.size > 0) chunks.push(e.data);
+            };
+
+            recorder.onstop = () => {
+                if (chunks.length > 0) {
+                    let blob = new Blob(chunks, { type: 'video/webm' });
+                    let url = URL.createObjectURL(blob);
+                    let a = document.createElement('a');
+                    a.href = url;
+                    a.download = `shumi-physarum-seed${seed}-1920x1080.webm`;
+                    a.click();
+                    setTimeout(() => URL.revokeObjectURL(url), 5000);
+                }
+                chunks = [];
+                // Small delay between seeds to let download trigger
+                setTimeout(() => processNextFsSeed(), 2000);
+            };
+
+            recorder.start(100);
+
+            setTimeout(() => {
+                if (recorder && recorder.state !== 'inactive') {
+                    recorder.stop();
+                }
+            }, clipSec * 1000);
+
+        }, 200);  // Just one frame settle, then record from birth
+    }
+    </script>
+</body>
+</html>
