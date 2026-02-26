@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SHUMI Physarum — Mycelial Intelligence Network</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
@@ -123,6 +124,34 @@
                 </div>
                 <div id="batch-status" style="margin-top:6px;font-size:11px;color:#39FF14;line-height:1.6;"></div>
                 <div id="audition-results" style="margin-top:6px;font-size:11px;color:var(--mg);line-height:1.6;"></div>
+            </div>
+
+            <div class="cs">
+                <h3>Export GIF</h3>
+                <div class="cg"><label>Size</label>
+                    <select id="gif-size" class="si" style="text-align:left;cursor:pointer;">
+                        <option value="128">128 x 128 — Favicon / Tiny</option>
+                        <option value="256" selected>256 x 256 — Avatar</option>
+                        <option value="480">480 x 480 — Profile Pic</option>
+                        <option value="720">720 x 720 — Social Post</option>
+                    </select>
+                </div>
+                <div class="cg"><label>Duration</label>
+                    <div class="sl">
+                        <input type="range" id="gifDur" min="2" max="15" step="1" value="4" oninput="document.getElementById('gifDur-v').textContent=this.value+'s'">
+                        <span class="vd" id="gifDur-v">4s</span>
+                    </div>
+                    <div class="hint">Shorter = smaller file · 3–5s loops best for avatars</div>
+                </div>
+                <div class="cg"><label>FPS</label>
+                    <div class="sl">
+                        <input type="range" id="gifFps" min="8" max="30" step="2" value="16" oninput="document.getElementById('gifFps-v').textContent=this.value">
+                        <span class="vd" id="gifFps-v">16</span>
+                    </div>
+                    <div class="hint">Sweet spot 12–20 · higher = smoother but larger file</div>
+                </div>
+                <button class="btn" id="gif-btn" onclick="exportGif()" style="width:100%;background:#1a1a1a;color:#FFD700;border-color:#FFD700;font-weight:600;padding:10px 12px;margin-top:4px;">✦ Export GIF</button>
+                <div id="gif-status" style="margin-top:6px;font-size:11px;color:#FFD700;line-height:1.6;text-align:center;"></div>
             </div>
         </div>
 
@@ -596,6 +625,97 @@
     }
 
     function exportImage() { saveCanvas('shumi-physarum-' + P.seed, 'png'); }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  GIF EXPORT — square crop, resized, loopable
+    // ═══════════════════════════════════════════════════════════════
+
+    let gifRecording = false;
+
+    function exportGif() {
+        if (gifRecording) return;
+        gifRecording = true;
+
+        let size = parseInt(document.getElementById('gif-size').value);
+        let duration = parseInt(document.getElementById('gifDur').value);
+        let fps = parseInt(document.getElementById('gifFps').value);
+        let totalFrames = duration * fps;
+        let frameDelay = Math.round(1000 / fps);
+        let statusEl = document.getElementById('gif-status');
+        let btn = document.getElementById('gif-btn');
+
+        btn.textContent = '⏳ Capturing frames...';
+        btn.style.pointerEvents = 'none';
+        statusEl.textContent = '';
+
+        let gif = new GIF({
+            workers: 4,
+            quality: 10,
+            width: size,
+            height: size,
+            workerScript: 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js',
+            repeat: 0 // loop forever
+        });
+
+        // Offscreen canvas for square crop + resize
+        let cropCanvas = document.createElement('canvas');
+        cropCanvas.width = size;
+        cropCanvas.height = size;
+        let cropCtx = cropCanvas.getContext('2d');
+
+        let sourceCanvas = document.querySelector('canvas');
+        let frameCount = 0;
+        let captureInterval;
+
+        function captureFrame() {
+            // Center-crop to square from the source canvas
+            let sw = sourceCanvas.width;
+            let sh = sourceCanvas.height;
+            let sq = Math.min(sw, sh);
+            let sx = (sw - sq) / 2;
+            let sy = (sh - sq) / 2;
+
+            cropCtx.fillStyle = '#000';
+            cropCtx.fillRect(0, 0, size, size);
+            cropCtx.drawImage(sourceCanvas, sx, sy, sq, sq, 0, 0, size, size);
+
+            gif.addFrame(cropCtx, { copy: true, delay: frameDelay });
+            frameCount++;
+
+            let pct = Math.round((frameCount / totalFrames) * 100);
+            statusEl.textContent = `Capturing: ${pct}% (${frameCount}/${totalFrames})`;
+
+            if (frameCount >= totalFrames) {
+                clearInterval(captureInterval);
+                statusEl.textContent = 'Encoding GIF...';
+                btn.textContent = '⏳ Encoding...';
+                gif.render();
+            }
+        }
+
+        gif.on('finished', function(blob) {
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = `shumi-physarum-${P.seed}-${size}px.gif`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            let kb = Math.round(blob.size / 1024);
+            let mb = (blob.size / (1024 * 1024)).toFixed(1);
+            statusEl.textContent = `Done! ${kb > 1024 ? mb + ' MB' : kb + ' KB'}`;
+            btn.textContent = '✦ Export GIF';
+            btn.style.pointerEvents = '';
+            gifRecording = false;
+        });
+
+        gif.on('progress', function(p) {
+            statusEl.textContent = `Encoding: ${Math.round(p * 100)}%`;
+        });
+
+        // Capture at the target FPS
+        captureInterval = setInterval(captureFrame, frameDelay);
+    }
 
     // ═══════════════════════════════════════════════════════════════
     //  VIDEO RECORDING — captures canvas stream as WebM
