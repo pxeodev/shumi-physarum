@@ -1,12 +1,13 @@
 # Shumi Physarum
 
-Interactive Physarum (slime mold) transport network simulator with gold/amber color palette. Built with p5.js.
+Interactive mycelial network simulator — emergent fungal transport networks with gold/amber color palette. Built with p5.js.
 
 ## Features
 
-- **Real-time simulation** — Physarum polycephalum agent-based model with chemical trails, diffusion, and decay
+- **Real-time simulation** — Agent-based mycelial growth model with chemical trails, diffusion, and decay
 - **Seed system** — Deterministic seeds for reproducible patterns. Randomize or bookmark favorites
-- **Full parameter control** — Agent count, speed, sensor distance/angle, turn speed, deposit, decay, diffusion, food sources, trail brightness, agent glow
+- **Full parameter control** — Agent count, speed, sensor distance/angle, turn speed, deposit, decay, diffusion, nutrient sources, trail brightness, agent glow
+- **Recommended ranges** — Each slider shows the sweet spot for producing clean mycelial networks
 - **Custom color palette** — Three-stop gradient (background, primary trail, accent)
 - **Cursor influence** — Mouse interaction attracts or repels agents
 - **Recording** — Record individual seeds or batch-record bookmarked seeds as WebM video

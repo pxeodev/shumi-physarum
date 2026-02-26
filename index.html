@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHUMI Physarum — Slime Intelligence Network</title>
+    <title>SHUMI Physarum — Mycelial Intelligence Network</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,6 +37,7 @@
         .btn { padding:8px 12px; border:1px solid var(--lg); background:#fff; border-radius:8px; cursor:pointer; font-family:'Poppins',sans-serif; font-size:11px; color:var(--d); transition:all .2s; text-align:center; }
         .btn:hover { border-color:var(--o); color:var(--o); }
         .br { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+        .hint { font-size:9px; color:var(--mg); opacity:0.7; margin-top:2px; letter-spacing:0.2px; }
         .ca { flex:1; display:flex; justify-content:center; align-items:center; border-radius:12px; overflow:hidden; background:#0D0D0D; }
         #cc { position:relative; }
         .ld { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:'Lora',serif; color:var(--mg); font-size:16px; }
@@ -61,32 +62,32 @@
 
             <div class="cs">
                 <h3>Colony</h3>
-                <div class="cg"><label>Agent Count</label><div class="sl"><input type="range" id="agentCount" min="500" max="8000" step="100" value="6000" oninput="U('agentCount',this.value)"><span class="vd" id="agentCount-v">6000</span></div></div>
-                <div class="cg"><label>Speed</label><div class="sl"><input type="range" id="speed" min="0.5" max="4.0" step="0.1" value="2.8" oninput="UL('speed',this.value)"><span class="vd" id="speed-v">2.8</span></div></div>
-                <div class="cg"><label>Sensor Distance</label><div class="sl"><input type="range" id="sensorDist" min="5" max="40" step="1" value="22" oninput="UL('sensorDist',this.value)"><span class="vd" id="sensorDist-v">22</span></div></div>
-                <div class="cg"><label>Sensor Angle</label><div class="sl"><input type="range" id="sensorAngle" min="10" max="80" step="1" value="40" oninput="UL('sensorAngle',this.value)"><span class="vd" id="sensorAngle-v">40</span></div></div>
-                <div class="cg"><label>Turn Speed</label><div class="sl"><input type="range" id="turnSpeed" min="5" max="60" step="1" value="20" oninput="UL('turnSpeed',this.value)"><span class="vd" id="turnSpeed-v">20</span></div></div>
+                <div class="cg"><label>Agent Count</label><div class="sl"><input type="range" id="agentCount" min="500" max="8000" step="100" value="6000" oninput="U('agentCount',this.value)"><span class="vd" id="agentCount-v">6000</span></div><div class="hint">Sweet spot 4000–7000 · sparse below, sluggish above</div></div>
+                <div class="cg"><label>Speed</label><div class="sl"><input type="range" id="speed" min="0.5" max="4.0" step="0.1" value="2.8" oninput="UL('speed',this.value)"><span class="vd" id="speed-v">2.8</span></div><div class="hint">Sweet spot 2.0–3.5 · slow crawl vs chaotic scatter</div></div>
+                <div class="cg"><label>Sensor Distance</label><div class="sl"><input type="range" id="sensorDist" min="5" max="40" step="1" value="22" oninput="UL('sensorDist',this.value)"><span class="vd" id="sensorDist-v">22</span></div><div class="hint">Sweet spot 15–30 · tight spirals below, blobby above</div></div>
+                <div class="cg"><label>Sensor Angle</label><div class="sl"><input type="range" id="sensorAngle" min="10" max="80" step="1" value="40" oninput="UL('sensorAngle',this.value)"><span class="vd" id="sensorAngle-v">40</span></div><div class="hint">Sweet spot 30–55 · straight hyphae below, noise above</div></div>
+                <div class="cg"><label>Turn Speed</label><div class="sl"><input type="range" id="turnSpeed" min="5" max="60" step="1" value="20" oninput="UL('turnSpeed',this.value)"><span class="vd" id="turnSpeed-v">20</span></div><div class="hint">Sweet spot 12–30 · stiff/angular below, jittery above</div></div>
             </div>
 
             <div class="cs">
                 <h3>Chemistry</h3>
-                <div class="cg"><label>Deposit Strength</label><div class="sl"><input type="range" id="deposit" min="5" max="80" step="1" value="12" oninput="UL('deposit',this.value)"><span class="vd" id="deposit-v">12</span></div></div>
-                <div class="cg"><label>Decay Rate</label><div class="sl"><input type="range" id="decay" min="0.90" max="0.999" step="0.001" value="0.965" oninput="UL('decay',this.value)"><span class="vd" id="decay-v">0.965</span></div></div>
-                <div class="cg"><label>Diffusion</label><div class="sl"><input type="range" id="diffusion" min="0.0" max="1.0" step="0.05" value="0.25" oninput="UL('diffusion',this.value)"><span class="vd" id="diffusion-v">0.25</span></div></div>
+                <div class="cg"><label>Deposit Strength</label><div class="sl"><input type="range" id="deposit" min="5" max="80" step="1" value="12" oninput="UL('deposit',this.value)"><span class="vd" id="deposit-v">12</span></div><div class="hint">Sweet spot 8–20 · invisible trails below, thick blobs above</div></div>
+                <div class="cg"><label>Decay Rate</label><div class="sl"><input type="range" id="decay" min="0.90" max="0.999" step="0.001" value="0.965" oninput="UL('decay',this.value)"><span class="vd" id="decay-v">0.965</span></div><div class="hint">Sweet spot 0.955–0.985 · trails vanish below, fill solid above</div></div>
+                <div class="cg"><label>Diffusion</label><div class="sl"><input type="range" id="diffusion" min="0.0" max="1.0" step="0.05" value="0.25" oninput="UL('diffusion',this.value)"><span class="vd" id="diffusion-v">0.25</span></div><div class="hint">Sweet spot 0.1–0.4 · pixel-sharp at 0, blurry mush above 0.6</div></div>
             </div>
 
             <div class="cs">
                 <h3>Environment</h3>
-                <div class="cg"><label>Food Sources</label><div class="sl"><input type="range" id="foodCount" min="0" max="20" step="1" value="12" oninput="U('foodCount',this.value)"><span class="vd" id="foodCount-v">12</span></div></div>
-                <div class="cg"><label>Food Strength</label><div class="sl"><input type="range" id="foodStr" min="0" max="50" step="1" value="15" oninput="UL('foodStr',this.value)"><span class="vd" id="foodStr-v">15</span></div></div>
-                <div class="cg"><label>Spawn Radius</label><div class="sl"><input type="range" id="spawnR" min="5" max="100" step="5" value="20" oninput="U('spawnR',this.value)"><span class="vd" id="spawnR-v">20</span></div></div>
+                <div class="cg"><label>Nutrient Sources</label><div class="sl"><input type="range" id="foodCount" min="0" max="20" step="1" value="12" oninput="U('foodCount',this.value)"><span class="vd" id="foodCount-v">12</span></div><div class="hint">Sweet spot 6–15 · 0 = pure radial, too many = cluttered</div></div>
+                <div class="cg"><label>Nutrient Strength</label><div class="sl"><input type="range" id="foodStr" min="0" max="50" step="1" value="15" oninput="UL('foodStr',this.value)"><span class="vd" id="foodStr-v">15</span></div><div class="hint">Sweet spot 8–25 · too high and hyphae clump at sources</div></div>
+                <div class="cg"><label>Spawn Radius</label><div class="sl"><input type="range" id="spawnR" min="5" max="100" step="5" value="20" oninput="U('spawnR',this.value)"><span class="vd" id="spawnR-v">20</span></div><div class="hint">Sweet spot 5–25 · tight = clean burst, wide = diffuse start</div></div>
             </div>
 
             <div class="cs">
                 <h3>Rendering</h3>
-                <div class="cg"><label>Trail Brightness</label><div class="sl"><input type="range" id="trailBright" min="0.3" max="3.0" step="0.1" value="1.8" oninput="UL('trailBright',this.value)"><span class="vd" id="trailBright-v">1.8</span></div></div>
-                <div class="cg"><label>Agent Glow</label><div class="sl"><input type="range" id="agentGlow" min="0" max="2.0" step="0.1" value="0.5" oninput="UL('agentGlow',this.value)"><span class="vd" id="agentGlow-v">0.5</span></div></div>
-                <div class="cg"><label>Cursor Influence</label><div class="sl"><input type="range" id="cursorInf" min="0" max="150" step="10" value="0" oninput="UL('cursorInf',this.value)"><span class="vd" id="cursorInf-v">0</span></div></div>
+                <div class="cg"><label>Trail Brightness</label><div class="sl"><input type="range" id="trailBright" min="0.3" max="3.0" step="0.1" value="1.8" oninput="UL('trailBright',this.value)"><span class="vd" id="trailBright-v">1.8</span></div><div class="hint">Sweet spot 1.2–2.5 · too dim below, blown out above</div></div>
+                <div class="cg"><label>Agent Glow</label><div class="sl"><input type="range" id="agentGlow" min="0" max="2.0" step="0.1" value="0.5" oninput="UL('agentGlow',this.value)"><span class="vd" id="agentGlow-v">0.5</span></div><div class="hint">Sweet spot 0.2–0.8 · 0 = no dots, high = distracting sparkle</div></div>
+                <div class="cg"><label>Cursor Influence</label><div class="sl"><input type="range" id="cursorInf" min="0" max="150" step="10" value="0" oninput="UL('cursorInf',this.value)"><span class="vd" id="cursorInf-v">0</span></div><div class="hint">0 for recording · raise for interactive exploration</div></div>
             </div>
 
             <div class="cs">
