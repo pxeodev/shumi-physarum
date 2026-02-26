@@ -94,14 +94,22 @@
 // ── Palette families ──
 // Each: { name, mascot: [dark, mid, hot], bg: [dark, mid, hot], chromatic: [warm, cool] }
 const PALETTES = [
-    { name: 'Ember',     mascot: ['#1A1408', '#D4A84B', '#D97757'], bg: ['#111010', '#8A7A42', '#7A5038'], chromatic: ['rgba(255,60,40,A)', 'rgba(40,220,255,A)'] },
-    { name: 'Frost',     mascot: ['#080E14', '#4B8ED4', '#57A0D9'], bg: ['#0A0F11', '#42698A', '#385E7A'], chromatic: ['rgba(40,180,255,A)', 'rgba(200,60,255,A)'] },
-    { name: 'Toxic',     mascot: ['#0A1408', '#7BD44B', '#A0D957'], bg: ['#0A1110', '#5A8A42', '#4E7A38'], chromatic: ['rgba(60,255,80,A)', 'rgba(255,220,40,A)'] },
-    { name: 'Void',      mascot: ['#0A0A0A', '#B0A8A0', '#D4CCC4'], bg: ['#080808', '#6A6460', '#8A8480'], chromatic: ['rgba(200,200,220,A)', 'rgba(120,100,140,A)'] },
-    { name: 'Orchid',    mascot: ['#140810', '#D44BA8', '#D957C0'], bg: ['#110A10', '#8A4278', '#7A3868'], chromatic: ['rgba(255,60,200,A)', 'rgba(60,255,180,A)'] },
-    { name: 'Sulfur',    mascot: ['#14120A', '#D4C44B', '#D9B057'], bg: ['#11100A', '#8A8042', '#7A7038'], chromatic: ['rgba(255,220,40,A)', 'rgba(40,100,255,A)'] },
-    { name: 'Abyss',     mascot: ['#06080E', '#4B5CD4', '#5768D9'], bg: ['#08080E', '#3A4A8A', '#2E3E7A'], chromatic: ['rgba(80,100,255,A)', 'rgba(255,80,60,A)'] },
-    { name: 'Bloodmoss', mascot: ['#140808', '#D44B4B', '#D95757'], bg: ['#110A0A', '#8A4242', '#7A3838'], chromatic: ['rgba(255,40,40,A)', 'rgba(40,255,200,A)'] },
+    // Warm gold, the original. Inviting, campfire.
+    { name: 'Ember',  mascot: ['#181208', '#E0B860', '#E8A070'], bg: ['#121010', '#9A8A55', '#8A7050'], chromatic: ['rgba(240,140,80,A)', 'rgba(80,180,220,A)'] },
+    // Cool blue, glacial glow. Calm, deep.
+    { name: 'Frost',  mascot: ['#0A1018', '#70B0E0', '#90C8E8'], bg: ['#0C1014', '#507898', '#608090'], chromatic: ['rgba(100,180,240,A)', 'rgba(180,120,220,A)'] },
+    // Soft green, forest bioluminescence. Alive, organic.
+    { name: 'Moss',   mascot: ['#0C1408', '#88C870', '#B0D890'], bg: ['#0C1210', '#608858', '#6A8060'], chromatic: ['rgba(120,220,100,A)', 'rgba(220,200,80,A)'] },
+    // Silver moonlight. Minimal, elegant.
+    { name: 'Pearl',  mascot: ['#0E0E0E', '#C0B8B0', '#E0D8D0'], bg: ['#0A0A0A', '#807870', '#9A9490'], chromatic: ['rgba(200,200,220,A)', 'rgba(140,130,160,A)'] },
+    // Warm pink, soft glow. Floral, not neon.
+    { name: 'Bloom',  mascot: ['#140A10', '#D880B8', '#E0A0C8'], bg: ['#120C10', '#906878', '#886878'], chromatic: ['rgba(220,120,180,A)', 'rgba(100,220,180,A)'] },
+    // Warm yellow, honeycomb. Rich, sunlit.
+    { name: 'Honey',  mascot: ['#14120A', '#E0C860', '#E8C080'], bg: ['#12100A', '#988850', '#8A8058'], chromatic: ['rgba(230,200,80,A)', 'rgba(80,130,220,A)'] },
+    // Soft ocean blue, tidal. Serene, deep water.
+    { name: 'Tide',   mascot: ['#080C14', '#6888C0', '#80A0D0'], bg: ['#0A0C12', '#506888', '#486080'], chromatic: ['rgba(100,140,220,A)', 'rgba(220,140,100,A)'] },
+    // Warm terracotta, clay. Earthy, grounded.
+    { name: 'Rust',   mascot: ['#140C08', '#C88060', '#D8A080'], bg: ['#120A0A', '#8A6050', '#806048'], chromatic: ['rgba(210,130,90,A)', 'rgba(90,200,180,A)'] },
 ];
 
 // Active palette (set per seed in initAll)
