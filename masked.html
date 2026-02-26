@@ -48,8 +48,12 @@
         .btn.active { border-color: #ff4444; color: #ff4444; }
         #status {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            color: #D4A84B; font-size: 12px; opacity: 0.5; z-index: 10;
+            color: #666; font-size: 11px; opacity: 0; z-index: 10;
+            transition: opacity 0.8s;
+            letter-spacing: 2px;
+            text-transform: lowercase;
         }
+        #status.show { opacity: 0.4; }
     </style>
 </head>
 <body>
@@ -66,7 +70,7 @@
     <!-- Composite for recording -->
     <canvas id="composite"></canvas>
 
-    <div id="status" style="display:none"></div>
+    <div id="status"></div>
     <div id="controls">
         <button class="btn" onclick="restart()">New Seed</button>
         <button class="btn" id="rec-btn" onclick="toggleRecord()">● Record</button>
@@ -78,10 +82,116 @@
 //  CONFIG
 // ═══════════════════════════════════════════════════════════════
 
-// Mascot colors — full warmth, high luminance
-const COLORS = ['#1A1408', '#D4A84B', '#D97757'];
-// Background colors — desaturated, cooler, recedes into depth
-const BG_COLORS = ['#111010', '#8A7A42', '#7A5038'];
+// ── Palette families ──
+// Each: { name, mascot: [dark, mid, hot], bg: [dark, mid, hot], chromatic: [warm, cool] }
+const PALETTES = [
+    { name: 'Ember',     mascot: ['#1A1408', '#D4A84B', '#D97757'], bg: ['#111010', '#8A7A42', '#7A5038'], chromatic: ['rgba(255,60,40,A)', 'rgba(40,220,255,A)'] },
+    { name: 'Frost',     mascot: ['#080E14', '#4B8ED4', '#57A0D9'], bg: ['#0A0F11', '#42698A', '#385E7A'], chromatic: ['rgba(40,180,255,A)', 'rgba(200,60,255,A)'] },
+    { name: 'Toxic',     mascot: ['#0A1408', '#7BD44B', '#A0D957'], bg: ['#0A1110', '#5A8A42', '#4E7A38'], chromatic: ['rgba(60,255,80,A)', 'rgba(255,220,40,A)'] },
+    { name: 'Void',      mascot: ['#0A0A0A', '#B0A8A0', '#D4CCC4'], bg: ['#080808', '#6A6460', '#8A8480'], chromatic: ['rgba(200,200,220,A)', 'rgba(120,100,140,A)'] },
+    { name: 'Orchid',    mascot: ['#140810', '#D44BA8', '#D957C0'], bg: ['#110A10', '#8A4278', '#7A3868'], chromatic: ['rgba(255,60,200,A)', 'rgba(60,255,180,A)'] },
+    { name: 'Sulfur',    mascot: ['#14120A', '#D4C44B', '#D9B057'], bg: ['#11100A', '#8A8042', '#7A7038'], chromatic: ['rgba(255,220,40,A)', 'rgba(40,100,255,A)'] },
+    { name: 'Abyss',     mascot: ['#06080E', '#4B5CD4', '#5768D9'], bg: ['#08080E', '#3A4A8A', '#2E3E7A'], chromatic: ['rgba(80,100,255,A)', 'rgba(255,80,60,A)'] },
+    { name: 'Bloodmoss', mascot: ['#140808', '#D44B4B', '#D95757'], bg: ['#110A0A', '#8A4242', '#7A3838'], chromatic: ['rgba(255,40,40,A)', 'rgba(40,255,200,A)'] },
+];
+
+// Active palette (set per seed in initAll)
+let activePalette = PALETTES[0];
+let COLORS = [...activePalette.mascot];
+let BG_COLORS = [...activePalette.bg];
+
+// HSL helpers for per-seed drift
+function hexToHSL(hex) {
+    let r = parseInt(hex.slice(1,3),16)/255, g = parseInt(hex.slice(3,5),16)/255, b = parseInt(hex.slice(5,7),16)/255;
+    let max = Math.max(r,g,b), min = Math.min(r,g,b), h, s, l = (max+min)/2;
+    if (max === min) { h = s = 0; } else {
+        let d = max - min;
+        s = l > 0.5 ? d/(2-max-min) : d/(max+min);
+        if (max === r) h = ((g-b)/d + (g<b?6:0))/6;
+        else if (max === g) h = ((b-r)/d+2)/6;
+        else h = ((r-g)/d+4)/6;
+    }
+    return [h*360, s*100, l*100];
+}
+
+function hslToHex(h, s, l) {
+    h = ((h%360)+360)%360; s = Math.max(0,Math.min(100,s))/100; l = Math.max(0,Math.min(100,l))/100;
+    let c = (1-Math.abs(2*l-1))*s, x = c*(1-Math.abs((h/60)%2-1)), m = l-c/2;
+    let r,g,b;
+    if (h<60){r=c;g=x;b=0;} else if(h<120){r=x;g=c;b=0;} else if(h<180){r=0;g=c;b=x;}
+    else if(h<240){r=0;g=x;b=c;} else if(h<300){r=x;g=0;b=c;} else{r=c;g=0;b=x;}
+    let toHex = v => Math.round((v+m)*255).toString(16).padStart(2,'0');
+    return '#' + toHex(r) + toHex(g) + toHex(b);
+}
+
+function driftColor(hex, hueDrift, satDrift, lumDrift) {
+    let [h,s,l] = hexToHSL(hex);
+    return hslToHex(h + hueDrift, s + satDrift, l + lumDrift);
+}
+
+function selectPalette(seed) {
+    // Use seed to pick family
+    let idx = seed % PALETTES.length;
+    activePalette = PALETTES[idx];
+
+    // Per-seed drift within family (subtle: +/-8 hue, +/-5 sat, +/-3 lum)
+    let tmpRng = seed;
+    function quickRng() { tmpRng = (tmpRng * 16807 + 0) % 2147483647; return tmpRng / 2147483647; }
+    let hDrift = (quickRng() - 0.5) * 16;
+    let sDrift = (quickRng() - 0.5) * 10;
+    let lDrift = (quickRng() - 0.5) * 6;
+
+    COLORS = activePalette.mascot.map(c => driftColor(c, hDrift, sDrift, lDrift));
+    BG_COLORS = activePalette.bg.map(c => driftColor(c, hDrift * 0.6, sDrift * 0.4, lDrift * 0.3));
+
+    // Structural mutation: turbulence (turnSpeed) varies per seed
+    // Range: 14-26 degrees (default is 20 for BG, 18 for MS)
+    let turbulence = 14 + quickRng() * 12;
+    BG.turnSpeed = turbulence * Math.PI / 180;
+    MS.turnSpeed = (turbulence - 2) * Math.PI / 180;
+
+    // Density mutation: decay varies per seed
+    // Range: 0.955-0.985 (lower = sharper trails, higher = ghostly)
+    let density = 0.955 + quickRng() * 0.030;
+    BG.decay = density;
+    MS.decay = density + 0.007;
+
+    // Update chromatic aberration CSS to match palette
+    let warm = activePalette.chromatic[0];
+    let cool = activePalette.chromatic[1];
+    let mascotEl = document.getElementById('mascot-layer');
+    let bgEl = document.getElementById('bg');
+
+    let mascotAnim = `
+        @keyframes chromatic-orbit {
+            0%   { filter: drop-shadow(8px 0 2px ${warm.replace('A','0.25')}) drop-shadow(-8px 0 2px ${cool.replace('A','0.25')}); }
+            25%  { filter: drop-shadow(0 8px 2px ${warm.replace('A','0.25')}) drop-shadow(0 -8px 2px ${cool.replace('A','0.25')}); }
+            50%  { filter: drop-shadow(-8px 0 2px ${warm.replace('A','0.25')}) drop-shadow(8px 0 2px ${cool.replace('A','0.25')}); }
+            75%  { filter: drop-shadow(0 -8px 2px ${warm.replace('A','0.25')}) drop-shadow(0 8px 2px ${cool.replace('A','0.25')}); }
+            100% { filter: drop-shadow(8px 0 2px ${warm.replace('A','0.25')}) drop-shadow(-8px 0 2px ${cool.replace('A','0.25')}); }
+        }
+        @keyframes bg-chromatic {
+            0%   { filter: drop-shadow(3px 0 1px ${warm.replace('A','0.08')}) drop-shadow(-3px 0 1px ${cool.replace('A','0.08')}); }
+            50%  { filter: drop-shadow(-3px 0 1px ${warm.replace('A','0.08')}) drop-shadow(3px 0 1px ${cool.replace('A','0.08')}); }
+            100% { filter: drop-shadow(3px 0 1px ${warm.replace('A','0.08')}) drop-shadow(-3px 0 1px ${cool.replace('A','0.08')}); }
+        }`;
+
+    // Inject updated keyframes
+    let styleId = 'dynamic-chromatic';
+    let existing = document.getElementById(styleId);
+    if (existing) existing.remove();
+    let style = document.createElement('style');
+    style.id = styleId;
+    style.textContent = mascotAnim;
+    document.head.appendChild(style);
+
+    // Re-trigger animations
+    mascotEl.style.animation = 'none';
+    bgEl.style.animation = 'none';
+    void mascotEl.offsetHeight;
+    mascotEl.style.animation = 'chromatic-orbit 6s linear infinite';
+    bgEl.style.animation = 'bg-chromatic 14s linear infinite';
+}
 
 // Background sim params — covers full viewport
 const BG = {
@@ -450,6 +560,7 @@ function generateBgFoods() {
 }
 
 function initAll() {
+    selectPalette(seed);
     srng(seed);
 
     // ── Background sim ──
@@ -576,6 +687,12 @@ function frame() {
         compCtx.drawImage(mascotCanvas, mx, my);
     }
 
+    if (msFc === 1) {
+        statusEl.textContent = `${seed} · ${activePalette.name}`;
+        statusEl.classList.add('show');
+        clearTimeout(statusEl._fadeTimer);
+        statusEl._fadeTimer = setTimeout(() => statusEl.classList.remove('show'), 3000);
+    }
     requestAnimationFrame(frame);
 }
 
