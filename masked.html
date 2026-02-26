@@ -204,10 +204,10 @@ function selectPalette(seed) {
     BG.speed = jitter(bgTex.speed, 0.15);
     BG.sensorDist = Math.round(jitter(bgTex.sensorDist, 0.15));
     BG.diffusion = Math.max(0.05, Math.min(0.50, jitter(bgTex.diffusion, 0.20)));
-    BG.deposit = Math.round(jitter(bgTex.deposit, 0.15));
-    BG.decay = Math.max(0.940, Math.min(0.990, jitter(bgTex.decay, 0.005)));
+    BG.deposit = Math.max(2, Math.round(jitter(bgTex.deposit, 0.15) * 0.7));
+    BG.decay = Math.max(0.940, Math.min(0.990, jitter(bgTex.decay, 0.005) - 0.004));
     BG.turnSpeed = jitter(bgTex.turnSpeed, 0.15) * Math.PI / 180;
-    BG.trailBright = jitter(bgTex.trailBright, 0.10);
+    BG.trailBright = jitter(bgTex.trailBright, 0.10) * 0.75;
     BG.foodCount = Math.round(jitter(bgTex.foodCount, 0.20));
 
     MS.speed = jitter(msTex.speed, 0.15);
@@ -257,42 +257,42 @@ function selectPalette(seed) {
     bgEl.style.animation = 'bg-chromatic 14s linear infinite';
 }
 
-// Background sim params — covers full viewport
+// Background sim params — thin radiating network from mascot
 const BG = {
-    agentCount: 10000,
+    agentCount: 8000,
     speed: 5.0,
     sensorDist: 22,
     sensorAngle: 40 * Math.PI / 180,
     turnSpeed: 20 * Math.PI / 180,
-    deposit: 12,
-    decay: 0.968,
-    diffusion: 0.25,
-    trailBright: 1.2,
-    agentGlow: 0.25,
+    deposit: 8,
+    decay: 0.960,
+    diffusion: 0.20,
+    trailBright: 1.0,
+    agentGlow: 0.18,
     spawnR: 15,
     stepsPerFrame: 3,
-    spawnRate: 60,
-    initialBatch: 1500,
+    spawnRate: 50,
+    initialBatch: 1200,
     foodCount: 12,
     foodStr: 15,
 };
 
-// Mascot sim params — denser, brighter to stand out
+// Mascot sim params — steady presence, not spectacle
 const MS = {
-    agentCount: 6000,
-    speed: 4.0,
+    agentCount: 4000,
+    speed: 3.2,
     sensorDist: 16,
     sensorAngle: 35 * Math.PI / 180,
     turnSpeed: 18 * Math.PI / 180,
-    deposit: 16,
+    deposit: 10,
     decay: 0.975,
-    diffusion: 0.2,
-    trailBright: 2.8,
-    agentGlow: 0.7,
+    diffusion: 0.22,
+    trailBright: 2.2,
+    agentGlow: 0.5,
     spawnR: 10,
     stepsPerFrame: 3,
-    spawnRate: 50,
-    initialBatch: 1200,
+    spawnRate: 40,
+    initialBatch: 800,
 };
 
 let seed = Math.floor(Math.random() * 999999) + 1;
@@ -682,17 +682,29 @@ function initAll() {
     selectPalette(seed);
     srng(seed);
 
-    // ── Background sim ──
+    // ── Background sim — emanates from mascot boundary ──
     bgCx = VW / 2;
-    bgCy = VH * 0.35;
+    bgCy = VH / 2;
     bgFc = 0;
     bgAgents = [];
     bgTrail = new Float32Array(VW * VH);
     bgTrailPrev = new Float32Array(VW * VH);
-    seedTrail(bgTrail, bgCx, bgCy, VW, VH, BG.spawnR);
+    // Seed trail in a ring around the mascot edge, not a center point
+    let spawnRingR = MSIZE * 0.3;
+    for (let i = 0; i < 24; i++) {
+        let a = (i / 24) * Math.PI * 2;
+        seedTrail(bgTrail, bgCx + Math.cos(a) * spawnRingR, bgCy + Math.sin(a) * spawnRingR, VW, VH, 8);
+    }
     generateBgFoods();
     for (let f of bgFoods) seedTrail(bgTrail, f.x, f.y, VW, VH, 8);
-    for (let i = 0; i < BG.initialBatch; i++) spawnAgent(bgAgents, bgCx, bgCy, BG.spawnR);
+    for (let i = 0; i < BG.initialBatch; i++) {
+        // Spawn agents on the ring, facing outward
+        let a = rng() * Math.PI * 2;
+        let r = spawnRingR + (rng() - 0.5) * 20;
+        let sx = bgCx + Math.cos(a) * r;
+        let sy = bgCy + Math.sin(a) * r;
+        bgAgents.push(new Agent(sx, sy, a + (rng() - 0.5) * 0.8));
+    }
     bgSimCtx.fillStyle = '#0D0D0D';
     bgSimCtx.fillRect(0, 0, VW, VH);
 
@@ -727,10 +739,15 @@ function frame() {
     if (!running) return;
     bgFc++; msFc++;
 
-    // ── Background sim step ──
+    // ── Background sim step — spawn from mascot boundary ring ──
     if (bgAgents.length < BG.agentCount) {
         let n = Math.min(BG.spawnRate, BG.agentCount - bgAgents.length);
-        for (let i = 0; i < n; i++) spawnAgent(bgAgents, bgCx, bgCy, BG.spawnR);
+        let ringR = MSIZE * 0.3;
+        for (let i = 0; i < n; i++) {
+            let a = rng() * Math.PI * 2;
+            let r = ringR + (rng() - 0.5) * 20;
+            bgAgents.push(new Agent(bgCx + Math.cos(a) * r, bgCy + Math.sin(a) * r, a + (rng() - 0.5) * 0.8));
+        }
     }
     for (let s = 0; s < BG.stepsPerFrame; s++) {
         for (let a of bgAgents) a.step(BG, bgTrail, bgFoods, VW, VH);
