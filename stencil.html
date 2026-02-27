@@ -195,7 +195,7 @@
 
             <div class="panel-section">
                 <h3>Stencil</h3>
-                <div class="sg"><label>Master Opacity</label><div class="sl"><input type="range" id="s-stencilMaster" min="0" max="0.8" step="0.01" oninput="window._stencilMaster=+this.value;sv(this)"><span class="vd" id="s-stencilMaster-v"></span></div></div>
+                <div class="sg"><label>Master Opacity</label><div class="sl"><input type="range" id="s-stencilMaster" min="0" max="1.5" step="0.01" oninput="window._stencilMaster=+this.value;sv(this)"><span class="vd" id="s-stencilMaster-v"></span></div></div>
                 <div class="sg"><label>Edge Strong</label><div class="sl"><input type="range" id="s-edgeStrong" min="0.1" max="0.6" step="0.01" oninput="window._edgeStrong=+this.value;sv(this)"><span class="vd" id="s-edgeStrong-v"></span></div></div>
                 <div class="sg"><label>Edge Weak</label><div class="sl"><input type="range" id="s-edgeWeak" min="0.04" max="0.3" step="0.01" oninput="window._edgeWeak=+this.value;sv(this)"><span class="vd" id="s-edgeWeak-v"></span></div></div>
                 <div class="sg"><label>Pulse Speed</label><div class="sl"><input type="range" id="s-pulseSpeed" min="0.01" max="0.12" step="0.002" oninput="window._pulseSpeed=+this.value;sv(this)"><span class="vd" id="s-pulseSpeed-v"></span></div></div>
@@ -1288,13 +1288,13 @@ function frame() {
                     }
 
                 } else if (formationMode === 3) {
-                    // Mode 3: Ramp silhouette — lightweight density symbols, edges slightly heavier
+                    // Mode 3: Ramp silhouette — density symbols, edges heavier
                     let edgeBonus = isEdge ? 2 : (isMidEdge ? 1 : 0);
                     let rampIdx = Math.floor((lumPulsed + cell.edge) * (CHAR_RAMP.length - 1) + rampShift + edgeBonus);
                     rampIdx = Math.max(1, Math.min(CHAR_RAMP.length - 1, rampIdx));
                     ch = CHAR_RAMP[rampIdx];
                     if (!isMidEdge && (row + col) % 3 !== 0) { skipCell = true; }
-                    alphaBoost = isEdge ? 1.2 : (isMidEdge ? 0.5 : 0.2);
+                    alphaBoost = isEdge ? 1.8 : (isMidEdge ? 0.9 : 0.4);
 
                 } else if (formationMode === 4) {
                     // Mode 4: Edges-only — characters ONLY on contours, nothing else
@@ -1302,7 +1302,7 @@ function frame() {
                     else {
                         ch = CODE_BUF[(row * sCols + col) % CODE_LEN];
                         if (ch === ' ') ch = CODE_BUF[(row * sCols + col + 13) % CODE_LEN];
-                        alphaBoost = isEdge ? 1.6 : 0.4;
+                        alphaBoost = isEdge ? 2.0 : 0.8;
                     }
 
                 } else if (formationMode === 5) {
@@ -1310,41 +1310,46 @@ function frame() {
                     if (isEdge) {
                         ch = CODE_BUF[(row * sCols + col) % CODE_LEN];
                         if (ch === ' ') ch = CODE_BUF[(row * sCols + col + 13) % CODE_LEN];
-                        alphaBoost = 1.4;
+                        alphaBoost = 2.0;
                     } else if (isMidEdge) {
                         if ((row + col) % 3 === 0) {
                             let rampIdx = Math.floor(lumPulsed * (CHAR_RAMP.length - 1) + rampShift);
                             rampIdx = Math.max(1, Math.min(CHAR_RAMP.length - 1, rampIdx));
                             ch = CHAR_RAMP[rampIdx];
-                            alphaBoost = 0.35;
+                            alphaBoost = 1.0;
                         } else { skipCell = true; }
                     } else {
                         // Deep interior: almost invisible scatter
                         if ((row + col) % 5 === 0) {
                             ch = CHAR_RAMP[Math.min(2, Math.floor(lumPulsed * 2) + 1)];
-                            alphaBoost = 0.12;
+                            alphaBoost = 0.5;
                         } else { skipCell = true; }
                     }
                 }
                 if (skipCell) continue;
 
-                // Color: palette mid-tone only, no hot push — let physarum own the bright spots
-                let lumT = Math.min(1, lumPulsed * 1.1);
+                // Color: scales with STENCIL_MASTER — subtle at low, full palette push at high
+                let colorPush = STENCIL_MASTER * 2.5; // 0 at master=0, 2.0 at master=0.8
+                let lumT = Math.min(1, lumPulsed * (0.9 + colorPush * 0.3));
                 let r, g, b;
-                let t = 0.2 + lumT * 0.5; // narrower range, stays in mid-tones
+                let hotMix = 0.3 + colorPush * 0.35; // 0.3 at low master, up to 1.0 at max
+                let baseMix = 0.5 + colorPush * 0.25;
+                let t = 0.2 + lumT * (0.4 + colorPush * 0.15);
                 if (t > 0.5) {
                     let ht = (t - 0.5) / 0.5;
-                    r = bright.r + (hot.r - bright.r) * ht * 0.4; // only 40% toward hot
-                    g = bright.g + (hot.g - bright.g) * ht * 0.4;
-                    b = bright.b + (hot.b - bright.b) * ht * 0.4;
+                    r = bright.r + (hot.r - bright.r) * ht * hotMix;
+                    g = bright.g + (hot.g - bright.g) * ht * hotMix;
+                    b = bright.b + (hot.b - bright.b) * ht * hotMix;
                 } else {
                     let bt = t / 0.5;
-                    r = bright.r * bt * 0.6 + bright.r * 0.2;
-                    g = bright.g * bt * 0.6 + bright.g * 0.2;
-                    b = bright.b * bt * 0.6 + bright.b * 0.2;
+                    r = bright.r * bt * baseMix + bright.r * 0.15;
+                    g = bright.g * bt * baseMix + bright.g * 0.15;
+                    b = bright.b * bt * baseMix + bright.b * 0.15;
                 }
 
-                mascotSimCtx.globalAlpha = Math.min(1, cellBlend * cell.a * STENCIL_MASTER * alphaBoost);
+                // Alpha scales quadratically with master — feels linear to the eye
+                let masterAlpha = STENCIL_MASTER * (1 + STENCIL_MASTER);
+                mascotSimCtx.globalAlpha = Math.min(1, cellBlend * cell.a * masterAlpha * alphaBoost);
                 mascotSimCtx.fillStyle = `rgb(${r|0},${g|0},${b|0})`;
                 mascotSimCtx.fillText(ch, col * cw + Math.floor(cw / 2), row * ch_);
             }
