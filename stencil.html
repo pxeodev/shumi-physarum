@@ -1462,15 +1462,25 @@ function drawSeedWatermark(ctx, w, h) {
 }
 
 function savePNG() {
-    // Composite both layers
-    compCtx.drawImage(bgCanvas, 0, 0);
-    let mx = (VW - MSIZE) / 2;
-    let my = (VH - MSIZE) / 2;
-    compCtx.drawImage(mascotCanvas, mx, my);
-    drawSeedWatermark(compCtx, VW, VH);
+    // Render at 4K (3840×2160) regardless of viewport size
+    const EW = 3840, EH = 2160;
+    let exportC = document.createElement('canvas');
+    exportC.width = EW; exportC.height = EH;
+    let ectx = exportC.getContext('2d');
+    ectx.imageSmoothingEnabled = true;
+    ectx.imageSmoothingQuality = 'high';
+    // Scale BG to fill 4K
+    ectx.drawImage(bgCanvas, 0, 0, EW, EH);
+    // Scale mascot proportionally — keep same relative size & centering
+    let mScale = Math.min(EW / VW, EH / VH);
+    let mW = MSIZE * mScale, mH = MSIZE * mScale;
+    let mx = (EW - mW) / 2;
+    let my = (EH - mH) / 2;
+    ectx.drawImage(mascotCanvas, mx, my, mW, mH);
+    drawSeedWatermark(ectx, EW, EH);
     let a = document.createElement('a');
     a.download = `shumi-masked-${seed}.png`;
-    a.href = compositeCanvas.toDataURL('image/png');
+    a.href = exportC.toDataURL('image/png');
     a.click();
 }
 
