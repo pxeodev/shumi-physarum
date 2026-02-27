@@ -1349,12 +1349,14 @@ function frame() {
                 let gridCol = Math.min(origCols - 1, Math.floor((col * cw + cw / 2) / CELL_W));
                 let gridRow = Math.min(origRows - 1, Math.floor((row * ch_ + ch_ / 2) / CELL_H));
                 let cell = stencilGrid[gridRow * origCols + gridCol];
-                if (!cell || cell.a < 0.1 || formation < cell.reveal) continue;
+                if (!cell || cell.a < 0.1) continue;
+                let isBlast = STENCIL_MASTER > 1.0;
+                if (!isBlast && formation < cell.reveal) continue;
 
                 let isEdge = cell.edge >= EDGE_STRONG;
                 let isMidEdge = cell.edge >= EDGE_WEAK;
                 let isDarkFeature = cell.a > 0.3 && cell.lum < 0.12;
-                let cellBlend = Math.min(1, (formation - cell.reveal) / 0.3);
+                let cellBlend = isBlast ? 1.0 : Math.min(1, (formation - cell.reveal) / 0.3);
                 let lumPulsed = cell.lum + pulse * 0.15;
 
                 let ch;
