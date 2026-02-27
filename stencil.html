@@ -1618,47 +1618,26 @@ window.addEventListener('resize', () => {
 
 // Hold Space to flash — boosts stencil (ASCII modes) + trail brightness (pixel modes)
 let _savedMaster = null;
-let _trailBoost = 1.0;  // multiplier for pixel trail rendering during flash
-
-// Auto-flash: briefly reveal the face so every visitor immediately sees the character
-let _autoFlashTimer = null;
-let _autoFlashFadeTimer = null;
-function autoFlash() {
-    if (_autoFlashTimer) clearTimeout(_autoFlashTimer);
-    if (_autoFlashFadeTimer) clearTimeout(_autoFlashFadeTimer);
-    let prev = window._stencilMaster ?? 0.28;
-    let delay = IS_MOBILE ? 400 : 600;
-    _autoFlashTimer = setTimeout(() => {
-        // Don't override a manual spacebar hold
-        if (_savedMaster !== null) return;
-        window._stencilMaster = 2.5;
-        _trailBoost = 3.0;
-        _autoFlashFadeTimer = setTimeout(() => {
-            // Don't reset if user is holding spacebar
-            if (_savedMaster !== null) return;
-            window._stencilMaster = prev;
-            _trailBoost = 1.0;
-        }, 1500);
-    }, delay);
-}
-let _blastTimer = null;
+let _trailBoost = 1.0;
 window.addEventListener('keydown', (e) => {
     if (e.code === 'Space' && !e.target.matches('input, textarea, select')) {
         e.preventDefault();
-        // Tap to flash: blast briefly then auto-restore
-        if (_blastTimer) clearTimeout(_blastTimer);
-        if (_autoFlashTimer) clearTimeout(_autoFlashTimer);
-        if (_autoFlashFadeTimer) clearTimeout(_autoFlashFadeTimer);
-        let prev = _savedMaster ?? window._stencilMaster ?? 0.28;
-        _savedMaster = prev;
-        window._stencilMaster = 3.0;
-        _trailBoost = 4.0;
-        _blastTimer = setTimeout(() => {
-            window._stencilMaster = prev;
-            _trailBoost = 1.0;
-            _savedMaster = null;
-            _blastTimer = null;
-        }, 1500);
+        if (_savedMaster === null) {
+            _savedMaster = window._stencilMaster ?? 0.28;
+            window._stencilMaster = 3.0;
+            _trailBoost = 4.0;
+            let sl = document.getElementById('stencilMaster');
+            if (sl) sl.value = 3.0;
+        }
+    }
+});
+window.addEventListener('keyup', (e) => {
+    if (e.code === 'Space' && _savedMaster !== null) {
+        window._stencilMaster = _savedMaster;
+        _trailBoost = 1.0;
+        let sl = document.getElementById('stencilMaster');
+        if (sl) sl.value = _savedMaster;
+        _savedMaster = null;
     }
 });
 
