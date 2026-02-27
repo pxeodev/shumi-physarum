@@ -68,63 +68,6 @@
             text-transform: lowercase;
         }
         #status.show { opacity: 0.4; }
-        .mode-btn { font-size: 11px !important; padding: 6px 12px !important; text-align: left; }
-        .mode-btn.active { border-color: #D4A84B !important; color: #D4A84B !important; background: rgba(212,168,75,0.15) !important; }
-
-        /* ── Settings Panel ── */
-        #settings-panel {
-            position: fixed; top: 0; left: 0; bottom: 0; width: 280px; z-index: 20;
-            background: rgba(13,13,13,0.92); backdrop-filter: blur(12px);
-            border-right: 1px solid #222; overflow-y: auto; overflow-x: hidden;
-            transform: translateX(-100%); transition: transform 0.3s ease;
-            font-family: 'Courier New', monospace; color: #999; font-size: 11px;
-            scrollbar-width: thin; scrollbar-color: #333 transparent;
-        }
-        #settings-panel.open { transform: translateX(0); }
-        #settings-panel::-webkit-scrollbar { width: 4px; }
-        #settings-panel::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
-        .panel-inner { padding: 16px 14px 80px; }
-        .panel-section { margin-bottom: 16px; }
-        .panel-section h3 {
-            color: #D4A84B; font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
-            margin: 0 0 10px; padding-bottom: 4px; border-bottom: 1px solid #222;
-        }
-        .panel-section h4 {
-            color: #777; font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
-            margin: 12px 0 6px;
-        }
-        .sg { margin-bottom: 8px; }
-        .sg label { display: block; color: #888; font-size: 10px; margin-bottom: 2px; }
-        .sg .sl { display: flex; align-items: center; gap: 6px; }
-        .sg .sl input[type="range"] {
-            flex: 1; height: 3px; background: #222; border-radius: 2px; outline: none;
-            -webkit-appearance: none; cursor: pointer;
-        }
-        .sg .sl input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 11px; height: 11px; background: #D4A84B;
-            border-radius: 50%; cursor: pointer;
-        }
-        .sg .sl input[type="range"]::-moz-range-thumb {
-            width: 11px; height: 11px; background: #D4A84B; border-radius: 50%;
-            border: none; cursor: pointer;
-        }
-        .sg .vd { min-width: 38px; text-align: right; color: #D4A84B; font-size: 10px; }
-        #toggle-panel {
-            position: fixed; top: 12px; left: 12px; z-index: 21;
-            padding: 6px 10px; border: 1px solid #333; background: rgba(13,13,13,0.85);
-            color: #D4A84B; font-family: 'Courier New', monospace; font-size: 11px;
-            cursor: pointer; border-radius: 4px; backdrop-filter: blur(8px);
-            transition: all 0.2s;
-        }
-        #toggle-panel:hover { border-color: #D4A84B; background: rgba(212,168,75,0.1); }
-        @media (max-width: 768px) {
-            #settings-panel { width: 260px; font-size: 10px; }
-            .panel-inner { padding: 12px 10px 80px; }
-            #mode-controls { top: auto; bottom: 60px; right: 10px; flex-direction: row; flex-wrap: wrap; gap: 4px; }
-            .mode-btn { font-size: 9px !important; padding: 4px 8px !important; }
-            #controls { bottom: 10px; gap: 6px; }
-            .btn { font-size: 11px; padding: 8px 14px; }
-        }
     </style>
 </head>
 <body>
@@ -142,74 +85,6 @@
     <canvas id="composite"></canvas>
 
     <div id="status"></div>
-    <button id="toggle-panel" onclick="document.getElementById('settings-panel').classList.toggle('open')">☰ Settings</button>
-
-    <div id="settings-panel">
-        <div class="panel-inner">
-            <div class="panel-section">
-                <h3>Seed</h3>
-                <div class="sg"><div class="sl"><input type="text" id="s-seed" style="flex:1;background:#111;border:1px solid #333;color:#D4A84B;padding:4px 8px;font-family:inherit;font-size:11px;border-radius:3px;text-align:center;" onchange="seed=parseInt(this.value)||1;restart()"><button class="btn" style="font-size:10px;padding:4px 8px;" onclick="restart()">Jump</button></div></div>
-            </div>
-
-            <div class="panel-section">
-                <h3>Background Network</h3>
-                <h4>Colony</h4>
-                <div class="sg"><label>Agent Count</label><div class="sl"><input type="range" id="s-bg-agentCount" min="2000" max="15000" step="500" oninput="BG.agentCount=+this.value;sv(this)"><span class="vd" id="s-bg-agentCount-v"></span></div></div>
-                <div class="sg"><label>Speed</label><div class="sl"><input type="range" id="s-bg-speed" min="2" max="14" step="0.2" oninput="BG.speed=+this.value;sv(this)"><span class="vd" id="s-bg-speed-v"></span></div></div>
-                <div class="sg"><label>Sensor Distance</label><div class="sl"><input type="range" id="s-bg-sensorDist" min="8" max="40" step="1" oninput="BG.sensorDist=+this.value;sv(this)"><span class="vd" id="s-bg-sensorDist-v"></span></div></div>
-                <div class="sg"><label>Sensor Angle</label><div class="sl"><input type="range" id="s-bg-sensorAngle" min="15" max="70" step="1" oninput="BG.sensorAngle=+this.value*Math.PI/180;sv(this)"><span class="vd" id="s-bg-sensorAngle-v"></span></div></div>
-                <div class="sg"><label>Turn Speed</label><div class="sl"><input type="range" id="s-bg-turnSpeed" min="10" max="45" step="1" oninput="BG.turnSpeed=+this.value*Math.PI/180;sv(this)"><span class="vd" id="s-bg-turnSpeed-v"></span></div></div>
-                <div class="sg"><label>Steps/Frame</label><div class="sl"><input type="range" id="s-bg-stepsPerFrame" min="1" max="10" step="1" oninput="BG.stepsPerFrame=+this.value;sv(this)"><span class="vd" id="s-bg-stepsPerFrame-v"></span></div></div>
-                <div class="sg"><label>Spawn Rate</label><div class="sl"><input type="range" id="s-bg-spawnRate" min="20" max="300" step="10" oninput="BG.spawnRate=+this.value;sv(this)"><span class="vd" id="s-bg-spawnRate-v"></span></div></div>
-                <h4>Chemistry</h4>
-                <div class="sg"><label>Deposit</label><div class="sl"><input type="range" id="s-bg-deposit" min="3" max="30" step="1" oninput="BG.deposit=+this.value;sv(this)"><span class="vd" id="s-bg-deposit-v"></span></div></div>
-                <div class="sg"><label>Decay</label><div class="sl"><input type="range" id="s-bg-decay" min="0.930" max="0.990" step="0.001" oninput="BG.decay=+this.value;sv(this)"><span class="vd" id="s-bg-decay-v"></span></div></div>
-                <div class="sg"><label>Diffusion</label><div class="sl"><input type="range" id="s-bg-diffusion" min="0.05" max="0.55" step="0.01" oninput="BG.diffusion=+this.value;sv(this)"><span class="vd" id="s-bg-diffusion-v"></span></div></div>
-                <h4>Appearance</h4>
-                <div class="sg"><label>Trail Brightness</label><div class="sl"><input type="range" id="s-bg-trailBright" min="0.5" max="3.0" step="0.1" oninput="BG.trailBright=+this.value;sv(this)"><span class="vd" id="s-bg-trailBright-v"></span></div></div>
-                <div class="sg"><label>Agent Glow</label><div class="sl"><input type="range" id="s-bg-agentGlow" min="0" max="1.0" step="0.02" oninput="BG.agentGlow=+this.value;sv(this)"><span class="vd" id="s-bg-agentGlow-v"></span></div></div>
-                <div class="sg"><label>Food Count</label><div class="sl"><input type="range" id="s-bg-foodCount" min="0" max="25" step="1" oninput="BG.foodCount=+this.value;sv(this)"><span class="vd" id="s-bg-foodCount-v"></span></div></div>
-                <div class="sg"><label>Food Strength</label><div class="sl"><input type="range" id="s-bg-foodStr" min="0" max="35" step="1" oninput="BG.foodStr=+this.value;sv(this)"><span class="vd" id="s-bg-foodStr-v"></span></div></div>
-                <div class="sg"><label>Spawn Radius</label><div class="sl"><input type="range" id="s-bg-spawnR" min="5" max="40" step="1" oninput="BG.spawnR=+this.value;sv(this)"><span class="vd" id="s-bg-spawnR-v"></span></div></div>
-            </div>
-
-            <div class="panel-section">
-                <h3>Mascot Physarum</h3>
-                <h4>Colony</h4>
-                <div class="sg"><label>Agent Count</label><div class="sl"><input type="range" id="s-ms-agentCount" min="1000" max="10000" step="500" oninput="MS.agentCount=+this.value;sv(this)"><span class="vd" id="s-ms-agentCount-v"></span></div></div>
-                <div class="sg"><label>Speed</label><div class="sl"><input type="range" id="s-ms-speed" min="1" max="10" step="0.2" oninput="MS.speed=+this.value;sv(this)"><span class="vd" id="s-ms-speed-v"></span></div></div>
-                <div class="sg"><label>Sensor Distance</label><div class="sl"><input type="range" id="s-ms-sensorDist" min="5" max="35" step="1" oninput="MS.sensorDist=+this.value;sv(this)"><span class="vd" id="s-ms-sensorDist-v"></span></div></div>
-                <div class="sg"><label>Sensor Angle</label><div class="sl"><input type="range" id="s-ms-sensorAngle" min="15" max="65" step="1" oninput="MS.sensorAngle=+this.value*Math.PI/180;sv(this)"><span class="vd" id="s-ms-sensorAngle-v"></span></div></div>
-                <div class="sg"><label>Turn Speed</label><div class="sl"><input type="range" id="s-ms-turnSpeed" min="8" max="42" step="1" oninput="MS.turnSpeed=+this.value*Math.PI/180;sv(this)"><span class="vd" id="s-ms-turnSpeed-v"></span></div></div>
-                <div class="sg"><label>Steps/Frame</label><div class="sl"><input type="range" id="s-ms-stepsPerFrame" min="1" max="10" step="1" oninput="MS.stepsPerFrame=+this.value;sv(this)"><span class="vd" id="s-ms-stepsPerFrame-v"></span></div></div>
-                <div class="sg"><label>Spawn Rate</label><div class="sl"><input type="range" id="s-ms-spawnRate" min="10" max="200" step="5" oninput="MS.spawnRate=+this.value;sv(this)"><span class="vd" id="s-ms-spawnRate-v"></span></div></div>
-                <h4>Chemistry</h4>
-                <div class="sg"><label>Deposit</label><div class="sl"><input type="range" id="s-ms-deposit" min="3" max="30" step="1" oninput="MS.deposit=+this.value;sv(this)"><span class="vd" id="s-ms-deposit-v"></span></div></div>
-                <div class="sg"><label>Decay</label><div class="sl"><input type="range" id="s-ms-decay" min="0.935" max="0.990" step="0.001" oninput="MS.decay=+this.value;sv(this)"><span class="vd" id="s-ms-decay-v"></span></div></div>
-                <div class="sg"><label>Diffusion</label><div class="sl"><input type="range" id="s-ms-diffusion" min="0.05" max="0.50" step="0.01" oninput="MS.diffusion=+this.value;sv(this)"><span class="vd" id="s-ms-diffusion-v"></span></div></div>
-                <h4>Appearance</h4>
-                <div class="sg"><label>Trail Brightness</label><div class="sl"><input type="range" id="s-ms-trailBright" min="0.8" max="4.5" step="0.1" oninput="MS.trailBright=+this.value;sv(this)"><span class="vd" id="s-ms-trailBright-v"></span></div></div>
-                <div class="sg"><label>Agent Glow</label><div class="sl"><input type="range" id="s-ms-agentGlow" min="0" max="1.5" step="0.02" oninput="MS.agentGlow=+this.value;sv(this)"><span class="vd" id="s-ms-agentGlow-v"></span></div></div>
-                <div class="sg"><label>Spawn Radius</label><div class="sl"><input type="range" id="s-ms-spawnR" min="3" max="30" step="1" oninput="MS.spawnR=+this.value;sv(this)"><span class="vd" id="s-ms-spawnR-v"></span></div></div>
-            </div>
-
-            <div class="panel-section">
-                <h3>Stencil</h3>
-                <div class="sg"><label>Master Opacity</label><div class="sl"><input type="range" id="s-stencilMaster" min="0" max="0.8" step="0.01" oninput="window._stencilMaster=+this.value;sv(this)"><span class="vd" id="s-stencilMaster-v"></span></div></div>
-                <div class="sg"><label>Edge Strong</label><div class="sl"><input type="range" id="s-edgeStrong" min="0.1" max="0.6" step="0.01" oninput="window._edgeStrong=+this.value;sv(this)"><span class="vd" id="s-edgeStrong-v"></span></div></div>
-                <div class="sg"><label>Edge Weak</label><div class="sl"><input type="range" id="s-edgeWeak" min="0.04" max="0.3" step="0.01" oninput="window._edgeWeak=+this.value;sv(this)"><span class="vd" id="s-edgeWeak-v"></span></div></div>
-                <div class="sg"><label>Pulse Speed</label><div class="sl"><input type="range" id="s-pulseSpeed" min="0.01" max="0.12" step="0.002" oninput="window._pulseSpeed=+this.value;sv(this)"><span class="vd" id="s-pulseSpeed-v"></span></div></div>
-            </div>
-        </div>
-    </div>
-
-    <div id="mode-controls" style="position:fixed;top:20px;right:20px;display:flex;flex-direction:column;gap:6px;z-index:10;">
-        <button class="btn mode-btn active" data-mode="1" onclick="setMode(1)">1 Original</button>
-        <button class="btn mode-btn" data-mode="2" onclick="setMode(2)">2 Contour</button>
-        <button class="btn mode-btn" data-mode="3" onclick="setMode(3)">3 Ramp</button>
-        <button class="btn mode-btn" data-mode="4" onclick="setMode(4)">4 Edges</button>
-        <button class="btn mode-btn" data-mode="5" onclick="setMode(5)">5 Hybrid</button>
-    </div>
     <div id="controls">
         <button class="btn" onclick="restart()">New Seed</button>
         <button class="btn" id="rec-btn" onclick="toggleRecord()">● Record</button>
@@ -227,29 +102,29 @@
 // bg/ms overrides are applied on top of base BG/MS params
 const TEXTURES = {
     // Warm, steady glow. Medium everything, the baseline.
-    standard:    { bg: { speed: 7.0, sensorDist: 22, diffusion: 0.25, deposit: 12, decay: 0.960, turnSpeed: 26, trailBright: 1.3, foodCount: 12 },
-                   ms: { speed: 5.5, sensorDist: 16, diffusion: 0.22, deposit: 16, decay: 0.968, turnSpeed: 24, trailBright: 2.8 } },
+    standard:    { bg: { speed: 5.0, sensorDist: 22, diffusion: 0.25, deposit: 12, decay: 0.968, turnSpeed: 20, trailBright: 1.2, foodCount: 12 },
+                   ms: { speed: 4.0, sensorDist: 16, diffusion: 0.20, deposit: 16, decay: 0.975, turnSpeed: 18, trailBright: 2.8 } },
     // Sharp defined veins, gem-like facets. Low diffusion, high deposit.
-    crystalline: { bg: { speed: 5.5, sensorDist: 18, diffusion: 0.10, deposit: 18, decay: 0.950, turnSpeed: 22, trailBright: 1.6, foodCount: 16 },
-                   ms: { speed: 5.0, sensorDist: 12, diffusion: 0.08, deposit: 22, decay: 0.958, turnSpeed: 20, trailBright: 3.2 } },
+    crystalline: { bg: { speed: 4.0, sensorDist: 18, diffusion: 0.10, deposit: 18, decay: 0.958, turnSpeed: 16, trailBright: 1.6, foodCount: 16 },
+                   ms: { speed: 3.5, sensorDist: 12, diffusion: 0.08, deposit: 22, decay: 0.965, turnSpeed: 14, trailBright: 3.2 } },
     // Soft ghostly haze. High diffusion, low deposit, trails dissolve.
-    smoke:       { bg: { speed: 7.5, sensorDist: 28, diffusion: 0.45, deposit: 8,  decay: 0.972, turnSpeed: 30, trailBright: 1.0, foodCount: 8 },
-                   ms: { speed: 6.0, sensorDist: 22, diffusion: 0.38, deposit: 10, decay: 0.978, turnSpeed: 28, trailBright: 2.2 } },
-    // Dense branching networks, organic growth.
-    coral:       { bg: { speed: 4.5, sensorDist: 30, diffusion: 0.18, deposit: 14, decay: 0.965, turnSpeed: 22, trailBright: 1.4, foodCount: 18 },
-                   ms: { speed: 3.8, sensorDist: 24, diffusion: 0.15, deposit: 18, decay: 0.970, turnSpeed: 20, trailBright: 3.0 } },
+    smoke:       { bg: { speed: 5.5, sensorDist: 28, diffusion: 0.45, deposit: 8,  decay: 0.980, turnSpeed: 24, trailBright: 0.9, foodCount: 8 },
+                   ms: { speed: 4.5, sensorDist: 22, diffusion: 0.38, deposit: 10, decay: 0.985, turnSpeed: 22, trailBright: 2.2 } },
+    // Dense branching networks, slow organic growth. Coral reef.
+    coral:       { bg: { speed: 3.0, sensorDist: 30, diffusion: 0.18, deposit: 14, decay: 0.972, turnSpeed: 15, trailBright: 1.4, foodCount: 18 },
+                   ms: { speed: 2.5, sensorDist: 24, diffusion: 0.15, deposit: 18, decay: 0.978, turnSpeed: 13, trailBright: 3.0 } },
     // Thin delicate threads, fast fade. Silk in water.
-    silk:        { bg: { speed: 8.0, sensorDist: 20, diffusion: 0.30, deposit: 6,  decay: 0.942, turnSpeed: 28, trailBright: 1.8, foodCount: 10 },
-                   ms: { speed: 6.5, sensorDist: 14, diffusion: 0.25, deposit: 8,  decay: 0.950, turnSpeed: 26, trailBright: 3.4 } },
+    silk:        { bg: { speed: 6.0, sensorDist: 20, diffusion: 0.30, deposit: 6,  decay: 0.950, turnSpeed: 22, trailBright: 1.8, foodCount: 10 },
+                   ms: { speed: 5.0, sensorDist: 14, diffusion: 0.25, deposit: 8,  decay: 0.958, turnSpeed: 20, trailBright: 3.4 } },
     // Long streaky paths, nervous energy. Lightning in a bottle.
-    electric:    { bg: { speed: 9.0, sensorDist: 14, diffusion: 0.15, deposit: 10, decay: 0.955, turnSpeed: 34, trailBright: 1.5, foodCount: 14 },
-                   ms: { speed: 7.5, sensorDist: 10, diffusion: 0.12, deposit: 14, decay: 0.960, turnSpeed: 32, trailBright: 3.0 } },
-    // Wide flowing rivers, heavy. Lava lamp.
-    flow:        { bg: { speed: 6.0, sensorDist: 26, diffusion: 0.42, deposit: 4,  decay: 0.938, turnSpeed: 20, trailBright: 0.8, foodCount: 6 },
-                   ms: { speed: 5.5, sensorDist: 16, diffusion: 0.38, deposit: 4,  decay: 0.942, turnSpeed: 18, trailBright: 1.4, densityMult: 0.4, trailMax: 120 } },
+    electric:    { bg: { speed: 7.0, sensorDist: 14, diffusion: 0.15, deposit: 10, decay: 0.962, turnSpeed: 28, trailBright: 1.5, foodCount: 14 },
+                   ms: { speed: 6.0, sensorDist: 10, diffusion: 0.12, deposit: 14, decay: 0.968, turnSpeed: 26, trailBright: 3.0 } },
+    // Wide flowing rivers, slow and heavy. Lava lamp.
+    flow:        { bg: { speed: 4.5, sensorDist: 26, diffusion: 0.42, deposit: 4,  decay: 0.945, turnSpeed: 14, trailBright: 0.7, foodCount: 6 },
+                   ms: { speed: 4.0, sensorDist: 16, diffusion: 0.38, deposit: 4,  decay: 0.948, turnSpeed: 12, trailBright: 1.4, densityMult: 0.4, trailMax: 120 } },
     // Tight clusters with bright nodes. Constellation map.
-    spore:       { bg: { speed: 6.0, sensorDist: 12, diffusion: 0.20, deposit: 16, decay: 0.948, turnSpeed: 24, trailBright: 1.8, foodCount: 20 },
-                   ms: { speed: 5.0, sensorDist: 10, diffusion: 0.16, deposit: 18, decay: 0.955, turnSpeed: 22, trailBright: 3.2 } },
+    spore:       { bg: { speed: 4.5, sensorDist: 12, diffusion: 0.20, deposit: 16, decay: 0.955, turnSpeed: 18, trailBright: 1.8, foodCount: 20 },
+                   ms: { speed: 3.5, sensorDist: 10, diffusion: 0.16, deposit: 18, decay: 0.962, turnSpeed: 16, trailBright: 3.2 } },
 };
 
 const TEXTURE_NAMES = ['standard', 'crystalline', 'smoke', 'coral', 'silk', 'electric', 'flow', 'spore'];
@@ -264,97 +139,6 @@ const PALETTES = [
     { name: 'Tide',   mascot: ['#080C14', '#6888C0', '#80A0D0'], bg: ['#0A0C12', '#506888', '#486080'], chromatic: ['rgba(100,140,220,A)', 'rgba(220,140,100,A)'] },
     { name: 'Rust',   mascot: ['#140C08', '#C88060', '#D8A080'], bg: ['#120A0A', '#8A6050', '#806048'], chromatic: ['rgba(210,130,90,A)', 'rgba(90,200,180,A)'] },
 ];
-
-// ASCII trail rendering config
-const CELL_W = 8;
-const CELL_H = 14;
-const CHAR_RAMP = ' ·:;=+*#%@';  // 10 levels, low-to-high density (fallback)
-const PULSE_SPEED = 0.055;        // radians per frame (~3.5s full cycle, more lively)
-const PULSE_BRIGHT = 0.25;        // +/-25% brightness oscillation
-const PULSE_RAMP = 1.2;           // +/-1.2 character levels shift
-const STENCIL_START = 0;          // frames when ASCII stencil begins accumulating (immediate)
-const STENCIL_END = 55;           // frames when stencil is fully formed (same cadence as before)
-let pulsePhase = 0;
-
-// ── Formation modes (edge-aware) ──
-// 1: Original (dense code, uniform)
-// 2: Contour-priority (code on edges, thinned interiors)
-// 3: Ramp silhouette (density symbols shaped by edge strength)
-// 4: Edges-only (characters only on strong contours)
-// 5: Hybrid (code on contours, sparse ramp fill in flat zones)
-let formationMode = 1;
-
-// Algo code texture: real trading code that tiles across the ASCII grid
-const CODE_LINES = [
-    'let mark = exchange.getMarkPrice("BTC-PERP");',
-    'let index = exchange.getIndexPrice("BTC-PERP");',
-    'let basis = (mark - index) / index * 100;',
-    'let funding = await getFundingRate(symbol);',
-    'if (funding > 0.03 && oi_delta < -0.05) {',
-    '  openShort({ leverage: 5, size: notional });',
-    '}',
-    'let liqPrice = entry * (1 - 1/leverage + mm);',
-    'if (mark < liqPrice * 1.05) reducePosition(0.5);',
-    'const oi = await coinalyze.getOI("BTCUSDT");',
-    'let oiChange = (oi.current - oi.prev) / oi.prev;',
-    'if (oiChange > 0.08 && price.delta < -0.02) {',
-    '  signal = "LONG_SQUEEZE"; conviction = 0.85;',
-    '}',
-    'async function rebalanceHedge(pos) {',
-    '  let delta = pos.long.size - pos.short.size;',
-    '  if (Math.abs(delta) > threshold) {',
-    '    await placeOrder(delta > 0 ? "SELL" : "BUY",',
-    '      Math.abs(delta), "MARKET");',
-    '  }',
-    '}',
-    'let atr = calcATR(candles, 14);',
-    'let sl = entry - atr * 1.5;',
-    'let tp = entry + atr * 3.0;',
-    'let rr = (tp - entry) / (entry - sl);',
-    'function kelly(winRate, avgWin, avgLoss) {',
-    '  return winRate - (1 - winRate) / (avgWin/avgLoss);',
-    '}',
-    'let size = kelly(0.895, 2.1, 1) * balance;',
-    'size = Math.min(size, maxRisk * balance);',
-    'let pnl = (exit - entry) / entry * leverage;',
-    'let fee = notional * 2 * takerFee;',
-    'let netPnl = pnl * notional - fee;',
-    'for (let tf of ["5m","15m","1h","4h"]) {',
-    '  let sst = superTrend(ohlc[tf], 3, 10);',
-    '  if (sst.dir > 0) bullCount++;',
-    '}',
-    'if (bullCount >= 3) bias = "STRONG_LONG";',
-    'let fr8h = funding.rate * 3; // annualize',
-    'let carry = fr8h * 365 * notional;',
-    'if (carry > minYield && trend.aligned) {',
-    '  openCarryTrade(symbol, "LONG_SPOT_SHORT_PERP");',
-    '}',
-    'await ws.subscribe(`${symbol}@aggTrade`);',
-    'ws.on("message", (tick) => {',
-    '  cvd += tick.side === "BUY" ? tick.qty : -tick.qty;',
-    '  if (cvd < -threshold) emit("SELL_PRESSURE");',
-    '});',
-    'let margin = position.notional / leverage;',
-    'let mmr = margin * maintenanceRate;',
-    'let freeMargin = balance - margin + unrealizedPnl;',
-    'if (freeMargin < mmr * 2) closePosition();',
-    'let spread = askPrice - bidPrice;',
-    'let slip = size * avgSlippage[symbol];',
-    'let breakeven = entry + (fee * 2 + slip) / size;',
-    'function calcMaxLev(vol30d, balance) {',
-    '  let risk = vol30d * 2.5; // 2.5 sigma move',
-    '  return Math.floor(1 / risk);',
-    '}',
-    'if (exchange === "BYBIT") setTPSL(tp, sl, "FULL");',
-    'if (exchange === "BINANCE") setBracketOrder(tp, sl);',
-    'let longFunding = shorts.funding - longs.funding;',
-    'let netRate = longFunding * position.size;',
-    'emit("FUNDING_PNL", { rate: fr8h, net: netRate });',
-];
-// Flatten into a single char buffer; shuffled per seed in initAll
-const CODE_SRC = CODE_LINES.join(' ').split('');
-const CODE_LEN = CODE_SRC.length;
-let CODE_BUF = CODE_SRC.slice();
 
 // Active palette (set per seed in initAll)
 let activePalette = PALETTES[0];
@@ -420,10 +204,10 @@ function selectPalette(seed) {
     BG.speed = jitter(bgTex.speed, 0.15);
     BG.sensorDist = Math.round(jitter(bgTex.sensorDist, 0.15));
     BG.diffusion = Math.max(0.05, Math.min(0.50, jitter(bgTex.diffusion, 0.20)));
-    BG.deposit = Math.max(4, Math.round(jitter(bgTex.deposit, 0.15)));
-    BG.decay = Math.max(0.940, Math.min(0.990, jitter(bgTex.decay, 0.005)));
+    BG.deposit = Math.max(2, Math.round(jitter(bgTex.deposit, 0.15) * 0.7));
+    BG.decay = Math.max(0.940, Math.min(0.990, jitter(bgTex.decay, 0.005) - 0.004));
     BG.turnSpeed = jitter(bgTex.turnSpeed, 0.15) * Math.PI / 180;
-    BG.trailBright = jitter(bgTex.trailBright, 0.10);
+    BG.trailBright = jitter(bgTex.trailBright, 0.10) * 0.75;
     BG.foodCount = Math.round(jitter(bgTex.foodCount, 0.20));
 
     MS.speed = jitter(msTex.speed, 0.15);
@@ -435,16 +219,6 @@ function selectPalette(seed) {
     MS.trailBright = jitter(msTex.trailBright, 0.10);
     MS.densityMult = msTex.densityMult !== undefined ? msTex.densityMult : 1.0;
     MS.trailMax = msTex.trailMax || 180; // Global cap prevents mascot blowout
-
-    // Re-apply mobile caps after texture override
-    if (IS_MOBILE) {
-        BG.agentCount = Math.min(BG.agentCount, 4000);
-        MS.agentCount = Math.min(MS.agentCount, 3000);
-        BG.stepsPerFrame = Math.min(BG.stepsPerFrame, 3);
-        MS.stepsPerFrame = Math.min(MS.stepsPerFrame, 3);
-        BG.spawnRate = Math.min(BG.spawnRate, 80);
-        MS.spawnRate = Math.min(MS.spawnRate, 40);
-    }
 
     // Update chromatic aberration CSS to match palette
     let warm = activePalette.chromatic[0];
@@ -483,42 +257,42 @@ function selectPalette(seed) {
     bgEl.style.animation = 'bg-chromatic 14s linear infinite';
 }
 
-// Background sim params — radiating network from mascot, lively movement
+// Background sim params — thin radiating network from mascot
 const BG = {
     agentCount: 8000,
-    speed: 7.5,
+    speed: 5.0,
     sensorDist: 22,
     sensorAngle: 40 * Math.PI / 180,
-    turnSpeed: 26 * Math.PI / 180,
-    deposit: 11,
-    decay: 0.938,
-    diffusion: 0.17,
-    trailBright: 1.3,
+    turnSpeed: 20 * Math.PI / 180,
+    deposit: 8,
+    decay: 0.960,
+    diffusion: 0.20,
+    trailBright: 1.0,
     agentGlow: 0.18,
     spawnR: 15,
-    stepsPerFrame: 5,
-    spawnRate: 140,
-    initialBatch: 3000,
-    foodCount: 16,
+    stepsPerFrame: 3,
+    spawnRate: 50,
+    initialBatch: 1200,
+    foodCount: 12,
     foodStr: 15,
 };
 
-// Mascot sim params — alive and breathing, not static
+// Mascot sim params — steady presence, not spectacle
 const MS = {
-    agentCount: 5500,
-    speed: 4.8,
+    agentCount: 4000,
+    speed: 3.2,
     sensorDist: 16,
     sensorAngle: 35 * Math.PI / 180,
-    turnSpeed: 24 * Math.PI / 180,
-    deposit: 11,
-    decay: 0.968,
-    diffusion: 0.24,
-    trailBright: 2.4,
+    turnSpeed: 18 * Math.PI / 180,
+    deposit: 10,
+    decay: 0.975,
+    diffusion: 0.22,
+    trailBright: 2.2,
     agentGlow: 0.5,
     spawnR: 10,
-    stepsPerFrame: 5,
-    spawnRate: 70,
-    initialBatch: 1400,
+    stepsPerFrame: 3,
+    spawnRate: 40,
+    initialBatch: 800,
 };
 
 let seed = Math.floor(Math.random() * 999999) + 1;
@@ -561,27 +335,7 @@ let featheredMask = null; // Blurred-edge version of mask for soft bleed
 let densityMap = null;    // Luminance/edge map from mascot — guides trail deposit
 let edgeDistMap = null;   // 0 at mask edges, 1 deep inside — fades deposit near boundaries
 let edgeFoods = [];       // Food sources placed at high-contrast edges
-let stencilGrid = null;   // Per-ASCII-cell {lum, alpha, reveal} from mascot image
 let running = false;
-
-// ── Mobile detection & performance scaling ──
-const IS_MOBILE = /Android|iPhone|iPad|iPod|webOS/i.test(navigator.userAgent)
-    || (window.innerWidth <= 768 && 'ontouchstart' in window);
-const PERF_SCALE = IS_MOBILE ? 0.5 : 1.0;  // halve everything on mobile
-
-if (IS_MOBILE) {
-    // Halve agent populations
-    BG.agentCount = Math.round(BG.agentCount * 0.45);
-    MS.agentCount = Math.round(MS.agentCount * 0.45);
-    // Fewer sim steps per frame
-    BG.stepsPerFrame = Math.max(2, Math.round(BG.stepsPerFrame * 0.5));
-    MS.stepsPerFrame = Math.max(2, Math.round(MS.stepsPerFrame * 0.5));
-    // Slower spawn (less GC pressure)
-    BG.spawnRate = Math.round(BG.spawnRate * 0.5);
-    MS.spawnRate = Math.round(MS.spawnRate * 0.5);
-    BG.initialBatch = Math.round(BG.initialBatch * 0.5);
-    MS.initialBatch = Math.round(MS.initialBatch * 0.5);
-}
 
 // Seeded PRNG
 let rngState;
@@ -727,36 +481,6 @@ function buildMask() {
         }
         if (!tooClose) edgeFoods.push({ x: c.x, y: c.y, r: 100 });
     }
-
-    // ── Build ASCII stencil grid from mascot image ──
-    // Each cell stores luminance, alpha, edge strength, and a random reveal threshold
-    let sCols = Math.floor(MSIZE / CELL_W);
-    let sRows = Math.floor(MSIZE / CELL_H);
-    stencilGrid = new Array(sCols * sRows);
-    let imgPx = maskCtx.getImageData(0, 0, MSIZE, MSIZE).data;
-    for (let row = 0; row < sRows; row++) {
-        let sy = row * CELL_H + Math.floor(CELL_H / 2);
-        for (let col = 0; col < sCols; col++) {
-            let sx = col * CELL_W + Math.floor(CELL_W / 2);
-            let si = (sy * MSIZE + sx) * 4;
-            let r = imgPx[si], g = imgPx[si+1], b = imgPx[si+2], a = imgPx[si+3];
-            let lumVal = a > 10 ? (r * 0.299 + g * 0.587 + b * 0.114) / 255 : 0;
-            // Sample edge strength from density map (Sobel edges + luminance)
-            let edgeVal = densityMap ? densityMap[sy * MSIZE + sx] : 0;
-            // Also sample a small neighborhood for more robust edge detection per cell
-            let edgeMax = edgeVal;
-            for (let dy = -2; dy <= 2; dy++) {
-                for (let dx = -2; dx <= 2; dx++) {
-                    let ny = sy + dy * 2, nx = sx + dx * 2;
-                    if (ny >= 0 && ny < MSIZE && nx >= 0 && nx < MSIZE && densityMap) {
-                        edgeMax = Math.max(edgeMax, densityMap[ny * MSIZE + nx]);
-                    }
-                }
-            }
-            let reveal = a > 10 ? (1 - edgeVal * 0.6) * (0.3 + rng() * 0.7) : 2; // >1 = never
-            stencilGrid[row * sCols + col] = { lum: lumVal, a: a / 255, reveal, r, g, b, edge: edgeMax };
-        }
-    }
 }
 
 function getMaskFoodPoints(count) {
@@ -893,68 +617,31 @@ function seedTrail(trail, cx, cy, w, h, spawnR) {
 function renderTrail(ctx, trail, w, h, P, colors) {
     colors = colors || COLORS;
     let base = h2r(colors[0]), bright = h2r(colors[1]), hot = h2r(colors[2]);
+    let imgData = ctx.createImageData(w, h);
+    let px = imgData.data;
 
-    // Clear to background color
-    ctx.fillStyle = colors[0];
-    ctx.fillRect(0, 0, w, h);
-
-    // On mobile: use larger cells to halve draw calls
-    let cellW = IS_MOBILE ? CELL_W * 2 : CELL_W;
-    let cellH = IS_MOBILE ? CELL_H * 2 : CELL_H;
-    let cols = Math.floor(w / cellW);
-    let rows = Math.floor(h / cellH);
-    let fontSize = cellH - 2;
-    ctx.font = `${fontSize}px 'Courier New'`;
-    ctx.textBaseline = 'top';
-    ctx.textAlign = 'center';
-
-    // Pulse factor: sine wave oscillation for brightness + ramp shift
-    let pulse = Math.sin(pulsePhase);
-    let brightMult = 1 + pulse * PULSE_BRIGHT;
-    let rampShift = pulse * PULSE_RAMP;
-
-    for (let row = 0; row < rows; row++) {
-        let py = row * cellH + Math.floor(cellH / 2);
-        for (let col = 0; col < cols; col++) {
-            let px = col * cellW + Math.floor(cellW / 2);
-            if (py >= h || px >= w) continue;
-            let v = trail[py * w + px] * P.trailBright;
-
-            // Skip empty cells
-            if (v < 1) continue;
-
-            // Pulsed brightness for color interpolation
-            let vPulsed = v * brightMult;
-
-            // Character from code buffer (tiled across grid), not density ramp
-            let ch = CODE_BUF[(row * cols + col) % CODE_LEN];
-            if (ch === ' ') ch = CODE_BUF[(row * cols + col + 7) % CODE_LEN];
-
-            // Opacity: cubic ease so faint trails are very subtle, only hot trails pop
-            let rawAlpha = Math.min(1, v / 50);
-            let alpha = rawAlpha * rawAlpha * rawAlpha; // cubic falloff
-
-            // 3-stop color interpolation, scaled for lower trail values
-            let t = Math.min(vPulsed / 30, 1);
-            let t2 = Math.min(vPulsed / 80, 1);
-            let r, g, b;
-            if (t2 > 0.3) {
-                let ht = (t2 - 0.3) / 0.7;
-                r = bright.r + (hot.r - bright.r) * ht;
-                g = bright.g + (hot.g - bright.g) * ht;
-                b = bright.b + (hot.b - bright.b) * ht;
-            } else {
-                r = base.r + (bright.r - base.r) * t;
-                g = base.g + (bright.g - base.g) * t;
-                b = base.b + (bright.b - base.b) * t;
-            }
-
-            ctx.globalAlpha = alpha;
-            ctx.fillStyle = `rgb(${Math.min(255,r)|0},${Math.min(255,g)|0},${Math.min(255,b)|0})`;
-            ctx.fillText(ch, col * cellW + Math.floor(cellW / 2), row * cellH);
+    for (let i = 0; i < w * h; i++) {
+        let v = trail[i] * P.trailBright;
+        let t = Math.min(v / 80, 1);
+        let t2 = Math.min(v / 200, 1);
+        let r, g, b;
+        if (t2 > 0.3) {
+            let ht = (t2 - 0.3) / 0.7;
+            r = bright.r + (hot.r - bright.r) * ht;
+            g = bright.g + (hot.g - bright.g) * ht;
+            b = bright.b + (hot.b - bright.b) * ht;
+        } else {
+            r = base.r + (bright.r - base.r) * t;
+            g = base.g + (bright.g - base.g) * t;
+            b = base.b + (bright.b - base.b) * t;
         }
+        let idx = i * 4;
+        px[idx] = Math.min(255, r);
+        px[idx + 1] = Math.min(255, g);
+        px[idx + 2] = Math.min(255, b);
+        px[idx + 3] = 255;
     }
-    ctx.globalAlpha = 1;
+    ctx.putImageData(imgData, 0, 0);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -962,26 +649,9 @@ function renderTrail(ctx, trail, w, h, P, colors) {
 // ═══════════════════════════════════════════════════════════════
 
 function resize() {
-    let screenW = window.innerWidth;
-    let screenH = window.innerHeight;
-
-    // On mobile: render at half resolution, CSS-scale to fill viewport
-    if (IS_MOBILE) {
-        VW = Math.floor(screenW * 0.6);
-        VH = Math.floor(screenH * 0.6);
-        // CSS stretches canvas to viewport
-        bgCanvas.style.width = screenW + 'px';
-        bgCanvas.style.height = screenH + 'px';
-        mascotCanvas.style.width = ''; // sized by CSS position
-        mascotCanvas.style.height = '';
-    } else {
-        VW = screenW;
-        VH = screenH;
-    }
-
+    VW = window.innerWidth;
+    VH = window.innerHeight;
     MSIZE = Math.floor(Math.min(VW, VH) * 0.5);
-    // On mobile, clamp MSIZE to avoid too-small mascot
-    if (IS_MOBILE) MSIZE = Math.max(MSIZE, 160);
 
     bgCanvas.width = VW; bgCanvas.height = VH;
     bgSimCanvas.width = VW; bgSimCanvas.height = VH;
@@ -990,129 +660,45 @@ function resize() {
     mascotCanvas.width = MSIZE; mascotCanvas.height = MSIZE;
     mascotSimCanvas.width = MSIZE; mascotSimCanvas.height = MSIZE;
 
-    // Scale mascot canvas display to correct screen position
-    if (IS_MOBILE) {
-        let displayMsize = Math.floor(Math.min(screenW, screenH) * 0.5);
-        mascotCanvas.style.width = displayMsize + 'px';
-        mascotCanvas.style.height = displayMsize + 'px';
-    }
-
     if (maskImg) buildMask();
 }
 
 function generateBgFoods() {
     bgFoods = [];
-    let cx = VW / 2, cy = VH / 2;
-    let minR = MSIZE * 0.5;
-    let maxR = Math.max(VW, VH) * 0.55;
+    let cx = VW / 2, cy = VH / 2; // center on mascot, not spawn point
+    let minR = MSIZE * 0.75; // clear the mascot silhouette + buffer
     for (let i = 0; i < BG.foodCount; i++) {
         let a = rng() * Math.PI * 2;
-        let r = minR + rng() * (maxR - minR);
+        let r = minR + rng() * Math.min(VW, VH) * 0.35;
         bgFoods.push({
             x: cx + Math.cos(a) * r,
             y: cy + Math.sin(a) * r,
-            r: 100 + rng() * 140
+            r: 80 + rng() * 120
         });
     }
-}
-
-function setMode(m) {
-    formationMode = m;
-    document.querySelectorAll('.mode-btn').forEach(b => {
-        b.classList.toggle('active', parseInt(b.dataset.mode) === m);
-    });
-}
-
-// Slider value display helper — show sensible precision
-function sv(el) {
-    let vd = document.getElementById(el.id + '-v');
-    if (!vd) return;
-    let v = parseFloat(el.value);
-    let step = parseFloat(el.step) || 1;
-    if (step >= 1) vd.textContent = Math.round(v);
-    else if (step >= 0.1) vd.textContent = v.toFixed(1);
-    else if (step >= 0.01) vd.textContent = v.toFixed(2);
-    else vd.textContent = v.toFixed(3);
-}
-
-// Sync all sliders to current param values
-function syncSliders() {
-    function set(id, val) {
-        let el = document.getElementById(id);
-        if (el) {
-            // Snap value to nearest slider step so display matches
-            let step = parseFloat(el.step) || 1;
-            let snapped = Math.round(val / step) * step;
-            el.value = snapped;
-            sv(el);
-        }
-    }
-    set('s-seed', seed);
-    // BG
-    set('s-bg-agentCount', BG.agentCount);
-    set('s-bg-speed', BG.speed);
-    set('s-bg-sensorDist', BG.sensorDist);
-    set('s-bg-sensorAngle', BG.sensorAngle * 180 / Math.PI);
-    set('s-bg-turnSpeed', BG.turnSpeed * 180 / Math.PI);
-    set('s-bg-stepsPerFrame', BG.stepsPerFrame);
-    set('s-bg-spawnRate', BG.spawnRate);
-    set('s-bg-deposit', BG.deposit);
-    set('s-bg-decay', BG.decay);
-    set('s-bg-diffusion', BG.diffusion);
-    set('s-bg-trailBright', BG.trailBright);
-    set('s-bg-agentGlow', BG.agentGlow);
-    set('s-bg-foodCount', BG.foodCount);
-    set('s-bg-foodStr', BG.foodStr);
-    set('s-bg-spawnR', BG.spawnR);
-    // MS
-    set('s-ms-agentCount', MS.agentCount);
-    set('s-ms-speed', MS.speed);
-    set('s-ms-sensorDist', MS.sensorDist);
-    set('s-ms-sensorAngle', MS.sensorAngle * 180 / Math.PI);
-    set('s-ms-turnSpeed', MS.turnSpeed * 180 / Math.PI);
-    set('s-ms-stepsPerFrame', MS.stepsPerFrame);
-    set('s-ms-spawnRate', MS.spawnRate);
-    set('s-ms-deposit', MS.deposit);
-    set('s-ms-decay', MS.decay);
-    set('s-ms-diffusion', MS.diffusion);
-    set('s-ms-trailBright', MS.trailBright);
-    set('s-ms-agentGlow', MS.agentGlow);
-    set('s-ms-spawnR', MS.spawnR);
-    // Stencil
-    set('s-stencilMaster', window._stencilMaster ?? 0.28);
-    set('s-edgeStrong', window._edgeStrong ?? 0.3);
-    set('s-edgeWeak', window._edgeWeak ?? 0.12);
-    set('s-pulseSpeed', window._pulseSpeed ?? PULSE_SPEED);
 }
 
 function initAll() {
     selectPalette(seed);
     srng(seed);
 
-    // Shuffle code buffer with seeded RNG so each seed gets unique code layout
-    CODE_BUF = CODE_SRC.slice();
-    for (let i = CODE_LEN - 1; i > 0; i--) {
-        let j = Math.floor(rng() * (i + 1));
-        let tmp = CODE_BUF[i]; CODE_BUF[i] = CODE_BUF[j]; CODE_BUF[j] = tmp;
-    }
-
-    // ── Background sim — network radiates from mascot ring to edges ──
+    // ── Background sim — emanates from mascot boundary ──
     bgCx = VW / 2;
     bgCy = VH / 2;
     bgFc = 0;
     bgAgents = [];
     bgTrail = new Float32Array(VW * VH);
     bgTrailPrev = new Float32Array(VW * VH);
-    generateBgFoods();
-    // Seed trail on the spawn ring and at food targets
+    // Seed trail in a ring around the mascot edge, not a center point
     let spawnRingR = MSIZE * 0.35;
-    for (let i = 0; i < 48; i++) {
-        let a = (i / 48) * Math.PI * 2;
-        seedTrail(bgTrail, bgCx + Math.cos(a) * spawnRingR, bgCy + Math.sin(a) * spawnRingR, VW, VH, 10);
+    for (let i = 0; i < 24; i++) {
+        let a = (i / 24) * Math.PI * 2;
+        seedTrail(bgTrail, bgCx + Math.cos(a) * spawnRingR, bgCy + Math.sin(a) * spawnRingR, VW, VH, 8);
     }
+    generateBgFoods();
     for (let f of bgFoods) seedTrail(bgTrail, f.x, f.y, VW, VH, 8);
-    // Spawn agents on the ring, facing outward toward food sources
     for (let i = 0; i < BG.initialBatch; i++) {
+        // Spawn agents on the ring, facing outward
         let a = rng() * Math.PI * 2;
         let r = spawnRingR + (rng() - 0.5) * 20;
         let sx = bgCx + Math.cos(a) * r;
@@ -1152,12 +738,8 @@ function initAll() {
 function frame() {
     if (!running) return;
     bgFc++; msFc++;
-    pulsePhase += (window._pulseSpeed ?? PULSE_SPEED);
 
-    // Shared formation factor: drives both trail inflow and mascot illumination
-    let formation = Math.min(1, Math.max(0, (msFc - STENCIL_START) / (STENCIL_END - STENCIL_START)));
-
-    // ── Background sim step — spawn from mascot ring, radiating outward ──
+    // ── Background sim step — spawn from mascot boundary ring ──
     if (bgAgents.length < BG.agentCount) {
         let n = Math.min(BG.spawnRate, BG.agentCount - bgAgents.length);
         let ringR = MSIZE * 0.35;
@@ -1173,8 +755,8 @@ function frame() {
     let bgD = diffuse(bgTrail, bgTrailPrev, VW, VH, BG.diffusion, BG.decay);
     bgTrail = bgD.trail; bgTrailPrev = bgD.trailPrev;
 
-    // Gentle suppression right at mascot center so trails don't pile up under the stencil
-    let fadeR = MSIZE * 0.22;
+    // Suppress bg trail near mascot center so network thins inward, grows outward
+    let fadeR = MSIZE * 0.358;
     let fadeR2 = fadeR * fadeR;
     let yMin = Math.max(0, Math.floor(bgCy - fadeR)), yMax = Math.min(VH - 1, Math.ceil(bgCy + fadeR));
     let xMin = Math.max(0, Math.floor(bgCx - fadeR)), xMax = Math.min(VW - 1, Math.ceil(bgCx + fadeR));
@@ -1185,7 +767,8 @@ function frame() {
             let d2 = dx * dx + dy * dy;
             if (d2 < fadeR2) {
                 let f = Math.sqrt(d2) / fadeR; // 0 at center, 1 at edge
-                bgTrail[y * VW + x] *= 0.3 + f * 0.7; // gentle: 30% at center, 100% at edge
+                f = f * f; // quadratic falloff: stronger suppression near center
+                bgTrail[y * VW + x] *= f;
             }
         }
     }
@@ -1201,7 +784,7 @@ function frame() {
     let msD = diffuse(msTrail, msTrailPrev, MSIZE, MSIZE, MS.diffusion, MS.decay);
     msTrail = msD.trail; msTrailPrev = msD.trailPrev;
 
-    // ── Render background ──
+    // ── Render background (desaturated, cooler) ──
     renderTrail(bgSimCtx, bgTrail, VW, VH, BG, BG_COLORS);
     bgCtx.drawImage(bgSimCanvas, 0, 0);
 
@@ -1209,149 +792,14 @@ function frame() {
     let vigR = Math.max(VW, VH) * 0.55;
     let grad = bgCtx.createRadialGradient(VW/2, VH/2, MSIZE * 0.2, VW/2, VH/2, vigR);
     let vigFade = Math.min(1, bgFc * 0.008);
-    grad.addColorStop(0, `rgba(13,13,13,${0.15 * vigFade})`);
-    grad.addColorStop(0.5, `rgba(13,13,13,${0.08 * vigFade})`);
+    grad.addColorStop(0, `rgba(13,13,13,${0.45 * vigFade})`);
+    grad.addColorStop(0.5, `rgba(13,13,13,${0.18 * vigFade})`);
     grad.addColorStop(1, 'rgba(13,13,13,0)');
     bgCtx.fillStyle = grad;
     bgCtx.fillRect(0, 0, VW, VH);
 
     // ── Render mascot (full warmth, bright) ──
     renderTrail(mascotSimCtx, msTrail, MSIZE, MSIZE, MS, COLORS);
-
-    // ── Stencil accumulation: ASCII characters form the mascot shape ──
-    // All modes now use cell.edge (Sobel contour strength) to emphasize outlines.
-    // Mode 1: Original (dense code, uniform)
-    // Mode 2: Contour-priority (code on edges, thin interiors with spacing)
-    // Mode 3: Ramp silhouette (density symbols shaped by edges, no code)
-    // Mode 4: Edges-only (characters only where strong contours exist)
-    // Mode 5: Hybrid (code on contours, sparse ramp fill in interiors)
-    if (stencilGrid && formation > 0) {
-        let EDGE_STRONG = window._edgeStrong ?? 0.3;
-        let EDGE_WEAK   = window._edgeWeak ?? 0.12;
-        let STENCIL_MASTER = window._stencilMaster ?? 0.28;
-
-        let cw = CELL_W;
-        let ch_ = CELL_H;
-        let sCols = Math.floor(MSIZE / cw);
-        let sRows = Math.floor(MSIZE / ch_);
-        let pulse = Math.sin(pulsePhase);
-        let rampShift = pulse * PULSE_RAMP * 0.6;
-        let bright = h2r(COLORS[1]), hot = h2r(COLORS[2]);
-
-        mascotSimCtx.font = `${ch_ - 2}px 'Courier New'`;
-        mascotSimCtx.textBaseline = 'top';
-        mascotSimCtx.textAlign = 'center';
-
-        let origCols = Math.floor(MSIZE / CELL_W);
-
-        for (let row = 0; row < sRows; row++) {
-            for (let col = 0; col < sCols; col++) {
-                let cell = stencilGrid[row * origCols + col];
-                if (!cell || cell.a < 0.1 || formation < cell.reveal) continue;
-
-                let isEdge = cell.edge >= EDGE_STRONG;
-                let isMidEdge = cell.edge >= EDGE_WEAK;
-                let cellBlend = Math.min(1, (formation - cell.reveal) / 0.3);
-                let lumPulsed = cell.lum + pulse * 0.15;
-
-                let ch;
-                let skipCell = false;
-                let alphaBoost = 1.0;
-
-                if (formationMode === 1) {
-                    // Mode 1: Original — all cells get code, but much softer
-                    ch = CODE_BUF[(row * sCols + col) % CODE_LEN];
-                    if (ch === ' ') ch = CODE_BUF[(row * sCols + col + 13) % CODE_LEN];
-
-                } else if (formationMode === 2) {
-                    // Mode 2: Contour-priority — edges get code, interiors heavily thinned
-                    if (isEdge) {
-                        ch = CODE_BUF[(row * sCols + col) % CODE_LEN];
-                        if (ch === ' ') ch = CODE_BUF[(row * sCols + col + 13) % CODE_LEN];
-                        alphaBoost = 1.5;
-                    } else if (isMidEdge) {
-                        if ((row + col) % 3 !== 0) { skipCell = true; }
-                        else {
-                            ch = CODE_BUF[(row * sCols + col) % CODE_LEN];
-                            if (ch === ' ') ch = CODE_BUF[(row * sCols + col + 13) % CODE_LEN];
-                            alphaBoost = 0.5;
-                        }
-                    } else {
-                        // Deep interior: very sparse faint dots
-                        if ((row + col) % 4 !== 0) { skipCell = true; }
-                        else {
-                            let rampIdx = Math.floor(lumPulsed * (CHAR_RAMP.length - 1));
-                            rampIdx = Math.max(1, Math.min(CHAR_RAMP.length - 1, rampIdx));
-                            ch = CHAR_RAMP[rampIdx];
-                            alphaBoost = 0.25;
-                        }
-                    }
-
-                } else if (formationMode === 3) {
-                    // Mode 3: Ramp silhouette — lightweight density symbols, edges slightly heavier
-                    let edgeBonus = isEdge ? 2 : (isMidEdge ? 1 : 0);
-                    let rampIdx = Math.floor((lumPulsed + cell.edge) * (CHAR_RAMP.length - 1) + rampShift + edgeBonus);
-                    rampIdx = Math.max(1, Math.min(CHAR_RAMP.length - 1, rampIdx));
-                    ch = CHAR_RAMP[rampIdx];
-                    if (!isMidEdge && (row + col) % 3 !== 0) { skipCell = true; }
-                    alphaBoost = isEdge ? 1.2 : (isMidEdge ? 0.5 : 0.2);
-
-                } else if (formationMode === 4) {
-                    // Mode 4: Edges-only — characters ONLY on contours, nothing else
-                    if (!isMidEdge) { skipCell = true; }
-                    else {
-                        ch = CODE_BUF[(row * sCols + col) % CODE_LEN];
-                        if (ch === ' ') ch = CODE_BUF[(row * sCols + col + 13) % CODE_LEN];
-                        alphaBoost = isEdge ? 1.6 : 0.4;
-                    }
-
-                } else if (formationMode === 5) {
-                    // Mode 5: Hybrid — subtle code on contours, whisper-faint ramp fill
-                    if (isEdge) {
-                        ch = CODE_BUF[(row * sCols + col) % CODE_LEN];
-                        if (ch === ' ') ch = CODE_BUF[(row * sCols + col + 13) % CODE_LEN];
-                        alphaBoost = 1.4;
-                    } else if (isMidEdge) {
-                        if ((row + col) % 3 === 0) {
-                            let rampIdx = Math.floor(lumPulsed * (CHAR_RAMP.length - 1) + rampShift);
-                            rampIdx = Math.max(1, Math.min(CHAR_RAMP.length - 1, rampIdx));
-                            ch = CHAR_RAMP[rampIdx];
-                            alphaBoost = 0.35;
-                        } else { skipCell = true; }
-                    } else {
-                        // Deep interior: almost invisible scatter
-                        if ((row + col) % 5 === 0) {
-                            ch = CHAR_RAMP[Math.min(2, Math.floor(lumPulsed * 2) + 1)];
-                            alphaBoost = 0.12;
-                        } else { skipCell = true; }
-                    }
-                }
-                if (skipCell) continue;
-
-                // Color: palette mid-tone only, no hot push — let physarum own the bright spots
-                let lumT = Math.min(1, lumPulsed * 1.1);
-                let r, g, b;
-                let t = 0.2 + lumT * 0.5; // narrower range, stays in mid-tones
-                if (t > 0.5) {
-                    let ht = (t - 0.5) / 0.5;
-                    r = bright.r + (hot.r - bright.r) * ht * 0.4; // only 40% toward hot
-                    g = bright.g + (hot.g - bright.g) * ht * 0.4;
-                    b = bright.b + (hot.b - bright.b) * ht * 0.4;
-                } else {
-                    let bt = t / 0.5;
-                    r = bright.r * bt * 0.6 + bright.r * 0.2;
-                    g = bright.g * bt * 0.6 + bright.g * 0.2;
-                    b = bright.b * bt * 0.6 + bright.b * 0.2;
-                }
-
-                mascotSimCtx.globalAlpha = Math.min(1, cellBlend * cell.a * STENCIL_MASTER * alphaBoost);
-                mascotSimCtx.fillStyle = `rgb(${r|0},${g|0},${b|0})`;
-                mascotSimCtx.fillText(ch, col * cw + Math.floor(cw / 2), row * ch_);
-            }
-        }
-        mascotSimCtx.globalAlpha = 1;
-    }
-
     mascotCtx.clearRect(0, 0, MSIZE, MSIZE);
     mascotCtx.drawImage(mascotSimCanvas, 0, 0);
 
@@ -1367,7 +815,6 @@ function frame() {
         let mx = (VW - MSIZE) / 2;
         let my = (VH - MSIZE) / 2;
         compCtx.drawImage(mascotCanvas, mx, my);
-        drawSeedWatermark(compCtx, VW, VH);
     }
 
     if (msFc === 1) {
@@ -1434,26 +881,9 @@ function stopRecord() {
 // ═══════════════════════════════════════════════════════════════
 
 function restart() {
-    let seedEl = document.getElementById('s-seed');
-    if (seedEl && seedEl === document.activeElement) {
-        seed = parseInt(seedEl.value) || 1;
-    } else {
-        seed = Math.floor(Math.random() * 999999) + 1;
-    }
+    seed = Math.floor(Math.random() * 999999) + 1;
     initAll();
-    syncSliders();
     if (!running) { running = true; requestAnimationFrame(frame); }
-}
-
-function drawSeedWatermark(ctx, w, h) {
-    ctx.save();
-    ctx.font = '11px "Courier New"';
-    ctx.textAlign = 'right';
-    ctx.textBaseline = 'bottom';
-    ctx.globalAlpha = 0.12;
-    ctx.fillStyle = '#fff';
-    ctx.fillText(seed, w - 10, h - 8);
-    ctx.restore();
 }
 
 function savePNG() {
@@ -1462,7 +892,6 @@ function savePNG() {
     let mx = (VW - MSIZE) / 2;
     let my = (VH - MSIZE) / 2;
     compCtx.drawImage(mascotCanvas, mx, my);
-    drawSeedWatermark(compCtx, VW, VH);
     let a = document.createElement('a');
     a.download = `shumi-masked-${seed}.png`;
     a.href = compositeCanvas.toDataURL('image/png');
@@ -1482,7 +911,6 @@ async function boot() {
     await loadMascot();
     resize();
     initAll();
-    syncSliders();
     running = true;
     requestAnimationFrame(frame);
 }
