@@ -586,6 +586,11 @@ if (IS_MOBILE) {
     MS.spawnRate = Math.round(MS.spawnRate * 0.5);
     BG.initialBatch = Math.round(BG.initialBatch * 0.5);
     MS.initialBatch = Math.round(MS.initialBatch * 0.5);
+    // Compensate for fewer agents — boost trail brightness so it's not dim
+    BG.trailBright *= 1.8;
+    MS.trailBright *= 1.8;
+    // Higher default stencil opacity — desktop's 0.28 is invisible on mobile
+    window._stencilMaster = 0.7;
 }
 
 // Seeded PRNG
