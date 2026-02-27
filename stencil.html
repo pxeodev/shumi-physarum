@@ -983,8 +983,9 @@ function renderTrailPixel(ctx, trail, w, h, P, colors, edgeMask) {
     let pulse = Math.sin(pulsePhase);
     let brightMult = 1 + pulse * PULSE_BRIGHT;
 
+    let boost = _trailBoost || 1.0;
     for (let i = 0; i < w * h; i++) {
-        let v = trail[i] * P.trailBright;
+        let v = trail[i] * P.trailBright * boost;
         if (v < 0.5) {
             // Background color
             px[i*4] = base.r; px[i*4+1] = base.g; px[i*4+2] = base.b; px[i*4+3] = 255;
@@ -1457,17 +1458,22 @@ function frame() {
 
     // ── Live watermark on BG canvas ──
     bgCtx.save();
-    bgCtx.font = '11px "Courier New"';
+    bgCtx.font = '12px "Courier New"';
     bgCtx.textAlign = 'right';
     bgCtx.textBaseline = 'bottom';
-    bgCtx.globalAlpha = 0.12;
-    bgCtx.fillStyle = '#fff';
-    bgCtx.fillText(seed, VW - 10, VH - 8);
+    // Dark backdrop for readability against busy ASCII
+    bgCtx.globalAlpha = 0.25;
+    bgCtx.fillStyle = '#000';
+    bgCtx.fillRect(VW - 120, VH - 32, 115, 28);
+    bgCtx.globalAlpha = 0.35;
+    bgCtx.fillStyle = '#D4A84B';
+    bgCtx.fillText(seed, VW - 10, VH - 10);
     // Easter egg hint — fades out over first 5 seconds
     if (bgFc < 150) {
-        let hintAlpha = 0.10 * Math.max(0, 1 - bgFc / 150);
+        let hintAlpha = 0.25 * Math.max(0, 1 - bgFc / 150);
         bgCtx.globalAlpha = hintAlpha;
-        bgCtx.fillText(IS_MOBILE ? 'tap & hold' : 'hold ␣', VW - 10, VH - 22);
+        bgCtx.fillStyle = '#888';
+        bgCtx.fillText(IS_MOBILE ? 'tap & hold' : 'hold ␣', VW - 10, VH - 24);
     }
     bgCtx.restore();
 
@@ -1561,7 +1567,8 @@ function restart() {
         // Flash at 600ms — stencil forms fast enough by then
         setTimeout(() => {
             window._stencilMaster = 3.0;
-            setTimeout(() => { window._stencilMaster = prev; }, 2500);
+            _trailBoost = 4.0;
+            setTimeout(() => { window._stencilMaster = prev; _trailBoost = 1.0; }, 2500);
         }, 600);
     }
 }
@@ -1619,14 +1626,16 @@ window.addEventListener('resize', () => {
     initAll();
 });
 
-// Hold Space to flash stencil at full blast, release to restore
+// Hold Space to flash — boosts stencil (ASCII modes) + trail brightness (pixel modes)
 let _savedMaster = null;
+let _trailBoost = 1.0;  // multiplier for pixel trail rendering during flash
 window.addEventListener('keydown', (e) => {
     if (e.code === 'Space' && !e.target.matches('input, textarea, select')) {
         e.preventDefault();
         if (_savedMaster === null) {
             _savedMaster = window._stencilMaster ?? 0.28;
             window._stencilMaster = 3.0;
+            _trailBoost = 4.0;
             let sl = document.getElementById('stencilMaster');
             if (sl) sl.value = 3.0;
         }
@@ -1635,6 +1644,7 @@ window.addEventListener('keydown', (e) => {
 window.addEventListener('keyup', (e) => {
     if (e.code === 'Space' && _savedMaster !== null) {
         window._stencilMaster = _savedMaster;
+        _trailBoost = 1.0;
         let sl = document.getElementById('stencilMaster');
         if (sl) sl.value = _savedMaster;
         _savedMaster = null;
