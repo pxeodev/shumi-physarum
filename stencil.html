@@ -954,7 +954,8 @@ function renderTrail(ctx, trail, w, h, P, colors) {
         for (let col = 0; col < cols; col++) {
             let px = col * cellW + Math.floor(cellW / 2);
             if (py >= h || px >= w) continue;
-            let v = trail[py * w + px] * P.trailBright;
+            let boost = _trailBoost || 1.0;
+            let v = trail[py * w + px] * P.trailBright * boost;
 
             // Skip empty cells
             if (v < 1) continue;
