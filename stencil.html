@@ -255,28 +255,28 @@
 const TEXTURES = {
     // Warm, steady glow. Medium everything, the baseline.
     standard:    { bg: { speed: 7.0, sensorDist: 22, diffusion: 0.25, deposit: 12, decay: 0.960, turnSpeed: 26, trailBright: 1.3, foodCount: 12 },
-                   ms: { speed: 3.8, sensorDist: 22, diffusion: 0.18, deposit: 10, decay: 0.952, turnSpeed: 22, trailBright: 2.0 } },
+                   ms: { speed: 3.2, sensorDist: 22, diffusion: 0.25, deposit: 4, decay: 0.925, turnSpeed: 22, trailBright: 0.8 } },
     // Sharp defined veins, gem-like facets. Low diffusion keeps structure.
     crystalline: { bg: { speed: 5.5, sensorDist: 18, diffusion: 0.10, deposit: 18, decay: 0.950, turnSpeed: 22, trailBright: 1.6, foodCount: 16 },
-                   ms: { speed: 3.5, sensorDist: 20, diffusion: 0.07, deposit: 12, decay: 0.948, turnSpeed: 18, trailBright: 2.2 } },
+                   ms: { speed: 3.0, sensorDist: 20, diffusion: 0.10, deposit: 5, decay: 0.920, turnSpeed: 18, trailBright: 0.9 } },
     // Soft ghostly haze. High diffusion, trails dissolve quickly.
     smoke:       { bg: { speed: 7.5, sensorDist: 28, diffusion: 0.45, deposit: 8,  decay: 0.972, turnSpeed: 30, trailBright: 1.0, foodCount: 8 },
-                   ms: { speed: 4.0, sensorDist: 24, diffusion: 0.22, deposit: 8,  decay: 0.955, turnSpeed: 24, trailBright: 1.8 } },
+                   ms: { speed: 3.5, sensorDist: 24, diffusion: 0.30, deposit: 3, decay: 0.930, turnSpeed: 24, trailBright: 0.7 } },
     // Dense branching networks, organic growth. The gold standard.
     coral:       { bg: { speed: 4.5, sensorDist: 30, diffusion: 0.18, deposit: 14, decay: 0.965, turnSpeed: 22, trailBright: 1.4, foodCount: 18 },
-                   ms: { speed: 3.6, sensorDist: 26, diffusion: 0.14, deposit: 11, decay: 0.954, turnSpeed: 20, trailBright: 2.0 } },
+                   ms: { speed: 3.0, sensorDist: 26, diffusion: 0.20, deposit: 4, decay: 0.928, turnSpeed: 20, trailBright: 0.8 } },
     // Thin delicate threads, fast fade. Silk in water.
     silk:        { bg: { speed: 8.0, sensorDist: 20, diffusion: 0.30, deposit: 6,  decay: 0.942, turnSpeed: 28, trailBright: 1.8, foodCount: 10 },
-                   ms: { speed: 4.0, sensorDist: 22, diffusion: 0.20, deposit: 9,  decay: 0.946, turnSpeed: 22, trailBright: 2.2 } },
+                   ms: { speed: 3.5, sensorDist: 22, diffusion: 0.28, deposit: 3, decay: 0.922, turnSpeed: 22, trailBright: 0.9 } },
     // Long streaky paths, nervous energy. Lightning in a bottle.
     electric:    { bg: { speed: 9.0, sensorDist: 14, diffusion: 0.15, deposit: 10, decay: 0.955, turnSpeed: 34, trailBright: 1.5, foodCount: 14 },
-                   ms: { speed: 4.2, sensorDist: 20, diffusion: 0.10, deposit: 10, decay: 0.950, turnSpeed: 26, trailBright: 2.0 } },
+                   ms: { speed: 3.8, sensorDist: 20, diffusion: 0.15, deposit: 4, decay: 0.925, turnSpeed: 26, trailBright: 0.8 } },
     // Wide flowing rivers, heavy. Lava lamp.
     flow:        { bg: { speed: 6.0, sensorDist: 26, diffusion: 0.42, deposit: 4,  decay: 0.938, turnSpeed: 20, trailBright: 0.8, foodCount: 6 },
-                   ms: { speed: 3.8, sensorDist: 24, diffusion: 0.22, deposit: 8,  decay: 0.944, turnSpeed: 18, trailBright: 1.6, densityMult: 0.5, trailMax: 150 } },
+                   ms: { speed: 3.2, sensorDist: 24, diffusion: 0.30, deposit: 3, decay: 0.920, turnSpeed: 18, trailBright: 0.6, densityMult: 0.5, trailMax: 150 } },
     // Tight clusters with bright nodes. Constellation map.
     spore:       { bg: { speed: 6.0, sensorDist: 12, diffusion: 0.20, deposit: 16, decay: 0.948, turnSpeed: 24, trailBright: 1.8, foodCount: 20 },
-                   ms: { speed: 3.6, sensorDist: 20, diffusion: 0.12, deposit: 11, decay: 0.950, turnSpeed: 20, trailBright: 2.2 } },
+                   ms: { speed: 3.0, sensorDist: 20, diffusion: 0.18, deposit: 5, decay: 0.925, turnSpeed: 20, trailBright: 0.9 } },
 };
 
 const TEXTURE_NAMES = ['standard', 'crystalline', 'smoke', 'coral', 'silk', 'electric', 'flow', 'spore'];
