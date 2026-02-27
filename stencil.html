@@ -1262,12 +1262,31 @@ function frame() {
 
                 let isEdge = cell.edge >= EDGE_STRONG;
                 let isMidEdge = cell.edge >= EDGE_WEAK;
+                // Dark features (eyes, nostrils): high alpha but very dark = intentional void
+                let isDarkFeature = cell.a > 0.3 && cell.lum < 0.12;
                 let cellBlend = Math.min(1, (formation - cell.reveal) / 0.3);
                 let lumPulsed = cell.lum + pulse * 0.15;
 
                 let ch;
                 let skipCell = false;
                 let alphaBoost = 1.0;
+
+                // Dark features (eyes, mouth) should be voids — don't render
+                // This creates the recognizable face by leaving dark gaps
+                if (isDarkFeature && !isEdge) { continue; }
+                // Edges bordering dark features get extra emphasis (eye outlines)
+                let nearDark = false;
+                if (isEdge) {
+                    for (let dy = -1; dy <= 1 && !nearDark; dy++) {
+                        for (let dx = -1; dx <= 1 && !nearDark; dx++) {
+                            let nc = gridCol + dx, nr = gridRow + dy;
+                            if (nc >= 0 && nc < origCols && nr >= 0 && nr < origRows) {
+                                let neighbor = stencilGrid[nr * origCols + nc];
+                                if (neighbor && neighbor.a > 0.3 && neighbor.lum < 0.12) nearDark = true;
+                            }
+                        }
+                    }
+                }
 
                 if (formationMode === 1) {
                     // Mode 1: Original — all cells get code, but much softer
@@ -1337,6 +1356,9 @@ function frame() {
                         } else { skipCell = true; }
                     }
                 }
+                // Eye/feature outlines get extra punch
+                if (nearDark) { alphaBoost = Math.max(alphaBoost, 2.5); }
+
                 // Blast mode: when master > 1.0, override thinning — fill every cell
                 let blast = STENCIL_MASTER > 1.0;
                 if (blast && skipCell) {
