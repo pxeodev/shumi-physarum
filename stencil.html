@@ -1466,7 +1466,8 @@ function frame() {
                     }
                 }
 
-                let masterAlpha = blast ? STENCIL_MASTER * 1.5 : STENCIL_MASTER;
+                // Normal: linear scaling. Blast: quadratic punch for ASCII visibility
+                let masterAlpha = blast ? STENCIL_MASTER * (1 + STENCIL_MASTER) : STENCIL_MASTER;
                 let alphaFloor = blast ? 0.3 : 0;
                 let finalAlpha = Math.min(1, Math.max(alphaFloor, cellBlend * cell.a * masterAlpha * alphaBoost));
                 mascotSimCtx.globalAlpha = finalAlpha;
