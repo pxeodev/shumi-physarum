@@ -1561,8 +1561,6 @@ function restart() {
     updateShareURL();
     if (!running) { running = true; requestAnimationFrame(frame); }
 
-    // Auto-flash: briefly reveal the face so every visitor sees the character
-    autoFlash();
 }
 
 function copyLink() {
@@ -1649,6 +1647,8 @@ window.addEventListener('keydown', (e) => {
         e.preventDefault();
         // Tap to flash: blast briefly then auto-restore
         if (_blastTimer) clearTimeout(_blastTimer);
+        if (_autoFlashTimer) clearTimeout(_autoFlashTimer);
+        if (_autoFlashFadeTimer) clearTimeout(_autoFlashFadeTimer);
         let prev = _savedMaster ?? window._stencilMaster ?? 0.28;
         _savedMaster = prev;
         window._stencilMaster = 3.0;
@@ -1680,8 +1680,6 @@ async function boot() {
     updateShareURL();
     running = true;
     requestAnimationFrame(frame);
-    // Flash the face on first load so every visitor sees the character
-    autoFlash();
 }
 
 function updateShareURL() {
