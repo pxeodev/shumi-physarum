@@ -1564,16 +1564,8 @@ function restart() {
     updateShareURL();
     if (!running) { running = true; requestAnimationFrame(frame); }
 
-    // On mobile: auto-flash the stencil once it's formed
-    if (IS_MOBILE) {
-        let prev = window._stencilMaster ?? 0.28;
-        // Flash at 600ms — stencil forms fast enough by then
-        setTimeout(() => {
-            window._stencilMaster = 3.0;
-            _trailBoost = 4.0;
-            setTimeout(() => { window._stencilMaster = prev; _trailBoost = 1.0; }, 2500);
-        }, 600);
-    }
+    // Auto-flash: briefly reveal the face so every visitor sees the character
+    autoFlash();
 }
 
 function copyLink() {
@@ -1629,6 +1621,24 @@ window.addEventListener('resize', () => {
     initAll();
 });
 
+// Auto-flash: briefly reveal the face so every visitor immediately sees the character
+let _autoFlashTimer = null;
+function autoFlash() {
+    if (_autoFlashTimer) clearTimeout(_autoFlashTimer);
+    let prev = window._stencilMaster ?? 0.28;
+    // Wait for stencil grid to form, then flash
+    let delay = IS_MOBILE ? 400 : 600;
+    _autoFlashTimer = setTimeout(() => {
+        window._stencilMaster = 2.5;
+        _trailBoost = 3.0;
+        // Fade back over 1.5s
+        setTimeout(() => {
+            window._stencilMaster = prev;
+            _trailBoost = 1.0;
+        }, 1500);
+    }, delay);
+}
+
 // Hold Space to flash — boosts stencil (ASCII modes) + trail brightness (pixel modes)
 let _savedMaster = null;
 let _trailBoost = 1.0;  // multiplier for pixel trail rendering during flash
@@ -1672,6 +1682,8 @@ async function boot() {
     updateShareURL();
     running = true;
     requestAnimationFrame(frame);
+    // Flash the face on first load so every visitor sees the character
+    autoFlash();
 }
 
 function updateShareURL() {
