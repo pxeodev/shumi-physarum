@@ -984,8 +984,8 @@ function resize() {
     }
 
     MSIZE = Math.floor(Math.min(VW, VH) * 0.5);
-    // On mobile, clamp MSIZE to avoid too-small mascot
-    if (IS_MOBILE) MSIZE = Math.max(MSIZE, 160);
+    // On mobile, mascot needs to be much bigger for the stencil to read
+    if (IS_MOBILE) MSIZE = Math.max(MSIZE, Math.floor(Math.min(screenW, screenH) * 0.55));
 
     bgCanvas.width = VW; bgCanvas.height = VH;
     bgSimCanvas.width = VW; bgSimCanvas.height = VH;
@@ -1234,8 +1234,9 @@ function frame() {
         let EDGE_WEAK   = window._edgeWeak ?? 0.12;
         let STENCIL_MASTER = window._stencilMaster ?? 0.28;
 
-        let cw = CELL_W;
-        let ch_ = CELL_H;
+        // Smaller stencil cells on mobile → more characters → readable face
+        let cw = IS_MOBILE ? 6 : CELL_W;
+        let ch_ = IS_MOBILE ? 10 : CELL_H;
         let sCols = Math.floor(MSIZE / cw);
         let sRows = Math.floor(MSIZE / ch_);
         let pulse = Math.sin(pulsePhase);
@@ -1247,10 +1248,14 @@ function frame() {
         mascotSimCtx.textAlign = 'center';
 
         let origCols = Math.floor(MSIZE / CELL_W);
+        let origRows = Math.floor(MSIZE / CELL_H);
 
         for (let row = 0; row < sRows; row++) {
             for (let col = 0; col < sCols; col++) {
-                let cell = stencilGrid[row * origCols + col];
+                // Map mobile cell coords back to stencil grid via nearest neighbor
+                let gridCol = Math.min(origCols - 1, Math.floor((col * cw + cw / 2) / CELL_W));
+                let gridRow = Math.min(origRows - 1, Math.floor((row * ch_ + ch_ / 2) / CELL_H));
+                let cell = stencilGrid[gridRow * origCols + gridCol];
                 if (!cell || cell.a < 0.1 || formation < cell.reveal) continue;
 
                 let isEdge = cell.edge >= EDGE_STRONG;
@@ -1489,11 +1494,14 @@ function restart() {
     syncSliders();
     if (!running) { running = true; requestAnimationFrame(frame); }
 
-    // On mobile: auto-flash the stencil so mascot is immediately visible
+    // On mobile: auto-flash the stencil once it's formed
     if (IS_MOBILE) {
         let prev = window._stencilMaster ?? 0.28;
-        window._stencilMaster = 3.0;
-        setTimeout(() => { window._stencilMaster = prev; }, 1500);
+        // Wait for stencil to fully form (~18 frames ≈ 1s on mobile), then blast for 2.5s
+        setTimeout(() => {
+            window._stencilMaster = 3.0;
+            setTimeout(() => { window._stencilMaster = prev; }, 2500);
+        }, 1200);
     }
 }
 
