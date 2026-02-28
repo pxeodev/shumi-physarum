@@ -22,18 +22,24 @@
         #mascot-layer {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2;
             animation: chromatic-orbit 6s linear infinite, breathe 5s ease-in-out infinite;
+            opacity: 0;
+        }
+        #mascot-layer.entered { animation: entrance 1.2s cubic-bezier(0.16,1,0.3,1) forwards, chromatic-orbit 6s linear 1.2s infinite, breathe 5s ease-in-out 1.2s infinite; }
+        @keyframes entrance {
+            0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.92); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1.0); }
         }
         @keyframes breathe {
             0%   { transform: translate(-50%, -50%) scale(1.0); }
-            50%  { transform: translate(-50%, -50%) scale(1.018); }
+            50%  { transform: translate(-50%, -50%) scale(1.03); }
             100% { transform: translate(-50%, -50%) scale(1.0); }
         }
         @keyframes chromatic-orbit {
-            0%   { filter: drop-shadow(8px 0 2px rgba(255,60,40,0.25)) drop-shadow(-8px 0 2px rgba(40,220,255,0.25)); }
-            25%  { filter: drop-shadow(0 8px 2px rgba(255,60,40,0.25)) drop-shadow(0 -8px 2px rgba(40,220,255,0.25)); }
-            50%  { filter: drop-shadow(-8px 0 2px rgba(255,60,40,0.25)) drop-shadow(8px 0 2px rgba(40,220,255,0.25)); }
-            75%  { filter: drop-shadow(0 -8px 2px rgba(255,60,40,0.25)) drop-shadow(0 8px 2px rgba(40,220,255,0.25)); }
-            100% { filter: drop-shadow(8px 0 2px rgba(255,60,40,0.25)) drop-shadow(-8px 0 2px rgba(40,220,255,0.25)); }
+            0%   { filter: drop-shadow(5px 0 3px rgba(255,60,40,0.30)) drop-shadow(-5px 0 3px rgba(40,220,255,0.30)); }
+            25%  { filter: drop-shadow(0 5px 3px rgba(255,60,40,0.30)) drop-shadow(0 -5px 3px rgba(40,220,255,0.30)); }
+            50%  { filter: drop-shadow(-5px 0 3px rgba(255,60,40,0.30)) drop-shadow(5px 0 3px rgba(40,220,255,0.30)); }
+            75%  { filter: drop-shadow(0 -5px 3px rgba(255,60,40,0.30)) drop-shadow(0 5px 3px rgba(40,220,255,0.30)); }
+            100% { filter: drop-shadow(5px 0 3px rgba(255,60,40,0.30)) drop-shadow(-5px 0 3px rgba(40,220,255,0.30)); }
         }
 
         /* Subtle chromatic on background too — slower, dimmer */
@@ -54,20 +60,21 @@
             display: flex; gap: 10px; z-index: 10;
         }
         .btn {
-            padding: 10px 20px; border: 1px solid #333; background: rgba(13,13,13,0.85);
+            padding: 10px 20px; border: 1px solid #333; background: rgba(13,13,13,0.88);
             color: #D4A84B; font-family: 'Courier New', monospace; font-size: 13px;
-            cursor: pointer; border-radius: 6px; transition: all 0.2s; backdrop-filter: blur(8px);
+            cursor: pointer; border-radius: 4px; transition: all 0.25s; backdrop-filter: blur(10px);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03);
         }
-        .btn:hover { border-color: #D4A84B; background: rgba(212,168,75,0.1); }
+        .btn:hover { border-color: #D4A84B; background: rgba(212,168,75,0.12); box-shadow: 0 2px 8px rgba(212,168,75,0.08), inset 0 1px 0 rgba(255,255,255,0.03); }
         .btn.active { border-color: #ff4444; color: #ff4444; }
         #status {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            color: #666; font-size: 11px; opacity: 0; z-index: 10;
+            color: #777; font-size: 12px; opacity: 0; z-index: 10;
             transition: opacity 0.8s;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             text-transform: lowercase;
         }
-        #status.show { opacity: 0.4; }
+        #status.show { opacity: 0.5; }
     </style>
 </head>
 <body>
@@ -228,11 +235,11 @@ function selectPalette(seed) {
 
     let mascotAnim = `
         @keyframes chromatic-orbit {
-            0%   { filter: drop-shadow(8px 0 2px ${warm.replace('A','0.25')}) drop-shadow(-8px 0 2px ${cool.replace('A','0.25')}); }
-            25%  { filter: drop-shadow(0 8px 2px ${warm.replace('A','0.25')}) drop-shadow(0 -8px 2px ${cool.replace('A','0.25')}); }
-            50%  { filter: drop-shadow(-8px 0 2px ${warm.replace('A','0.25')}) drop-shadow(8px 0 2px ${cool.replace('A','0.25')}); }
-            75%  { filter: drop-shadow(0 -8px 2px ${warm.replace('A','0.25')}) drop-shadow(0 8px 2px ${cool.replace('A','0.25')}); }
-            100% { filter: drop-shadow(8px 0 2px ${warm.replace('A','0.25')}) drop-shadow(-8px 0 2px ${cool.replace('A','0.25')}); }
+            0%   { filter: drop-shadow(5px 0 3px ${warm.replace('A','0.30')}) drop-shadow(-5px 0 3px ${cool.replace('A','0.30')}); }
+            25%  { filter: drop-shadow(0 5px 3px ${warm.replace('A','0.30')}) drop-shadow(0 -5px 3px ${cool.replace('A','0.30')}); }
+            50%  { filter: drop-shadow(-5px 0 3px ${warm.replace('A','0.30')}) drop-shadow(5px 0 3px ${cool.replace('A','0.30')}); }
+            75%  { filter: drop-shadow(0 -5px 3px ${warm.replace('A','0.30')}) drop-shadow(0 5px 3px ${cool.replace('A','0.30')}); }
+            100% { filter: drop-shadow(5px 0 3px ${warm.replace('A','0.30')}) drop-shadow(-5px 0 3px ${cool.replace('A','0.30')}); }
         }
         @keyframes bg-chromatic {
             0%   { filter: drop-shadow(3px 0 1px ${warm.replace('A','0.08')}) drop-shadow(-3px 0 1px ${cool.replace('A','0.08')}); }
@@ -253,7 +260,12 @@ function selectPalette(seed) {
     mascotEl.style.animation = 'none';
     bgEl.style.animation = 'none';
     void mascotEl.offsetHeight;
-    mascotEl.style.animation = 'chromatic-orbit 6s linear infinite, breathe 5s ease-in-out infinite';
+    // If entrance has already played, go straight to steady-state animations
+    if (mascotEl.classList.contains('entered')) {
+        mascotEl.classList.remove('entered');
+        void mascotEl.offsetHeight;
+        mascotEl.classList.add('entered');
+    }
     bgEl.style.animation = 'bg-chromatic 14s linear infinite';
 }
 
@@ -652,13 +664,24 @@ function resize() {
     VW = window.innerWidth;
     VH = window.innerHeight;
     MSIZE = Math.floor(Math.min(VW, VH) * 0.5);
+    // HiDPI: render mascot display at native resolution for sharp trails
+    let dpr = Math.min(window.devicePixelRatio || 1, 2);
 
     bgCanvas.width = VW; bgCanvas.height = VH;
     bgSimCanvas.width = VW; bgSimCanvas.height = VH;
     compositeCanvas.width = VW; compositeCanvas.height = VH;
 
-    mascotCanvas.width = MSIZE; mascotCanvas.height = MSIZE;
+    // Mascot display canvas: HiDPI-scaled; sim canvas stays at logical size
+    let mRender = Math.floor(MSIZE * dpr);
+    mascotCanvas.width = mRender; mascotCanvas.height = mRender;
     mascotSimCanvas.width = MSIZE; mascotSimCanvas.height = MSIZE;
+    if (dpr > 1) {
+        mascotCanvas.style.width = MSIZE + 'px';
+        mascotCanvas.style.height = MSIZE + 'px';
+        mascotCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        mascotCtx.imageSmoothingEnabled = false;
+    }
+    window._mascotDPR = dpr;
 
     if (maskImg) buildMask();
 }
@@ -788,12 +811,13 @@ function frame() {
     renderTrail(bgSimCtx, bgTrail, VW, VH, BG, BG_COLORS);
     bgCtx.drawImage(bgSimCanvas, 0, 0);
 
-    // Atmospheric vignette — dark falloff centered on mascot, creates depth
-    let vigR = Math.max(VW, VH) * 0.55;
-    let grad = bgCtx.createRadialGradient(VW/2, VH/2, MSIZE * 0.2, VW/2, VH/2, vigR);
+    // Atmospheric vignette — tighter falloff centered on mascot, creates depth
+    let vigR = Math.max(VW, VH) * 0.50;
+    let grad = bgCtx.createRadialGradient(VW/2, VH/2, MSIZE * 0.18, VW/2, VH/2, vigR);
     let vigFade = Math.min(1, bgFc * 0.008);
-    grad.addColorStop(0, `rgba(13,13,13,${0.45 * vigFade})`);
-    grad.addColorStop(0.5, `rgba(13,13,13,${0.18 * vigFade})`);
+    grad.addColorStop(0, `rgba(13,13,13,${0.50 * vigFade})`);
+    grad.addColorStop(0.35, `rgba(13,13,13,${0.22 * vigFade})`);
+    grad.addColorStop(0.7, `rgba(13,13,13,${0.06 * vigFade})`);
     grad.addColorStop(1, 'rgba(13,13,13,0)');
     bgCtx.fillStyle = grad;
     bgCtx.fillRect(0, 0, VW, VH);
@@ -883,6 +907,10 @@ function stopRecord() {
 function restart() {
     seed = Math.floor(Math.random() * 999999) + 1;
     initAll();
+    // Re-trigger entrance animation on new seed
+    mascotCanvas.classList.remove('entered');
+    void mascotCanvas.offsetHeight; // force reflow
+    mascotCanvas.classList.add('entered');
     if (!running) { running = true; requestAnimationFrame(frame); }
 }
 
@@ -912,7 +940,11 @@ async function boot() {
     resize();
     initAll();
     running = true;
-    requestAnimationFrame(frame);
+    // Trigger entrance animation after first frame renders
+    requestAnimationFrame(() => {
+        mascotCanvas.classList.add('entered');
+        frame();
+    });
 }
 
 boot();
