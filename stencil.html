@@ -25,6 +25,11 @@
             pointer-events: none;
         }
         #ghost-layer.visible { opacity: 1; }
+        /* Resurface layer — full-color mascot art, cyclic pulse */
+        #resurface-layer {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1;
+            opacity: 0; pointer-events: none;
+        }
         /* Mascot layer — centered, chromatic orbit */
         #mascot-layer {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2;
@@ -196,6 +201,8 @@
     <canvas id="bg"></canvas>
     <!-- Ghost afterimage: barely perceptible original mascot, fades as trails build -->
     <canvas id="ghost-layer"></canvas>
+    <!-- Resurface: full-color mascot art, cyclic pulse -->
+    <canvas id="resurface-layer"></canvas>
     <!-- Mascot masked physarum: square, centered -->
     <canvas id="mascot-layer"></canvas>
     <!-- Hidden work canvases -->
@@ -647,6 +654,7 @@ let _urlEdgeW = _urlParams.get('ew');
 const bgCanvas = document.getElementById('bg');
 const bgSimCanvas = document.getElementById('bg-sim');
 const ghostCanvas = document.getElementById('ghost-layer');
+const resurfaceCanvas = document.getElementById('resurface-layer');
 const mascotCanvas = document.getElementById('mascot-layer');
 const mascotSimCanvas = document.getElementById('mascot-sim');
 const maskCanvasEl = document.getElementById('mask-canvas');
@@ -914,12 +922,30 @@ function buildGhost() {
     // Show ghost immediately, will be faded out in frame loop
     ghostCanvas.classList.add('visible');
     ghostFadeStart = -1; // reset fade timer
+
+    // Build resurface layer — full-color mascot art, feather-masked
+    resurfaceCanvas.width = MSIZE; resurfaceCanvas.height = MSIZE;
+    let rCtx = resurfaceCanvas.getContext('2d');
+    rCtx.clearRect(0, 0, MSIZE, MSIZE);
+    rCtx.drawImage(maskImg, mx, my, s, s);
+    if (featheredMask) {
+        rCtx.globalCompositeOperation = 'destination-in';
+        rCtx.drawImage(featheredMask, 0, 0);
+        rCtx.globalCompositeOperation = 'source-over';
+    }
 }
 
 // Ghost fade state
 let ghostFadeStart = -1;
 const GHOST_HOLD_FRAMES = 90;       // frames to hold full ghost before fading
 const GHOST_FADE_FRAMES = 180;      // frames to fade ghost to zero
+
+// Cyclic resurface — full-color mascot pulse
+const RESURFACE_FIRST = 1500;   // frames before first resurface (~25s)
+const RESURFACE_CYCLE = 1800;   // frames per cycle (~30s)
+const RESURFACE_FADE  = 180;    // frames to fade in/out (~3s)
+const RESURFACE_HOLD  = 90;     // frames at peak (~1.5s)
+const RESURFACE_PEAK  = 0.30;   // max opacity on resurface
 
 function getMaskFoodPoints(count) {
     let points = [];
@@ -1204,6 +1230,11 @@ function resize() {
     ghostCanvas.style.width = MSIZE + 'px';
     ghostCanvas.style.height = MSIZE + 'px';
 
+    // Resurface layer — same size as ghost
+    resurfaceCanvas.width = MSIZE; resurfaceCanvas.height = MSIZE;
+    resurfaceCanvas.style.width = MSIZE + 'px';
+    resurfaceCanvas.style.height = MSIZE + 'px';
+
     // Mascot display canvas: HiDPI-scaled for sharp trails on Retina displays
     // Simulation stays at MSIZE; display canvas upscales for crispness
     let mRender = Math.floor(MSIZE * dpr);
@@ -1223,9 +1254,11 @@ function resize() {
         let displayMsize = Math.floor(Math.min(screenW, screenH) * 0.5);
         mascotCanvas.style.width = displayMsize + 'px';
         mascotCanvas.style.height = displayMsize + 'px';
-        // Ghost must match mascot display size so they overlap perfectly
+        // Ghost/resurface must match mascot display size so they overlap perfectly
         ghostCanvas.style.width = displayMsize + 'px';
         ghostCanvas.style.height = displayMsize + 'px';
+        resurfaceCanvas.style.width = displayMsize + 'px';
+        resurfaceCanvas.style.height = displayMsize + 'px';
     }
 
     if (maskImg && !USE_WORKER) buildMask();
@@ -1649,6 +1682,22 @@ function frame() {
         if (opacity <= 0.001) ghostCanvas.classList.remove('visible');
     }
 
+    // ── Resurface pulse — full-color mascot art ──
+    if (msFc >= RESURFACE_FIRST) {
+        let cycleFrame = (msFc - RESURFACE_FIRST) % RESURFACE_CYCLE;
+        let rOpacity = 0;
+        if (cycleFrame < RESURFACE_FADE) {
+            let t = cycleFrame / RESURFACE_FADE;
+            rOpacity = RESURFACE_PEAK * t * t * (3 - 2 * t);
+        } else if (cycleFrame < RESURFACE_FADE + RESURFACE_HOLD) {
+            rOpacity = RESURFACE_PEAK;
+        } else if (cycleFrame < RESURFACE_FADE * 2 + RESURFACE_HOLD) {
+            let t = (cycleFrame - RESURFACE_FADE - RESURFACE_HOLD) / RESURFACE_FADE;
+            rOpacity = RESURFACE_PEAK * (1 - t * t * (3 - 2 * t));
+        }
+        resurfaceCanvas.style.opacity = rOpacity.toFixed(3);
+    }
+
     bgCtx.restore();
 
     // ── Composite for recording ──
@@ -1660,6 +1709,13 @@ function frame() {
         if (ghostCanvas.classList.contains('visible')) {
             compCtx.globalAlpha = parseFloat(ghostCanvas.style.opacity) || 1;
             compCtx.drawImage(ghostCanvas, mx, my, MSIZE, MSIZE);
+            compCtx.globalAlpha = 1;
+        }
+        // Include resurface layer in recording
+        let rOp = parseFloat(resurfaceCanvas.style.opacity) || 0;
+        if (rOp > 0.001) {
+            compCtx.globalAlpha = rOp;
+            compCtx.drawImage(resurfaceCanvas, mx, my, MSIZE, MSIZE);
             compCtx.globalAlpha = 1;
         }
         compCtx.drawImage(mascotCanvas, mx, my);
@@ -1947,15 +2003,20 @@ function startWorkerMode() {
     let mid = buildMaskImageData();
     buildFeatheredMask();
 
-    // Ghost layer — show immediately while worker initializes
+    // Ghost + resurface layers — show immediately while worker initializes
     ghostCanvas.width = MSIZE; ghostCanvas.height = MSIZE;
     ghostCanvas.style.width = MSIZE + 'px';
     ghostCanvas.style.height = MSIZE + 'px';
+    resurfaceCanvas.width = MSIZE; resurfaceCanvas.height = MSIZE;
+    resurfaceCanvas.style.width = MSIZE + 'px';
+    resurfaceCanvas.style.height = MSIZE + 'px';
     if (IS_MOBILE) {
         let screenW = window.innerWidth, screenH = window.innerHeight;
         let displayMsize = Math.floor(Math.min(screenW, screenH) * 0.5);
         ghostCanvas.style.width = displayMsize + 'px';
         ghostCanvas.style.height = displayMsize + 'px';
+        resurfaceCanvas.style.width = displayMsize + 'px';
+        resurfaceCanvas.style.height = displayMsize + 'px';
     }
 
     worker.onmessage = function(e) {
@@ -2005,6 +2066,21 @@ function onWorkerReady(msg) {
     }
     ghostCanvas.classList.add('visible');
     ghostCanvas.style.opacity = '1';
+
+    // Build resurface layer — full-color mascot art, feather-masked
+    if (maskImg) {
+        let rCtx = resurfaceCanvas.getContext('2d');
+        rCtx.clearRect(0, 0, MSIZE, MSIZE);
+        let s = MSIZE * 0.7;
+        let rmx = (MSIZE - s) / 2;
+        let rmy = (MSIZE - s) / 2;
+        rCtx.drawImage(maskImg, rmx, rmy, s, s);
+        if (featheredMask) {
+            rCtx.globalCompositeOperation = 'destination-in';
+            rCtx.drawImage(featheredMask, 0, 0);
+            rCtx.globalCompositeOperation = 'source-over';
+        }
+    }
 
     // Inject dynamic chromatic CSS from palette info
     let warm = msg.chromaticWarm;
@@ -2094,6 +2170,9 @@ function onWorkerFrame(msg) {
     ghostCanvas.style.opacity = msg.ghostOpacity.toFixed(3);
     if (!msg.ghostVisible) ghostCanvas.classList.remove('visible');
 
+    // ── Resurface opacity ──
+    resurfaceCanvas.style.opacity = msg.resurfaceOpacity.toFixed(3);
+
     // ── Status info ──
     if (msg.statusText) {
         statusEl.textContent = msg.statusText;
@@ -2116,6 +2195,11 @@ function onWorkerFrame(msg) {
         if (ghostCanvas.classList.contains('visible')) {
             compCtx.globalAlpha = parseFloat(ghostCanvas.style.opacity) || 1;
             compCtx.drawImage(ghostCanvas, mx, my, MSIZE, MSIZE);
+            compCtx.globalAlpha = 1;
+        }
+        if (msg.resurfaceOpacity > 0.001) {
+            compCtx.globalAlpha = msg.resurfaceOpacity;
+            compCtx.drawImage(resurfaceCanvas, mx, my, MSIZE, MSIZE);
             compCtx.globalAlpha = 1;
         }
         compCtx.drawImage(mascotCanvas, mx, my);

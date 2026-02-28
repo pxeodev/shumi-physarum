@@ -179,6 +179,13 @@ let ghostFadeStart = -1;
 const GHOST_HOLD_FRAMES = 90;
 const GHOST_FADE_FRAMES = 180;
 
+// Cyclic resurface constants
+const RESURFACE_FIRST = 1500;
+const RESURFACE_CYCLE = 1800;
+const RESURFACE_FADE  = 180;
+const RESURFACE_HOLD  = 90;
+const RESURFACE_PEAK  = 0.30;
+
 // Mask data (received from main thread)
 let maskImageData = null; // ImageData of the mascot
 
@@ -944,6 +951,21 @@ function handleTick() {
         if (ghostOpacity <= 0.001) { ghostVisible = false; ghostOpacity = 0; }
     }
 
+    // ── Resurface opacity (separate full-color layer) ──
+    let resurfaceOpacity = 0;
+    if (msFc >= RESURFACE_FIRST) {
+        let cycleFrame = (msFc - RESURFACE_FIRST) % RESURFACE_CYCLE;
+        if (cycleFrame < RESURFACE_FADE) {
+            let t = cycleFrame / RESURFACE_FADE;
+            resurfaceOpacity = RESURFACE_PEAK * t * t * (3 - 2 * t);
+        } else if (cycleFrame < RESURFACE_FADE + RESURFACE_HOLD) {
+            resurfaceOpacity = RESURFACE_PEAK;
+        } else if (cycleFrame < RESURFACE_FADE * 2 + RESURFACE_HOLD) {
+            let t = (cycleFrame - RESURFACE_FADE - RESURFACE_HOLD) / RESURFACE_FADE;
+            resurfaceOpacity = RESURFACE_PEAK * (1 - t * t * (3 - 2 * t));
+        }
+    }
+
     // ── Transfer bitmaps ──
     let bgBitmap = bgOffscreen.transferToImageBitmap();
     let mascotBitmap = mascotOffscreen.transferToImageBitmap();
@@ -954,6 +976,7 @@ function handleTick() {
         mascotBitmap,
         ghostOpacity,
         ghostVisible,
+        resurfaceOpacity,
         frameNum: msFc,
     };
 
