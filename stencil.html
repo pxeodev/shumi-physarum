@@ -45,10 +45,19 @@
             50%  { filter: drop-shadow(-3px 0 1px rgba(255,60,40,0.08)) drop-shadow(3px 0 1px rgba(40,220,255,0.08)); }
             100% { filter: drop-shadow(3px 0 1px rgba(255,60,40,0.08)) drop-shadow(-3px 0 1px rgba(40,220,255,0.08)); }
         }
-        /* Kill expensive CSS filters on mobile — drop-shadow on canvas tanks GPU */
+        /* Lighter chromatic on mobile — small offsets, low opacity, no bg chromatic */
         @media (max-width: 768px) {
-            #mascot-layer { animation: breathe 5s ease-in-out infinite !important; filter: none !important; }
+            #mascot-layer {
+                animation: chromatic-orbit-mobile 8s linear infinite, breathe 5s ease-in-out infinite !important;
+            }
             #bg { animation: none !important; filter: none !important; }
+        }
+        @keyframes chromatic-orbit-mobile {
+            0%   { filter: drop-shadow(4px 0 1px rgba(255,60,40,0.15)) drop-shadow(-4px 0 1px rgba(40,220,255,0.15)); }
+            25%  { filter: drop-shadow(0 4px 1px rgba(255,60,40,0.15)) drop-shadow(0 -4px 1px rgba(40,220,255,0.15)); }
+            50%  { filter: drop-shadow(-4px 0 1px rgba(255,60,40,0.15)) drop-shadow(4px 0 1px rgba(40,220,255,0.15)); }
+            75%  { filter: drop-shadow(0 -4px 1px rgba(255,60,40,0.15)) drop-shadow(0 4px 1px rgba(40,220,255,0.15)); }
+            100% { filter: drop-shadow(4px 0 1px rgba(255,60,40,0.15)) drop-shadow(-4px 0 1px rgba(40,220,255,0.15)); }
         }
         /* Hidden work canvases */
         .hidden-canvas { position: absolute; top: 0; left: 0; opacity: 0; pointer-events: none; width: 0; height: 0; overflow: hidden; }
@@ -144,11 +153,28 @@
         @media (max-width: 768px) {
             #settings-panel { width: 260px; font-size: 10px; }
             .panel-inner { padding: 12px 10px 80px; }
-            #mode-controls { top: auto; bottom: 60px; right: 10px; flex-direction: row; flex-wrap: wrap; gap: 4px; }
-            .mode-btn { font-size: 9px !important; padding: 4px 8px !important; }
+            #mode-controls { top: auto; bottom: 64px; right: 10px; flex-direction: row; flex-wrap: wrap; gap: 5px; }
+            .mode-btn { font-size: 10px !important; padding: 8px 12px !important; min-height: 36px; }
             #controls { bottom: 10px; gap: 6px; }
-            .btn { font-size: 11px; padding: 8px 14px; }
+            .btn { font-size: 11px; padding: 10px 14px; min-height: 40px; }
+            #mobile-stencil-slider { display: flex !important; }
         }
+        #mobile-stencil-slider {
+            display: none; position: fixed; bottom: 56px; left: 50%; transform: translateX(-50%);
+            z-index: 10; align-items: center; gap: 8px;
+            background: rgba(13,13,13,0.85); backdrop-filter: blur(8px);
+            border: 1px solid #333; border-radius: 6px; padding: 6px 14px;
+        }
+        #mobile-stencil-slider label { color: #888; font: 10px 'Courier New', monospace; white-space: nowrap; }
+        #mobile-stencil-slider input[type="range"] {
+            width: 120px; height: 3px; background: #222; border-radius: 2px;
+            -webkit-appearance: none; outline: none;
+        }
+        #mobile-stencil-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 16px; height: 16px; background: #D4A84B;
+            border-radius: 50%; cursor: pointer;
+        }
+        #mobile-stencil-slider .vd { min-width: 30px; text-align: right; color: #D4A84B; font: 10px 'Courier New', monospace; }
     </style>
 </head>
 <body>
@@ -219,10 +245,18 @@
 
             <div class="panel-section">
                 <h3>Stencil</h3>
+                <h4>Visibility</h4>
                 <div class="sg"><label>Master Opacity</label><div class="sl"><input type="range" id="s-stencilMaster" min="0" max="1.5" step="0.01" oninput="window._stencilMaster=+this.value;sv(this);updateShareURL()"><span class="vd" id="s-stencilMaster-v"></span></div></div>
+                <div class="sg"><label>Pulse Speed</label><div class="sl"><input type="range" id="s-pulseSpeed" min="0.01" max="0.12" step="0.002" oninput="window._pulseSpeed=+this.value;sv(this)"><span class="vd" id="s-pulseSpeed-v"></span></div></div>
+                <div class="sg"><label>Formation Speed</label><div class="sl"><input type="range" id="s-formSpeed" min="20" max="200" step="5" oninput="window._stencilEnd=+this.value;sv(this)"><span class="vd" id="s-formSpeed-v"></span></div></div>
+                <h4>Edge Detection</h4>
                 <div class="sg"><label>Edge Strong</label><div class="sl"><input type="range" id="s-edgeStrong" min="0.1" max="0.6" step="0.01" oninput="window._edgeStrong=+this.value;sv(this);updateShareURL()"><span class="vd" id="s-edgeStrong-v"></span></div></div>
                 <div class="sg"><label>Edge Weak</label><div class="sl"><input type="range" id="s-edgeWeak" min="0.04" max="0.3" step="0.01" oninput="window._edgeWeak=+this.value;sv(this);updateShareURL()"><span class="vd" id="s-edgeWeak-v"></span></div></div>
-                <div class="sg"><label>Pulse Speed</label><div class="sl"><input type="range" id="s-pulseSpeed" min="0.01" max="0.12" step="0.002" oninput="window._pulseSpeed=+this.value;sv(this)"><span class="vd" id="s-pulseSpeed-v"></span></div></div>
+                <div class="sg"><label>Edge Fade Depth</label><div class="sl"><input type="range" id="s-edgeFade" min="10" max="60" step="2" oninput="window._edgeFadeDepth=+this.value;sv(this)"><span class="vd" id="s-edgeFade-v"></span></div></div>
+                <h4>Face Detail</h4>
+                <div class="sg"><label>Dark Threshold</label><div class="sl"><input type="range" id="s-darkThresh" min="0.04" max="0.30" step="0.01" oninput="window._darkThresh=+this.value;sv(this)"><span class="vd" id="s-darkThresh-v"></span></div></div>
+                <div class="sg"><label>Dark Edge Boost</label><div class="sl"><input type="range" id="s-nearDarkBoost" min="1.0" max="5.0" step="0.1" oninput="window._nearDarkBoost=+this.value;sv(this)"><span class="vd" id="s-nearDarkBoost-v"></span></div></div>
+                <div class="sg"><label>Fill Density</label><div class="sl"><input type="range" id="s-fillDensity" min="1" max="5" step="1" oninput="window._fillDensity=+this.value;sv(this)"><span class="vd" id="s-fillDensity-v"></span></div></div>
             </div>
         </div>
     </div>
@@ -232,6 +266,11 @@
         <button class="btn mode-btn" data-mode="2" onclick="setMode(2)">2 Code</button>
         <button class="btn mode-btn" data-mode="3" onclick="setMode(3)">3 Mold</button>
         <button class="btn mode-btn" data-mode="4" onclick="setMode(4)">4 Hybrid</button>
+    </div>
+    <div id="mobile-stencil-slider">
+        <label>Stencil</label>
+        <input type="range" min="0" max="1.5" step="0.01" value="0.7" oninput="window._stencilMaster=+this.value;document.getElementById('s-stencilMaster').value=this.value;sv(document.getElementById('s-stencilMaster'));document.getElementById('mobile-stencil-v').textContent=parseFloat(this.value).toFixed(2);updateShareURL()">
+        <span class="vd" id="mobile-stencil-v">0.70</span>
     </div>
     <div id="controls">
         <button class="btn" onclick="restart()">New Seed</button>
@@ -463,12 +502,12 @@ function selectPalette(seed) {
 
     // Re-apply mobile caps after texture override
     if (IS_MOBILE) {
-        BG.agentCount = Math.min(BG.agentCount, 4000);
-        MS.agentCount = Math.min(MS.agentCount, 3000);
-        BG.stepsPerFrame = Math.min(BG.stepsPerFrame, 3);
-        MS.stepsPerFrame = Math.min(MS.stepsPerFrame, 3);
-        BG.spawnRate = Math.min(BG.spawnRate, 80);
-        MS.spawnRate = Math.min(MS.spawnRate, 40);
+        BG.agentCount = Math.min(BG.agentCount, 5500);
+        MS.agentCount = Math.min(MS.agentCount, 4000);
+        BG.stepsPerFrame = Math.min(BG.stepsPerFrame, 4);
+        MS.stepsPerFrame = Math.min(MS.stepsPerFrame, 4);
+        BG.spawnRate = Math.min(BG.spawnRate, 100);
+        MS.spawnRate = Math.min(MS.spawnRate, 50);
     }
 
     // Update chromatic aberration CSS to match palette
@@ -477,7 +516,19 @@ function selectPalette(seed) {
     let mascotEl = document.getElementById('mascot-layer');
     let bgEl = document.getElementById('bg');
 
-    let mascotAnim = `
+    let mascotAnim;
+    if (IS_MOBILE) {
+        // Lighter chromatic for mobile — smaller offsets, lower alpha, slower cycle
+        mascotAnim = `
+        @keyframes chromatic-orbit-mobile {
+            0%   { filter: drop-shadow(4px 0 1px ${warm.replace('A','0.15')}) drop-shadow(-4px 0 1px ${cool.replace('A','0.15')}); }
+            25%  { filter: drop-shadow(0 4px 1px ${warm.replace('A','0.15')}) drop-shadow(0 -4px 1px ${cool.replace('A','0.15')}); }
+            50%  { filter: drop-shadow(-4px 0 1px ${warm.replace('A','0.15')}) drop-shadow(4px 0 1px ${cool.replace('A','0.15')}); }
+            75%  { filter: drop-shadow(0 -4px 1px ${warm.replace('A','0.15')}) drop-shadow(0 4px 1px ${cool.replace('A','0.15')}); }
+            100% { filter: drop-shadow(4px 0 1px ${warm.replace('A','0.15')}) drop-shadow(-4px 0 1px ${cool.replace('A','0.15')}); }
+        }`;
+    } else {
+        mascotAnim = `
         @keyframes chromatic-orbit {
             0%   { filter: drop-shadow(8px 0 2px ${warm.replace('A','0.25')}) drop-shadow(-8px 0 2px ${cool.replace('A','0.25')}); }
             25%  { filter: drop-shadow(0 8px 2px ${warm.replace('A','0.25')}) drop-shadow(0 -8px 2px ${cool.replace('A','0.25')}); }
@@ -490,6 +541,7 @@ function selectPalette(seed) {
             50%  { filter: drop-shadow(-3px 0 1px ${warm.replace('A','0.08')}) drop-shadow(3px 0 1px ${cool.replace('A','0.08')}); }
             100% { filter: drop-shadow(3px 0 1px ${warm.replace('A','0.08')}) drop-shadow(-3px 0 1px ${cool.replace('A','0.08')}); }
         }`;
+    }
 
     // Inject updated keyframes
     let styleId = 'dynamic-chromatic';
@@ -504,8 +556,13 @@ function selectPalette(seed) {
     mascotEl.style.animation = 'none';
     bgEl.style.animation = 'none';
     void mascotEl.offsetHeight;
-    mascotEl.style.animation = 'chromatic-orbit 6s linear infinite, breathe 5s ease-in-out infinite';
-    bgEl.style.animation = 'bg-chromatic 14s linear infinite';
+    if (IS_MOBILE) {
+        mascotEl.style.animation = 'chromatic-orbit-mobile 8s linear infinite, breathe 5s ease-in-out infinite';
+        // No bg chromatic on mobile
+    } else {
+        mascotEl.style.animation = 'chromatic-orbit 6s linear infinite, breathe 5s ease-in-out infinite';
+        bgEl.style.animation = 'bg-chromatic 14s linear infinite';
+    }
 }
 
 // Background sim params — radiating network from mascot, lively movement
@@ -602,20 +659,20 @@ const IS_MOBILE = /Android|iPhone|iPad|iPod|webOS/i.test(navigator.userAgent)
 const PERF_SCALE = IS_MOBILE ? 0.5 : 1.0;  // halve everything on mobile
 
 if (IS_MOBILE) {
-    // Halve agent populations
-    BG.agentCount = Math.round(BG.agentCount * 0.45);
-    MS.agentCount = Math.round(MS.agentCount * 0.45);
-    // Fewer sim steps per frame
-    BG.stepsPerFrame = Math.max(2, Math.round(BG.stepsPerFrame * 0.5));
-    MS.stepsPerFrame = Math.max(2, Math.round(MS.stepsPerFrame * 0.5));
+    // ~60% of desktop agent populations (up from 45%)
+    BG.agentCount = Math.round(BG.agentCount * 0.60);
+    MS.agentCount = Math.round(MS.agentCount * 0.60);
+    // Fewer sim steps per frame (65% of desktop, min 3)
+    BG.stepsPerFrame = Math.max(3, Math.round(BG.stepsPerFrame * 0.65));
+    MS.stepsPerFrame = Math.max(3, Math.round(MS.stepsPerFrame * 0.65));
     // Slower spawn (less GC pressure)
-    BG.spawnRate = Math.round(BG.spawnRate * 0.5);
-    MS.spawnRate = Math.round(MS.spawnRate * 0.5);
-    BG.initialBatch = Math.round(BG.initialBatch * 0.5);
-    MS.initialBatch = Math.round(MS.initialBatch * 0.5);
-    // Compensate for fewer agents — boost trail brightness so it's not dim
-    BG.trailBright *= 1.8;
-    MS.trailBright *= 1.8;
+    BG.spawnRate = Math.round(BG.spawnRate * 0.60);
+    MS.spawnRate = Math.round(MS.spawnRate * 0.60);
+    BG.initialBatch = Math.round(BG.initialBatch * 0.60);
+    MS.initialBatch = Math.round(MS.initialBatch * 0.60);
+    // Compensate for fewer agents — less boost needed with more agents
+    BG.trailBright *= 1.4;
+    MS.trailBright *= 1.4;
     // Higher default stencil opacity — desktop's 0.28 is invisible on mobile
     window._stencilMaster = 0.7;
 }
@@ -690,7 +747,7 @@ function buildMask() {
         }
     }
     // Normalize with per-pixel noise so dissolution is ragged, not uniform
-    let edgeFadeDepth = 30;
+    let edgeFadeDepth = window._edgeFadeDepth ?? 30;
     // Low-frequency noise: sample every 8px, interpolate between
     let noiseGrid = 8;
     let nw = Math.ceil(MSIZE / noiseGrid) + 1;
@@ -1051,8 +1108,8 @@ function resize() {
 
     // On mobile: render at half resolution, CSS-scale to fill viewport
     if (IS_MOBILE) {
-        VW = Math.floor(screenW * 0.75);
-        VH = Math.floor(screenH * 0.75);
+        VW = Math.floor(screenW * 0.85);
+        VH = Math.floor(screenH * 0.85);
         // CSS stretches canvas to viewport
         bgCanvas.style.width = screenW + 'px';
         bgCanvas.style.height = screenH + 'px';
@@ -1165,9 +1222,19 @@ function syncSliders() {
     set('s-ms-spawnR', MS.spawnR);
     // Stencil
     set('s-stencilMaster', window._stencilMaster ?? 0.28);
+    set('s-pulseSpeed', window._pulseSpeed ?? PULSE_SPEED);
+    set('s-formSpeed', window._stencilEnd ?? (IS_MOBILE ? 45 : STENCIL_END));
     set('s-edgeStrong', window._edgeStrong ?? 0.3);
     set('s-edgeWeak', window._edgeWeak ?? 0.12);
-    set('s-pulseSpeed', window._pulseSpeed ?? PULSE_SPEED);
+    set('s-edgeFade', window._edgeFadeDepth ?? 30);
+    set('s-darkThresh', window._darkThresh ?? 0.12);
+    set('s-nearDarkBoost', window._nearDarkBoost ?? 2.5);
+    set('s-fillDensity', window._fillDensity ?? 3);
+    // Sync mobile stencil slider
+    let mobileSlider = document.querySelector('#mobile-stencil-slider input');
+    let mobileVal = document.getElementById('mobile-stencil-v');
+    if (mobileSlider) { mobileSlider.value = window._stencilMaster ?? 0.28; }
+    if (mobileVal) { mobileVal.textContent = (window._stencilMaster ?? 0.28).toFixed(2); }
 }
 
 function initAll() {
@@ -1241,7 +1308,7 @@ function frame() {
 
     // Shared formation factor: drives both trail inflow and mascot illumination
     // On mobile, form stencil in ~8 frames instead of 18 (mobile fps is lower)
-    let stencilEnd = IS_MOBILE ? 45 : STENCIL_END;
+    let stencilEnd = window._stencilEnd ?? (IS_MOBILE ? 45 : STENCIL_END);
     let formationLinear = Math.min(1, Math.max(0, (msFc - STENCIL_START) / (stencilEnd - STENCIL_START)));
     // Ease-in: starts ghostly, gradually solidifies
     let formation = formationLinear * formationLinear;
@@ -1355,7 +1422,8 @@ function frame() {
 
                 let isEdge = cell.edge >= EDGE_STRONG;
                 let isMidEdge = cell.edge >= EDGE_WEAK;
-                let isDarkFeature = cell.a > 0.3 && cell.lum < 0.12;
+                let darkThresh = window._darkThresh ?? 0.12;
+                let isDarkFeature = cell.a > 0.3 && cell.lum < darkThresh;
                 let cellBlend = isBlast ? 1.0 : Math.min(1, (formation - cell.reveal) / 0.3);
                 let lumPulsed = cell.lum + pulse * 0.15;
 
@@ -1377,13 +1445,15 @@ function frame() {
                     }
                 }
 
+                let fillD = window._fillDensity ?? 3;
+
                 if (formationMode === 1) {
                     // RAMP: density symbols, edges heavier
                     let edgeBonus = isEdge ? 2 : (isMidEdge ? 1 : 0);
                     let rampIdx = Math.floor((lumPulsed + cell.edge) * (CHAR_RAMP.length - 1) + rampShift + edgeBonus);
                     rampIdx = Math.max(1, Math.min(CHAR_RAMP.length - 1, rampIdx));
                     ch = CHAR_RAMP[rampIdx];
-                    if (!isMidEdge && (row + col) % 3 !== 0) { skipCell = true; }
+                    if (!isMidEdge && (row + col) % fillD !== 0) { skipCell = true; }
                     alphaBoost = isEdge ? 1.8 : (isMidEdge ? 0.9 : 0.4);
 
                 } else if (formationMode === 2) {
@@ -1391,7 +1461,8 @@ function frame() {
                     let scrollIdx = ((row + codeScroll) * sCols + col) % CODE_LEN;
                     ch = CODE_BUF[scrollIdx];
                     if (ch === ' ') ch = CODE_BUF[(scrollIdx + 7) % CODE_LEN];
-                    if (!isMidEdge && (row + col) % 2 !== 0) { skipCell = true; }
+                    let codeFillD = Math.max(1, fillD - 1);
+                    if (!isMidEdge && (row + col) % codeFillD !== 0) { skipCell = true; }
                     alphaBoost = isEdge ? 2.0 : (isMidEdge ? 1.2 : 0.6);
 
                 } else if (formationMode === 4) {
@@ -1399,11 +1470,12 @@ function frame() {
                     let scrollIdx = ((row + codeScroll) * sCols + col) % CODE_LEN;
                     ch = CODE_BUF[scrollIdx];
                     if (ch === ' ') ch = CODE_BUF[(scrollIdx + 13) % CODE_LEN];
-                    if (!isMidEdge && (row + col) % 2 !== 0) { skipCell = true; }
+                    let codeFillD = Math.max(1, fillD - 1);
+                    if (!isMidEdge && (row + col) % codeFillD !== 0) { skipCell = true; }
                     alphaBoost = isEdge ? 1.5 : (isMidEdge ? 0.8 : 0.4);
                 }
 
-                if (nearDark) { alphaBoost = Math.max(alphaBoost, 2.5); }
+                if (nearDark) { alphaBoost = Math.max(alphaBoost, window._nearDarkBoost ?? 2.5); }
 
                 // Blast mode: fill every cell at full brightness
                 let blast = STENCIL_MASTER > 1.0;
@@ -1640,6 +1712,63 @@ window.addEventListener('keyup', (e) => {
         _savedMaster = null;
     }
 });
+
+// Touch/pointer-hold blast for mobile (mirrors spacebar hold)
+// Walks DOM to check if interaction landed on UI chrome
+function _isUIElement(t) {
+    while (t && t !== document.body && t !== document.documentElement) {
+        if (t.tagName === 'BUTTON' || t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'LABEL') return true;
+        if (t.id === 'settings-panel' || t.id === 'mobile-stencil-slider' || t.id === 'mode-controls' || t.id === 'controls' || t.id === 'toggle-panel') return true;
+        t = t.parentElement;
+    }
+    return false;
+}
+function _blastStart() {
+    if (_savedMaster === null) {
+        _savedMaster = window._stencilMaster ?? 0.7;
+        window._stencilMaster = 3.0;
+        _trailBoost = 4.0;
+    }
+}
+function _blastEnd() {
+    if (_savedMaster !== null) {
+        window._stencilMaster = _savedMaster;
+        _trailBoost = 1.0;
+        _savedMaster = null;
+    }
+}
+// Touch events — { passive: false } so preventDefault works on Android Chrome
+window.addEventListener('touchstart', (e) => {
+    if (_isUIElement(e.target)) return;
+    e.preventDefault();
+    _blastStart();
+}, { passive: false });
+window.addEventListener('touchend', _blastEnd);
+window.addEventListener('touchcancel', _blastEnd); // foldables fire cancel on fold/unfold
+
+// Pointer fallback — covers Chrome DevTools responsive mode & stylus input
+// Only activate for non-keyboard, non-spacebar pointer interactions
+let _pointerBlastActive = false;
+window.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'mouse' && !IS_MOBILE) return; // desktop mouse handled by spacebar
+    if (_isUIElement(e.target)) return;
+    _pointerBlastActive = true;
+    _blastStart();
+});
+window.addEventListener('pointerup', (e) => {
+    if (_pointerBlastActive) { _blastEnd(); _pointerBlastActive = false; }
+});
+window.addEventListener('pointercancel', (e) => {
+    if (_pointerBlastActive) { _blastEnd(); _pointerBlastActive = false; }
+});
+// Also support long-press via mousedown on narrow viewports (DevTools responsive)
+if (window.innerWidth <= 768) {
+    window.addEventListener('mousedown', (e) => {
+        if (_isUIElement(e.target)) return;
+        _blastStart();
+    });
+    window.addEventListener('mouseup', _blastEnd);
+}
 
 // ═══════════════════════════════════════════════════════════════
 //  BOOT
