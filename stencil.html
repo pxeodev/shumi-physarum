@@ -1945,7 +1945,13 @@ window.addEventListener('keydown', (e) => {
     if (e.code === 'Space' && !e.target.matches('input, textarea, select')) {
         e.preventDefault();
         if (_savedMaster === null) {
-            _savedMaster = window._stencilMaster ?? 0.28;
+            // If LP fade is running, cancel it and save the target value instead
+            if (window._lpBlastStart) {
+                _savedMaster = 0.40;
+                window._lpBlastStart = false;
+            } else {
+                _savedMaster = window._stencilMaster ?? 0.28;
+            }
             window._stencilMaster = 3.0;
             _trailBoost = 4.0;
             if (USE_WORKER && worker) worker.postMessage({ type: 'blast', active: true });
@@ -1977,7 +1983,12 @@ function _isUIElement(t) {
 }
 function _blastStart() {
     if (_savedMaster === null) {
-        _savedMaster = window._stencilMaster ?? 0.7;
+        if (window._lpBlastStart) {
+            _savedMaster = 0.40;
+            window._lpBlastStart = false;
+        } else {
+            _savedMaster = window._stencilMaster ?? 0.7;
+        }
         window._stencilMaster = 3.0;
         _trailBoost = 4.0;
         if (USE_WORKER && worker) worker.postMessage({ type: 'blast', active: true });

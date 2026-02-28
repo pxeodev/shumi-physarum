@@ -1135,6 +1135,7 @@ self.onmessage = function(e) {
             break;
 
         case 'blast':
+            _lpBlastStart = false; // manual blast cancels LP fade
             if (msg.active) {
                 _stencilMaster = 3.0;
                 _trailBoost = 4.0;
