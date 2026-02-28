@@ -1212,6 +1212,9 @@ function resize() {
         let displayMsize = Math.floor(Math.min(screenW, screenH) * 0.5);
         mascotCanvas.style.width = displayMsize + 'px';
         mascotCanvas.style.height = displayMsize + 'px';
+        // Ghost must match mascot display size so they overlap perfectly
+        ghostCanvas.style.width = displayMsize + 'px';
+        ghostCanvas.style.height = displayMsize + 'px';
     }
 
     if (maskImg) buildMask();
