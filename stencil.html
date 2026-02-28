@@ -301,7 +301,8 @@
 // ═══════════════════════════════════════════════════════════════
 //  WORKER FEATURE DETECTION
 // ═══════════════════════════════════════════════════════════════
-const USE_WORKER = typeof OffscreenCanvas !== 'undefined';
+const USE_WORKER = typeof OffscreenCanvas !== 'undefined'
+    && !new URLSearchParams(window.location.search).has('legacy');
 
 // Forward parameter changes to worker (no-op in legacy mode)
 function workerUpdateParam(key, value) {
