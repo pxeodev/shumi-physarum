@@ -180,8 +180,8 @@ const GHOST_HOLD_FRAMES = 90;
 const GHOST_FADE_FRAMES = 180;
 
 // Persistent resurface — retinal burn base layer
-const RESURFACE_EARLY_PEAK = 0.55;
-const RESURFACE_FLOOR = 0.12;
+const RESURFACE_EARLY_PEAK = 0.28;
+const RESURFACE_FLOOR = 0.06;
 const RESURFACE_FADE_UP = 90;
 const RESURFACE_SETTLE_START = 360;
 const RESURFACE_SETTLE_DUR = 600;
@@ -1053,17 +1053,17 @@ self.onmessage = function(e) {
 
             // Apply LP scaling — lightweight for landing pages
             if (IS_LP) {
-                BG.agentCount = Math.round(8000 * 0.30);
-                MS.agentCount = Math.round(5500 * 0.30);
-                BG.stepsPerFrame = Math.max(2, Math.round(5 * 0.50));
+                BG.agentCount = Math.round(8000 * 0.50);
+                MS.agentCount = Math.round(5500 * 0.35);
+                BG.stepsPerFrame = Math.max(2, Math.round(5 * 0.60));
                 MS.stepsPerFrame = Math.max(2, Math.round(5 * 0.50));
-                BG.spawnRate = Math.round(140 * 0.30);
-                MS.spawnRate = Math.round(70 * 0.30);
-                BG.initialBatch = Math.round(3000 * 0.30);
-                MS.initialBatch = Math.round(1400 * 0.30);
-                BG.trailBright = 1.3 * 1.8;
-                MS.trailBright = 2.4 * 1.8;
-                if (_stencilMaster === 0.28) _stencilMaster = 0.45;
+                BG.spawnRate = Math.round(140 * 0.50);
+                MS.spawnRate = Math.round(70 * 0.35);
+                BG.initialBatch = Math.round(3000 * 0.50);
+                MS.initialBatch = Math.round(1400 * 0.35);
+                BG.trailBright = 1.3 * 1.3;
+                MS.trailBright = 2.4 * 1.4;
+                if (_stencilMaster === 0.28) _stencilMaster = 0.40;
             } else if (IS_MOBILE) {
                 BG.agentCount = Math.round(8000 * 0.60);
                 MS.agentCount = Math.round(5500 * 0.60);

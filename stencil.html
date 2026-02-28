@@ -702,20 +702,20 @@ const IS_LP = _urlParams.has('lp');  // Landing page lightweight mode
 const PERF_SCALE = IS_MOBILE ? 0.5 : 1.0;  // halve everything on mobile
 
 if (IS_LP) {
-    // ~30% of desktop agents — coexist with other page content
-    BG.agentCount = Math.round(BG.agentCount * 0.30);
-    MS.agentCount = Math.round(MS.agentCount * 0.30);
-    BG.stepsPerFrame = Math.max(2, Math.round(BG.stepsPerFrame * 0.50));
+    // ~50% of desktop agents — enough for visible mycelial network
+    BG.agentCount = Math.round(BG.agentCount * 0.50);
+    MS.agentCount = Math.round(MS.agentCount * 0.35);
+    BG.stepsPerFrame = Math.max(2, Math.round(BG.stepsPerFrame * 0.60));
     MS.stepsPerFrame = Math.max(2, Math.round(MS.stepsPerFrame * 0.50));
-    BG.spawnRate = Math.round(BG.spawnRate * 0.30);
-    MS.spawnRate = Math.round(MS.spawnRate * 0.30);
-    BG.initialBatch = Math.round(BG.initialBatch * 0.30);
-    MS.initialBatch = Math.round(MS.initialBatch * 0.30);
-    // Compensate brightness for fewer agents
-    BG.trailBright *= 1.8;
-    MS.trailBright *= 1.8;
+    BG.spawnRate = Math.round(BG.spawnRate * 0.50);
+    MS.spawnRate = Math.round(MS.spawnRate * 0.35);
+    BG.initialBatch = Math.round(BG.initialBatch * 0.50);
+    MS.initialBatch = Math.round(MS.initialBatch * 0.35);
+    // Mild brightness compensation
+    BG.trailBright *= 1.3;
+    MS.trailBright *= 1.4;
     // Slightly higher stencil presence
-    window._stencilMaster = 0.45;
+    window._stencilMaster = 0.40;
 } else if (IS_MOBILE) {
     // ~60% of desktop agent populations (up from 45%)
     BG.agentCount = Math.round(BG.agentCount * 0.60);
@@ -962,8 +962,8 @@ const GHOST_HOLD_FRAMES = 90;       // frames to hold full ghost before fading
 const GHOST_FADE_FRAMES = 180;      // frames to fade ghost to zero
 
 // Persistent resurface — retinal burn base layer
-const RESURFACE_EARLY_PEAK = 0.55;  // strong presence while trails are sparse
-const RESURFACE_FLOOR = 0.12;       // persistent base after trails fill in
+const RESURFACE_EARLY_PEAK = 0.28;  // visible but not overpowering
+const RESURFACE_FLOOR = 0.06;       // subtle persistent base
 const RESURFACE_FADE_UP = 90;       // frames to reach peak (~1.5s)
 const RESURFACE_SETTLE_START = 360; // frames before settling down (~6s)
 const RESURFACE_SETTLE_DUR = 600;   // frames to settle to floor (~10s)
