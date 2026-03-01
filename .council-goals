@@ -16,6 +16,7 @@ Real-time agent-based physarum (slime mold) simulator rendered to canvas via Web
 - LP mode vs normal mode is determined once at init and does not toggle at runtime. LP-specific overrides (food placement, core suppression, agent counts) are baked in at init, not branched per-frame.
 - The message protocol between worker and main thread (`init`, `tick`, `frame`, `restart`, `resize`, `updateParams`, `setMode`, `blast`) is a contract — adding fields is fine, changing semantics breaks both sides silently.
 - Color palettes and textures are seed-deterministic. A given seed number must always produce the same visual. Breaking this breaks bookmarked seeds.
+- Normal mode must not regress — parameter controls, seed switching, and WebM/GIF recording are actively used for development and asset creation. LP mode is the production priority, but breaking normal mode's interactive workflow blocks tuning work.
 
 ## Known tech debt
 - Simulation params are duplicated between worker and main-thread fallback paths. A shared config object would be cleaner but hasn't been worth the refactor since the fallback path is rarely hit.
