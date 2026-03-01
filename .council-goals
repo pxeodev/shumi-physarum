@@ -1,0 +1,24 @@
+# Shumi Physarum — Project Goals
+
+## What this is
+Real-time agent-based physarum (slime mold) simulator rendered to canvas via Web Worker + OffscreenCanvas, used as an animated hero background on the Shumi landing page. ~6,000 agents deposit pheromone trails that are diffused and decayed every frame, producing emergent fungal transport networks. Ships as a standalone HTML + worker JS pair (no bundler, no framework). Normal mode exposes full parameter controls and batch recording (WebM/GIF); LP mode strips all UI for a clean, high-performance background visual.
+
+## Non-negotiable priorities (ranked)
+1. **60 fps on mobile Safari in the render loop** — This is a background visual; a single dropped frame is visible. `updateAgents()`, `diffuseAndDecay()`, and `renderTrailPixels()` run every frame on ~1M pixels and thousands of agents. Zero allocations, no DOM touches, no branching on hot paths. This outranks everything because bad perf makes the entire landing page feel broken.
+2. **Zero jank on load** — The simulation must appear smoothly with no white flash, no half-drawn mascot, no ghost layer popping. Race conditions between mask image loading, ghost pre-render, and first visible frame are the #1 class of bugs. This is ranked #2 because load happens once but a bad first impression is permanent.
+3. **LP mode visual fidelity** — The mascot resurface, filament density, hollow-core suppression, fade curves, and entrance easing must look organic and intentional, never glitchy. Recent commits are almost entirely LP tuning (blast fade, chromatic halo removal, mascot positioning, core suppression). Ranked #3 because visual polish is the product — but only after it runs smoothly.
+4. **Payload size under 50 KB per file** — stencil.html is currently ~117 KB and stencil-worker.js ~54 KB, both over budget. No new dependencies. Every line of code added must justify its bytes. Ranked last because size matters for load time but is less urgent than runtime performance.
+
+## Architecture constraints
+- Worker and main thread share simulation constants but NOT runtime state. Config flows via `postMessage`; never via shared globals or SharedArrayBuffer.
+- The worker owns simulation + trail rendering. The main thread owns compositing (ghost, resurface, chromatic overlays) and DOM (settings panel, recording controls).
+- Frame handoff uses `transferToImageBitmap()` for zero-copy. Never `toDataURL()` or `getImageData()` in the frame loop.
+- LP mode vs normal mode is determined once at init and does not toggle at runtime. LP-specific overrides (food placement, core suppression, agent counts) are baked in at init, not branched per-frame.
+- The message protocol between worker and main thread (`init`, `tick`, `frame`, `restart`, `resize`, `updateParams`, `setMode`, `blast`) is a contract — adding fields is fine, changing semantics breaks both sides silently.
+- Color palettes and textures are seed-deterministic. A given seed number must always produce the same visual. Breaking this breaks bookmarked seeds.
+
+## Known tech debt
+- Simulation params are duplicated between worker and main-thread fallback paths. A shared config object would be cleaner but hasn't been worth the refactor since the fallback path is rarely hit.
+- The resurface/mascot overlay uses OffscreenCanvas in the worker and regular canvas in the fallback — two codepaths that can drift if only one is updated.
+- stencil.html (117 KB) and stencil-worker.js (54 KB) both exceed the 50 KB target. Needs minification or splitting, but not urgent until Next.js embedding becomes a bottleneck.
+- Legacy p5.js path (index.html, masked.html) is effectively unmaintained — all active development is on stencil.html + stencil-worker.js.
