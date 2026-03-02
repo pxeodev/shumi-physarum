@@ -1,19 +1,35 @@
 # Seed System
 
-Every Shumi agent is identified by a unique seed. Seeds are deterministic — the same seed always produces the same swarm pattern. Your seed is your agent's visual signature.
+Every Shumi agent is identified by a unique seed. Seeds are deterministic — the same seed always produces the same swarm pattern in a given simulator. Your seed is your agent's visual signature.
 
 ## How Seeds Work
 
 A seed is a positive integer that initializes the swarm's random number generator. It controls:
 
-- **Cell spawn positions** — Where each cell emerges within the hub radius
+- **Cell spawn positions** — Where each cell emerges
 - **Cell headings** — The initial direction each cell faces
 - **Attractor placement** — Where signal attractors land on the canvas
-- **Micro-randomness** — Subtle jitter in cell movement that creates organic texture
+- **Micro-randomness** — Subtle jitter in cell movement for organic texture
 
-Same seed + same parameters = identical swarm, every time, on any device.
+Same seed + same simulator + same parameters = identical swarm, every time, on any device.
 
-## Seed Controls
+## Seeds Across the Three Simulators
+
+The same seed number produces **related but distinct** visuals in each simulator:
+
+| Aspect | Generator | Stencil | Masked |
+|--------|-----------|---------|--------|
+| **PRNG sequence** | Shared base | Shared base | Shared base |
+| **Layout** | Radial from center hub | BG + mascot-shaped | BG + mascot-shaped |
+| **Palette** | Manual (presets/pickers) | Seed-determined (`seed % 8`) | Seed-determined (`seed % 8`) |
+| **Texture** | Manual (all sliders) | Seed-determined (`seed/8 % 8`) | Seed-determined (`seed/8 % 8`) |
+| **Color drift** | None | Per-seed HSL shift | Per-seed HSL shift |
+
+Think of the seed as a genome — the same DNA expressed differently in each environment.
+
+## Seed Controls by Simulator
+
+### Generator
 
 | Action | How |
 |--------|-----|
@@ -22,43 +38,69 @@ Same seed + same parameters = identical swarm, every time, on any device.
 | Step backward | Click **Prev** (seed - 1, minimum 1) |
 | Random seed | Click **Random** (picks 1–999,999) |
 
+### Stencil
+
+| Action | How |
+|--------|-----|
+| Random seed | Click **New Seed** |
+| Specific seed | Open **☰ Settings**, type in seed field, click **Jump** |
+| Share seed + settings | Click **Share** (copies URL) |
+
+### Masked
+
+| Action | How |
+|--------|-----|
+| Random seed | Click **New Seed** |
+
+The Masked has no manual seed input — it's designed for exploration through random discovery.
+
 ## What Changes Between Seeds
+
+### In the Generator
 
 With default parameters, different seeds produce noticeably different topologies:
 
-1. **Attractor layout varies** — 12 signal attractors land in different positions, creating unique branch targets
+1. **Attractor layout varies** — Attractors land in different positions, creating unique branch targets
 2. **Spawn angles differ** — Cells radiate in different initial directions from the hub
-3. **Early-stage divergence** — Small differences in the first frames compound into completely different network structures
+3. **Early-stage divergence** — Small differences in the first frames compound into completely different networks
+
+### In the Stencil & Masked
+
+In addition to layout differences, the seed also changes:
+
+1. **Palette** — Cycling through the 8 palettes (Ember, Frost, Moss, Pearl, Bloom, Honey, Tide, Rust)
+2. **Texture profile** — Cycling through 8 textures (standard, crystalline, smoke, coral, silk, electric, flow, spore)
+3. **Color drift** — Subtle hue/saturation/luminance shifts within the palette family
+4. **Parameter jitter** — ±10% variation in simulation parameters
 
 ## What Stays Constant
 
-- The intelligence hub is always at 35% from top, horizontally centered
-- The overall swarm character (density, speed, palette) is set by parameters, not the seed
-- The growth pattern (radial outward from hub) is consistent across all seeds
+- **Generator:** Hub at 35% from top, horizontally centered. Swarm character (density, speed, palette) set by parameters.
+- **Stencil:** Mascot image, formation mode, and settings panel values persist across seeds.
+- **Masked:** Mascot shape, masking behavior, and ghost afterimage timing are fixed.
 
 ## Finding Your Seed
 
-### Manual Browsing
+### Manual Browsing (Generator)
 
 Use **Prev/Next** to step through seeds. Adjacent seeds (e.g., 100 and 101) can produce very different results — there's no gradual transition.
 
-### Preview Carousel
+### Preview Carousel (Generator)
 
-The **Preview Seeds** feature in the Recording Studio is the fastest discovery method:
+The **Preview Seeds** feature is the fastest discovery method:
 
 1. Click **Preview Seeds**
 2. Watch random seeds grow for 4 seconds each
 3. Press **Space** to bookmark ones that resonate
 4. Stop when you've found your candidates
 
-### What Makes a Strong Seed
+### Rapid Tapping (Masked)
 
-The best seeds tend to have:
+In the Masked, just keep clicking **New Seed**. The minimal UI and fast restarts make it the quickest way to browse palette/texture combinations. The seed number appears briefly in the status bar.
 
-- **Balanced distribution** — Attractors spread widely, not clustered on one side
-- **Clear branching** — Multiple distinct pathways visible
-- **Directional variety** — Growth in all directions, not biased to one quadrant
-- **Clean separation** — Space between major paths gives the network definition
+### Share URL (Stencil)
+
+Found a great combination? Click **Share** to capture the exact seed, mode, and settings in a URL.
 
 ## Seed as Identity
 

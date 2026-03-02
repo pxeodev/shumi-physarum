@@ -1,12 +1,12 @@
 # Seed Gallery
 
-A curated collection of seeds that produce distinctive swarm topologies. Click any seed link to load it directly in the generator.
+A curated collection of seeds that produce distinctive swarm topologies. Click any link to load it directly.
 
-## Featured Seeds
+## Generator Seeds
 
 ### Dense Webs
 
-These seeds produce intricate, tightly-woven networks with lots of fine branching.
+Intricate, tightly-woven networks with fine branching.
 
 | Seed | Character | Try It |
 |------|-----------|--------|
@@ -17,7 +17,7 @@ These seeds produce intricate, tightly-woven networks with lots of fine branchin
 
 ### Dramatic Branches
 
-Seeds where attractors pull the swarm into bold directional patterns.
+Bold directional patterns pulled by attractor placement.
 
 | Seed | Character | Try It |
 |------|-----------|--------|
@@ -27,7 +27,7 @@ Seeds where attractors pull the swarm into bold directional patterns.
 
 ### Minimal & Clean
 
-Seeds that produce sparse, elegant topologies with lots of negative space.
+Sparse, elegant topologies with lots of negative space.
 
 | Seed | Character | Try It |
 |------|-----------|--------|
@@ -35,9 +35,48 @@ Seeds that produce sparse, elegant topologies with lots of negative space.
 | 100 | Clean radial with even distribution | [Open →](https://haddencarpenter.github.io/shumi-physarum/index.html) |
 | 2025 | Current year — commemorative seed | [Open →](https://haddencarpenter.github.io/shumi-physarum/index.html) |
 
+## Stencil Seeds
+
+In the Stencil, seeds select palette + texture automatically. Try these in different formation modes.
+
+| Seed | Palette | Texture | Character | Try It |
+|------|---------|---------|-----------|--------|
+| 1 | Ember | Standard | Classic warm baseline | [Open →](https://haddencarpenter.github.io/shumi-physarum/stencil.html?seed=1) |
+| 2 | Frost | Standard | Cool blue, steady glow | [Open →](https://haddencarpenter.github.io/shumi-physarum/stencil.html?seed=2) |
+| 10 | Frost | Crystalline | Sharp ice veins | [Open →](https://haddencarpenter.github.io/shumi-physarum/stencil.html?seed=10) |
+| 19 | Bloom | Smoke | Soft pink haze | [Open →](https://haddencarpenter.github.io/shumi-physarum/stencil.html?seed=19) |
+| 28 | Pearl | Coral | Elegant branching gray | [Open →](https://haddencarpenter.github.io/shumi-physarum/stencil.html?seed=28) |
+| 45 | Bloom | Electric | Lightning pink energy | [Open →](https://haddencarpenter.github.io/shumi-physarum/stencil.html?seed=45) |
+| 60 | Pearl | Flow | Wide flowing silver rivers | [Open →](https://haddencarpenter.github.io/shumi-physarum/stencil.html?seed=60) |
+
+### Try Mode Combinations
+
+The same seed transforms dramatically across modes:
+
+| Mode | Character | Try seed 10 |
+|------|-----------|-------------|
+| 1 Ramp | ASCII character art | [Open →](https://haddencarpenter.github.io/shumi-physarum/stencil.html?seed=10&mode=1) |
+| 2 Code | Matrix-style text | [Open →](https://haddencarpenter.github.io/shumi-physarum/stencil.html?seed=10&mode=2) |
+| 3 Mold | Smooth pixel trails | [Open →](https://haddencarpenter.github.io/shumi-physarum/stencil.html?seed=10&mode=3) |
+| 4 Hybrid | ASCII + pixel blend | [Open →](https://haddencarpenter.github.io/shumi-physarum/stencil.html?seed=10&mode=4) |
+
+## Masked Seeds
+
+In the Masked, seeds control everything — palette, texture, and color drift. These showcase the range.
+
+| Seed | Palette | Texture | Character | Try It |
+|------|---------|---------|-----------|--------|
+| 1 | Ember | Standard | Warm gold baseline | [Open →](https://haddencarpenter.github.io/shumi-physarum/masked.html) |
+| 3 | Pearl | Standard | Minimal gray elegance | [Open →](https://haddencarpenter.github.io/shumi-physarum/masked.html) |
+| 9 | Frost | Crystalline | Sharp blue-white veins | [Open →](https://haddencarpenter.github.io/shumi-physarum/masked.html) |
+| 22 | Moss | Smoke | Soft green mist | [Open →](https://haddencarpenter.github.io/shumi-physarum/masked.html) |
+| 37 | Bloom | Electric | Hot pink lightning | [Open →](https://haddencarpenter.github.io/shumi-physarum/masked.html) |
+| 52 | Pearl | Flow | Silver lava lamp | [Open →](https://haddencarpenter.github.io/shumi-physarum/masked.html) |
+| 63 | Rust | Spore | Copper constellation map | [Open →](https://haddencarpenter.github.io/shumi-physarum/masked.html) |
+
 ## Palette Showcase
 
-The same seed looks completely different across palettes. Try seed **12345** with each:
+The same seed looks completely different across the Generator's palettes. Try seed **12345**:
 
 | Palette | Mood |
 |---------|------|
@@ -50,24 +89,21 @@ The same seed looks completely different across palettes. Try seed **12345** wit
 | **Rose** | Soft organic warmth |
 | **Mono** | Raw topology, clinical |
 
-## Submit Your Seed
-
-Found an exceptional seed? These patterns are the pre-seeds for the limited-edition Shumi agent collection. The most distinctive seeds discovered by the community may become part of the official agent roster.
-
-Share your discoveries — include:
-- **Seed number**
-- **Any parameter changes** from defaults
-- **Palette** used
-- **What makes it special**
-
 ## Discovering New Seeds
 
-The fastest way to find interesting seeds:
+### In the Generator
 
-1. Open the generator
-2. Click **Preview Seeds** in the Recording Studio section
-3. Seeds cycle every 4 seconds — press **Space** to bookmark
-4. After previewing, click any bookmarked seed to revisit
-5. Fine-tune parameters once you find a topology you like
+1. Click **Preview Seeds** in the Recording Studio
+2. Seeds cycle every 4 seconds — press **Space** to bookmark
+3. Click any bookmarked seed to revisit
+4. Fine-tune parameters, then batch-record favorites
 
-See [Seed System](seed-system.md) for more on how seeds work.
+### In the Stencil
+
+Click **New Seed** repeatedly, or enter specific seeds via **☰ Settings**. The **Share** button captures your favorite as a URL.
+
+### In the Masked
+
+Just keep clicking **New Seed**. The fast restart and auto-palette selection makes the Masked ideal for rapid seed browsing.
+
+See [Seed System](seed-system.md) for the full technical explanation.

@@ -5,28 +5,33 @@
 - A modern web browser (Chrome recommended, Firefox/Edge/Safari also work)
 - No installation or build step required
 
-## Opening the Generator
+## Which Version Should I Use?
+
+| If you want to... | Use | Link |
+|-------------------|-----|------|
+| Explore and tweak every parameter | [The Generator](generator.md) | [Open →](https://haddencarpenter.github.io/shumi-physarum/index.html) |
+| Create mascot avatar compositions | [The Stencil](stencil.md) | [Open →](https://haddencarpenter.github.io/shumi-physarum/stencil.html) |
+| Quickly browse seed personalities | [The Masked](masked.md) | [Open →](https://haddencarpenter.github.io/shumi-physarum/masked.html) |
+| See the branded landing page | Demo Hub | [Open →](https://haddencarpenter.github.io/shumi-physarum/demo.html) |
+
+## Opening a Simulator
 
 ### Option 1: Live on GitHub Pages
 
-Visit the published URL directly — the generator runs entirely in your browser.
+Click any link above — every simulator runs entirely in your browser.
 
 ### Option 2: Run Locally
 
-Clone or download the repository and open `index.html` in your browser.
+Clone or download the repository and open `index.html`, `stencil.html`, or `masked.html` directly in your browser.
 
-## Interface Layout
+## Quick Start: The Generator
 
-![Shumi Generator Interface](https://raw.githubusercontent.com/haddencarpenter/shumi-physarum/main/shumi.webp)
+1. Open `index.html` — the swarm starts growing immediately with seed `12345`
+2. Click **Random** to discover new patterns
+3. Adjust the sidebar sliders to shape the swarm's behavior
+4. Hit **Save PNG** or **Record WebM** to capture your pattern
 
-The interface has two areas:
-
-- **Left sidebar** (300px) — All controls: seed navigation, swarm parameters, palette selection, and export tools
-- **Main canvas** (right) — The live swarm simulation at 16:9 aspect ratio
-
-## Your First Swarm
-
-When you open the generator, it immediately begins growing a swarm with these defaults:
+### Generator Defaults
 
 | Parameter | Default Value |
 |-----------|--------------|
@@ -42,16 +47,23 @@ When you open the generator, it immediately begins growing a swarm with these de
 | Attractors | 12 |
 | Palette | Shumi Gold |
 
-The swarm spawns from a central intelligence hub positioned at 35% from the top of the canvas and grows outward. New cells continuously emerge from the hub until the population cap is reached.
+## Quick Start: The Stencil
 
-## Basic Workflow
+1. Open `stencil.html` — the swarm grows behind the mascot automatically
+2. Use **1 2 3 4** keys (or buttons, top-right) to switch formation modes
+3. Press and hold **Space** for a dramatic blast reveal
+4. Open **☰ Settings** (top-left) to fine-tune parameters
+5. Click **Share** to copy a shareable URL
 
-1. **Explore seeds** — Click **Random** or use **Prev/Next** to browse unique patterns
-2. **Shape the swarm** — Adjust sliders to change cell behavior, signal chemistry, and rendering
-3. **Choose a palette** — Pick a preset or define your own color identity
-4. **Export** — Save as PNG, record WebM video, or export an animated GIF
-5. **Preview & batch** — Use the seed preview carousel to audition many seeds, bookmark favorites, then batch-record them all
+## Quick Start: The Masked
+
+1. Open `masked.html` — a random seed loads automatically
+2. Click **New Seed** to explore different palette/texture combinations
+3. Each seed selects its own palette and texture — just keep clicking
+4. Click **Save PNG** or **● Record** to capture
 
 ## Sharing Your Seed
 
-Every swarm is fully reproducible. Share your seed number and parameter settings with others — they'll see the exact same pattern. This is how Shumi agents will be identified: by their unique seed.
+Every swarm is fully reproducible. In the Generator and Masked, share the seed number. In the Stencil, use the **Share** button to copy a URL that encodes the seed, formation mode, and key settings.
+
+The same seed number produces different (but related) visuals across the three simulators — the underlying random sequence is shared, but each version interprets it differently.

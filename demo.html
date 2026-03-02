@@ -3,7 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shumi — Landing Page Preview</title>
+<title>Shumi Visual System</title>
+<meta property="og:title" content="Shumi Visual System">
+<meta property="og:description" content="Three physarum simulators for designing your agent's visual identity.">
+<meta property="og:image" content="https://haddencarpenter.github.io/shumi-physarum/og-thumbnail.png">
+<meta property="og:url" content="https://haddencarpenter.github.io/shumi-physarum/demo.html">
+<meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -36,7 +41,9 @@
     background: var(--primary); color: var(--primary-fg);
     border: none; border-radius: 8px; padding: 8px 20px;
     font-weight: 600; font-size: 14px; cursor: pointer;
+    text-decoration: none;
   }
+  .launch-btn:hover { filter: brightness(0.9); }
 
   /* Hero */
   .hero { position: relative; min-height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
@@ -132,6 +139,43 @@
   .trust-item { display: flex; align-items: center; gap: 8px; }
   .trust-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--primary); }
 
+  /* Simulators section */
+  .simulators {
+    position: relative; z-index: 20; padding: 60px 24px 80px;
+    max-width: 72rem; margin: 0 auto;
+  }
+  .simulators h2 {
+    text-align: center; font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: 700; margin-bottom: 12px;
+  }
+  .simulators .section-sub {
+    text-align: center; color: var(--muted); font-size: 16px;
+    max-width: 36rem; margin: 0 auto 40px; line-height: 1.6;
+  }
+  .sim-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  }
+  .sim-card {
+    background: oklch(0.1 0.01 50 / 0.6); border: 1px solid var(--border);
+    border-radius: 12px; padding: 28px 24px; backdrop-filter: blur(8px);
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .sim-card:hover { border-color: oklch(0.82 0.16 85 / 0.4); transform: translateY(-2px); }
+  .sim-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+  .sim-card .sim-file { color: var(--primary); font-size: 13px; font-weight: 500; margin-bottom: 12px; font-family: 'Courier New', monospace; }
+  .sim-card p { color: var(--muted); font-size: 14px; line-height: 1.5; margin-bottom: 16px; }
+  .sim-card .sim-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .sim-tag {
+    font-size: 11px; padding: 4px 10px; border-radius: 9999px;
+    border: 1px solid oklch(0.82 0.16 85 / 0.2); color: var(--primary);
+    background: oklch(0.82 0.16 85 / 0.06);
+  }
+  .sim-card a {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--primary); text-decoration: none; font-size: 14px; font-weight: 600;
+  }
+  .sim-card a:hover { text-decoration: underline; }
+
   /* Reveal animation */
   @keyframes reveal-up { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
   .reveal { opacity: 0; animation: reveal-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -145,11 +189,13 @@
     .shield-desktop { display: none; }
     .shield-mobile { display: block; }
     nav { display: none; }
-    .launch-btn { display: none; }
+    header .launch-btn { display: none; }
     .hero-inner { padding-top: 45vh; }
     .hero-content { padding-bottom: 16px; }
     h1 { font-size: 2.25rem; }
     .trust { gap: 12px 16px; }
+    .sim-grid { grid-template-columns: 1fr; }
+    .simulators { padding: 40px 16px 60px; }
   }
   @media (min-width: 1024px) {
     .hero-content { padding-bottom: 40px; }
@@ -161,15 +207,16 @@
 
 <header>
   <div class="logo">
-    <img src="https://haddencarpenter.github.io/shumi-physarum/stencil.html?lp" style="display:none">
     <img src="shumi.webp" alt="Shumi" width="32" height="32" style="border-radius:4px">
     <span>Shumi</span>
   </div>
   <nav>
-    <a href="#">Features</a>
-    <a href="#">How It Works</a>
+    <a href="index.html">Generator</a>
+    <a href="stencil.html">Stencil</a>
+    <a href="masked.html">Masked</a>
+    <a href="https://github.com/haddencarpenter/shumi-physarum/tree/main/docs" target="_blank" rel="noopener">Docs</a>
   </nav>
-  <button class="launch-btn">Launch App</button>
+  <a href="index.html" class="launch-btn">Open Generator</a>
 </header>
 
 <section class="hero">
@@ -191,36 +238,94 @@
     <div class="hero-inner">
       <div class="badge reveal">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
-        <span>Your AI Crypto Analyst</span>
+        <span>The Shumi Visual System</span>
       </div>
 
       <h1 class="reveal reveal-d1">
-        Stop Guessing.<br>
-        <span class="text-shimmer">Start Knowing.</span>
+        Design Your Agent's<br>
+        <span class="text-shimmer">Visual Identity.</span>
       </h1>
 
       <p class="body-copy reveal reveal-d2">
-        Shumi crunches billions of data points across 15,000+ cryptocurrencies
-        and 1,700+ exchanges &mdash; price, trend, sentiment, and futures data in one answer.
+        Three physarum simulators &mdash; each a different lens on emergent swarm intelligence.
+        Sculpt parameters, explore seed personalities, and export your agent's signature pattern.
       </p>
 
       <div class="cta-row reveal reveal-d3">
-        <a href="#" class="btn-primary">
-          Ask Shumi Now
+        <a href="index.html" class="btn-primary">
+          Open Generator
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
         </a>
-        <a href="#" class="btn-outline">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
-          Watch Demo
+        <a href="https://github.com/haddencarpenter/shumi-physarum/tree/main/docs" target="_blank" rel="noopener" class="btn-outline">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Read the Docs
         </a>
       </div>
 
       <div class="trust reveal reveal-d4">
-        <div class="trust-item"><div class="trust-dot"></div><span>No KYC Required</span></div>
-        <div class="trust-item"><div class="trust-dot"></div><span>Non-Custodial</span></div>
-        <div class="trust-item"><div class="trust-dot"></div><span>100% Independent</span></div>
-        <div class="trust-item"><div class="trust-dot"></div><span>Free to Start</span></div>
+        <div class="trust-item"><div class="trust-dot"></div><span>No Install Required</span></div>
+        <div class="trust-item"><div class="trust-dot"></div><span>Deterministic Seeds</span></div>
+        <div class="trust-item"><div class="trust-dot"></div><span>PNG / WebM / GIF Export</span></div>
+        <div class="trust-item"><div class="trust-dot"></div><span>Open Source</span></div>
       </div>
+    </div>
+  </div>
+</section>
+
+<section class="simulators">
+  <h2>Three Simulators, One Engine</h2>
+  <p class="section-sub">Each version interprets the same swarm intelligence differently. Same seed, three distinct visual identities.</p>
+
+  <div class="sim-grid">
+    <div class="sim-card">
+      <h3>The Generator</h3>
+      <div class="sim-file">index.html</div>
+      <p>Full-control laboratory with 14 sliders, 8 color presets, and a recording studio. Sculpt every parameter of the swarm from scratch.</p>
+      <div class="sim-tags">
+        <span class="sim-tag">14 Sliders</span>
+        <span class="sim-tag">8 Palettes</span>
+        <span class="sim-tag">GIF Export</span>
+        <span class="sim-tag">1080p</span>
+        <span class="sim-tag">Batch Record</span>
+      </div>
+      <a href="index.html">
+        Launch Generator
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+
+    <div class="sim-card">
+      <h3>The Stencil</h3>
+      <div class="sim-file">stencil.html</div>
+      <p>Identity engine that layers physarum behind the mascot. Four formation modes, shareable URLs, and Web Worker performance.</p>
+      <div class="sim-tags">
+        <span class="sim-tag">4 Modes</span>
+        <span class="sim-tag">ASCII Art</span>
+        <span class="sim-tag">Share URL</span>
+        <span class="sim-tag">Web Worker</span>
+        <span class="sim-tag">Blast Effect</span>
+      </div>
+      <a href="stencil.html">
+        Launch Stencil
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+
+    <div class="sim-card">
+      <h3>The Masked</h3>
+      <div class="sim-file">masked.html</div>
+      <p>Minimal seed explorer. Each seed auto-selects from 8 palettes and 8 textures with per-seed color drift. Just click and discover.</p>
+      <div class="sim-tags">
+        <span class="sim-tag">8 Palettes</span>
+        <span class="sim-tag">8 Textures</span>
+        <span class="sim-tag">Auto Color</span>
+        <span class="sim-tag">Edge Detection</span>
+        <span class="sim-tag">Minimal UI</span>
+      </div>
+      <a href="masked.html">
+        Launch Masked
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
     </div>
   </div>
 </section>

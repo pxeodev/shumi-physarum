@@ -1,6 +1,13 @@
-# Controls Reference
+# The Generator — index.html
 
-Every parameter can be adjusted in real time via the sidebar sliders. Changes take effect immediately — the swarm adapts as you move each slider.
+The Generator is the full-control physarum laboratory. It exposes every parameter of the swarm simulation through a sidebar of sliders, giving you complete creative authority over cell behavior, signal chemistry, rendering, and color.
+
+**[Open the Generator →](https://haddencarpenter.github.io/shumi-physarum/index.html)**
+
+## Interface Layout
+
+- **Left sidebar** (300px) — All controls: seed navigation, swarm parameters, palette selection, and export tools
+- **Main canvas** (right) — The live swarm simulation at 16:9 aspect ratio
 
 ## Seed Navigation
 
@@ -63,12 +70,10 @@ These control the signal trail system that cells use to communicate and self-org
 
 ## Environment
 
-These control the world the swarm inhabits.
-
 ### Attractors
 - **Range:** 0 – 20 | **Default:** 12
 - **Sweet spot:** 6 – 15
-- Number of signal attractors placed around the canvas. Set to 0 for pure radial growth from center. Too many creates a cluttered pattern.
+- Number of signal attractors placed around the canvas. Set to 0 for pure radial growth from center.
 
 ### Attractor Strength
 - **Range:** 0 – 50 | **Default:** 15
@@ -87,21 +92,47 @@ These affect the visual output without changing the underlying swarm behavior.
 ### Trail Brightness
 - **Range:** 0.3 – 3.0 | **Default:** 1.8
 - **Sweet spot:** 1.2 – 2.5
-- Brightness multiplier for signal trails. Too dim below 1.0, blown out above 2.5.
+- Brightness multiplier for signal trails.
 
 ### Cell Glow
 - **Range:** 0.0 – 2.0 | **Default:** 0.5
 - **Sweet spot:** 0.2 – 0.8
-- Brightness of individual cell dots. At 0, cells are invisible (only trails show). Cells glow brighter at the frontier — the unexplored edge of the swarm.
+- Brightness of individual cell dots. Cells glow brighter at the frontier — the unexplored edge of the swarm.
 
 ### Cursor Influence
 - **Range:** 0 – 500 | **Default:** 0 (off)
 - **Sweet spot:** 0 for recording, 100–300 for interactive play
 - Radius within which the mouse cursor attracts cells. Set to 0 when recording.
 
-## Palettes
+## Color Presets
 
-See [Swarm Palettes](color-presets.md) for full details on the 8 built-in palettes and custom color options.
+The Generator includes 8 curated palettes. See [Swarm Palettes & Modes](palettes-and-modes.md) for full color details.
+
+| Preset | Character |
+|--------|-----------|
+| **Shumi Gold** *(default)* | Warm amber networks, burnt orange accents |
+| **Emerald** | Bioluminescent green, deep ocean |
+| **Violet** | Purple-magenta neural glow |
+| **Ice** | Cool blue, ethereal and minimal |
+| **Ember** | Fire and molten gold |
+| **Toxic** | Neon green, cyberpunk |
+| **Rose** | Pink-magenta, soft organic |
+| **Mono** | Grayscale, raw topology |
+
+Custom colors can be set via three color pickers: Signal Base, Signal Bright, and Hub Accent.
+
+## Export Options
+
+The Generator has the most complete export toolkit. See [Recording & Export](recording-and-export.md) for full details.
+
+| Feature | Description |
+|---------|-------------|
+| **Save PNG** | Snapshot of current frame |
+| **Record WebM** | VP9 video at 60fps / 8Mbps |
+| **Export GIF** | Animated loop, center-cropped square (128–720px) |
+| **Fullscreen 1080p** | Hides sidebar, records at 1080×1080 |
+| **Seed Preview** | Random seeds cycle every 4s, bookmark with Space |
+| **Batch Record** | Records all bookmarked seeds sequentially |
 
 ## Reset
 
