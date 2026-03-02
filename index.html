@@ -6,183 +6,219 @@
     <title>SHUMI Physarum — Mycelial Intelligence Network</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        :root { --d:#141413; --l:#faf9f5; --mg:#b0aea5; --lg:#e8e6dc; --o:#d97757; }
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:'Poppins',sans-serif; background:linear-gradient(135deg,var(--l),#f5f3ee); min-height:100vh; color:var(--d); }
-        .container { display:flex; height:100vh; padding:20px; gap:20px; overflow:hidden; }
-        .sidebar { width:300px; flex-shrink:0; background:rgba(255,255,255,.95); backdrop-filter:blur(10px); padding:20px; border-radius:12px; box-shadow:0 10px 30px rgba(20,20,19,.1); overflow-y:auto; overflow-x:hidden; }
-        .sidebar h1 { font-family:'Lora',serif; font-size:22px; font-weight:500; margin-bottom:6px; }
-        .sidebar .subtitle { color:var(--mg); font-size:13px; margin-bottom:24px; line-height:1.4; }
-        .cs { margin-bottom:22px; }
-        .cs h3 { font-size:14px; font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
-        .cs h3::before { content:'•'; color:var(--o); font-weight:bold; }
-        .si { width:100%; background:var(--l); padding:10px; border-radius:8px; font-family:'Courier New',monospace; font-size:13px; margin-bottom:10px; border:1px solid var(--lg); text-align:center; }
-        .si:focus { outline:none; border-color:var(--o); box-shadow:0 0 0 2px rgba(217,119,87,.1); background:#fff; }
-        .sc { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:6px; }
-        .cg { margin-bottom:14px; }
-        .cg label { display:block; font-size:12px; font-weight:500; margin-bottom:5px; }
-        .sl { display:flex; align-items:center; gap:8px; }
-        .sl input[type="range"] { flex:1; height:3px; background:var(--lg); border-radius:2px; outline:none; -webkit-appearance:none; }
-        .sl input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:13px; height:13px; background:var(--o); border-radius:50%; cursor:pointer; }
-        .sl input[type="range"]::-moz-range-thumb { width:13px; height:13px; background:var(--o); border-radius:50%; border:none; cursor:pointer; }
-        .vd { font-family:'Courier New',monospace; font-size:10px; color:var(--mg); min-width:40px; text-align:right; }
-        .clg { margin-bottom:12px; }
-        .clg label { display:block; font-size:11px; color:var(--mg); margin-bottom:3px; }
-        .cpc { display:flex; align-items:center; gap:6px; }
-        .cpc input[type="color"] { width:26px; height:26px; border:none; border-radius:5px; cursor:pointer; background:none; padding:0; }
-        .cv { font-family:'Courier New',monospace; font-size:10px; color:var(--mg); }
-        .btn { padding:8px 12px; border:1px solid var(--lg); background:#fff; border-radius:8px; cursor:pointer; font-family:'Poppins',sans-serif; font-size:11px; color:var(--d); transition:all .2s; text-align:center; }
-        .btn:hover { border-color:var(--o); color:var(--o); }
-        .br { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
-        .hint { font-size:9px; color:var(--mg); opacity:0.7; margin-top:2px; letter-spacing:0.2px; }
-        .ca { flex:1; display:flex; justify-content:center; align-items:center; border-radius:12px; overflow:hidden; background:#0D0D0D; }
-        #cc { position:relative; }
-        .ld { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:'Lora',serif; color:var(--mg); font-size:16px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0D0D0D; overflow: hidden; font-family: 'Courier New', monospace; color: #999; }
+        canvas { position: fixed; top: 0; left: 0; }
+
+        /* ── Settings Panel ── */
+        #settings-panel {
+            position: fixed; top: 0; left: 0; bottom: 0; width: 280px; z-index: 20;
+            background: rgba(13,13,13,0.92); backdrop-filter: blur(12px);
+            border-right: 1px solid #222; overflow-y: auto; overflow-x: hidden;
+            transform: translateX(-100%); transition: transform 0.3s ease;
+            font-family: 'Courier New', monospace; color: #999; font-size: 11px;
+            scrollbar-width: thin; scrollbar-color: #333 transparent;
+        }
+        #settings-panel.open { transform: translateX(0); }
+        #settings-panel::-webkit-scrollbar { width: 4px; }
+        #settings-panel::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+        .panel-inner { padding: 16px 14px 80px; }
+        .panel-section { margin-bottom: 16px; }
+        .panel-section h3 {
+            color: #D4A84B; font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+            margin: 0 0 10px; padding-bottom: 4px; border-bottom: 1px solid #222;
+        }
+        .panel-section h4 {
+            color: #777; font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+            margin: 12px 0 6px;
+        }
+        .sg { margin-bottom: 8px; }
+        .sg label { display: block; color: #888; font-size: 10px; margin-bottom: 2px; }
+        .sg .sl { display: flex; align-items: center; gap: 6px; }
+        .sg .sl input[type="range"] {
+            flex: 1; height: 3px; background: #222; border-radius: 2px; outline: none;
+            -webkit-appearance: none; cursor: pointer;
+        }
+        .sg .sl input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 11px; height: 11px; background: #D4A84B;
+            border-radius: 50%; cursor: pointer;
+        }
+        .sg .sl input[type="range"]::-moz-range-thumb {
+            width: 11px; height: 11px; background: #D4A84B; border-radius: 50%;
+            border: none; cursor: pointer;
+        }
+        .sg .vd { min-width: 38px; text-align: right; color: #D4A84B; font-size: 10px; }
+        .sc { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+        .clg { margin-bottom: 10px; }
+        .clg label { display: block; font-size: 10px; color: #888; margin-bottom: 3px; }
+        .cpc { display: flex; align-items: center; gap: 6px; }
+        .cpc input[type="color"] { width: 24px; height: 24px; border: 1px solid #333; border-radius: 4px; cursor: pointer; background: #111; padding: 0; }
+        .cv { font-size: 10px; color: #D4A84B; }
+        .si {
+            width: 100%; background: #111; padding: 8px; border-radius: 4px;
+            font-family: 'Courier New', monospace; font-size: 12px; margin-bottom: 8px;
+            border: 1px solid #333; color: #D4A84B; text-align: center;
+        }
+        .si:focus { outline: none; border-color: #D4A84B; box-shadow: 0 0 0 2px rgba(212,168,75,0.15); }
+        select.si { text-align: left; cursor: pointer; color: #D4A84B; }
+        select.si option { background: #111; color: #D4A84B; }
+        .hint { font-size: 9px; color: #555; opacity: 0.8; margin-top: 2px; letter-spacing: 0.2px; }
+
+        /* ── Toggle Button ── */
+        #toggle-panel {
+            position: fixed; top: 12px; left: 12px; z-index: 21;
+            padding: 6px 10px; border: 1px solid #333; background: rgba(13,13,13,0.85);
+            color: #D4A84B; font-family: 'Courier New', monospace; font-size: 11px;
+            cursor: pointer; border-radius: 4px; backdrop-filter: blur(8px);
+            transition: all 0.2s;
+        }
+        #toggle-panel:hover { border-color: #D4A84B; background: rgba(212,168,75,0.1); }
+
+        /* ── Bottom Controls Bar ── */
+        #controls {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 10px; z-index: 10;
+        }
+        .btn {
+            padding: 10px 20px; border: 1px solid #333; background: rgba(13,13,13,0.88);
+            color: #D4A84B; font-family: 'Courier New', monospace; font-size: 13px;
+            cursor: pointer; border-radius: 4px; transition: all 0.25s; backdrop-filter: blur(10px);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03);
+            text-align: center; text-decoration: none;
+        }
+        .btn:hover { border-color: #D4A84B; background: rgba(212,168,75,0.12); box-shadow: 0 2px 8px rgba(212,168,75,0.08), inset 0 1px 0 rgba(255,255,255,0.03); }
+        .btn.active { border-color: #ff4444; color: #ff4444; }
+        .btn-sm { font-size: 10px; padding: 6px 10px; }
+        .btn-panel { font-size: 10px; padding: 8px; width: 100%; }
+        .btn-preset { flex: 1; min-width: 55px; font-size: 9px; padding: 5px 8px; }
+        .panel-link { color: #888; font-size: 10px; text-decoration: none; transition: color 0.2s; }
+        .panel-link:hover { color: #D4A84B; }
+
+        /* ── Mobile ── */
+        @media (max-width: 768px) {
+            #settings-panel { width: 260px; font-size: 10px; }
+            .panel-inner { padding: 12px 10px 80px; }
+            #controls { bottom: 10px; gap: 6px; }
+            .btn { font-size: 11px; padding: 10px 14px; min-height: 40px; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="sidebar">
-            <h1>Physarum Transport</h1>
-            <p class="subtitle">A decentralized intelligence network self-organizes from a single origin point — independent agents deposit signal memory that forms emergent pathways, the same architecture biological networks use to solve routing without a central planner.</p>
+    <button id="toggle-panel" onclick="document.getElementById('settings-panel').classList.toggle('open')">☰ Settings</button>
 
-            <div class="cs">
+    <div id="settings-panel">
+        <div class="panel-inner">
+            <div class="panel-section">
                 <h3>Seed</h3>
                 <input type="text" class="si" id="seed-input" value="12345" onchange="updateSeed()">
                 <div class="sc">
-                    <button class="btn" onclick="previousSeed()">← Prev</button>
-                    <button class="btn" onclick="nextSeed()">Next →</button>
-                    <button class="btn" onclick="randomSeedAndUpdate()">Random</button>
-                    <button class="btn" onclick="updateSeed()">Jump</button>
+                    <button class="btn btn-sm" onclick="previousSeed()">← Prev</button>
+                    <button class="btn btn-sm" onclick="nextSeed()">Next →</button>
+                    <button class="btn btn-sm" onclick="randomSeedAndUpdate()">Random</button>
+                    <button class="btn btn-sm" onclick="updateSeed()">Jump</button>
                 </div>
             </div>
 
-            <div class="cs">
+            <div class="panel-section">
                 <h3>Colony</h3>
-                <div class="cg"><label>Agent Count</label><div class="sl"><input type="range" id="agentCount" min="500" max="8000" step="100" value="6000" oninput="U('agentCount',this.value)"><span class="vd" id="agentCount-v">6000</span></div><div class="hint">Sweet spot 4000–7000 · sparse below, sluggish above</div></div>
-                <div class="cg"><label>Speed</label><div class="sl"><input type="range" id="speed" min="0.5" max="30.0" step="0.1" value="2.8" oninput="UL('speed',this.value)"><span class="vd" id="speed-v">2.8</span></div><div class="hint">Sweet spot 2.0–3.5 · slow crawl vs chaotic scatter</div></div>
-                <div class="cg"><label>Sensor Distance</label><div class="sl"><input type="range" id="sensorDist" min="5" max="40" step="1" value="22" oninput="UL('sensorDist',this.value)"><span class="vd" id="sensorDist-v">22</span></div><div class="hint">Sweet spot 15–30 · tight spirals below, blobby above</div></div>
-                <div class="cg"><label>Sensor Angle</label><div class="sl"><input type="range" id="sensorAngle" min="10" max="80" step="1" value="40" oninput="UL('sensorAngle',this.value)"><span class="vd" id="sensorAngle-v">40</span></div><div class="hint">Sweet spot 30–55 · straight hyphae below, noise above</div></div>
-                <div class="cg"><label>Turn Speed</label><div class="sl"><input type="range" id="turnSpeed" min="5" max="60" step="1" value="20" oninput="UL('turnSpeed',this.value)"><span class="vd" id="turnSpeed-v">20</span></div><div class="hint">Sweet spot 12–30 · stiff/angular below, jittery above</div></div>
+                <div class="sg"><label>Agent Count</label><div class="sl"><input type="range" id="agentCount" min="500" max="8000" step="100" value="6000" oninput="U('agentCount',this.value)"><span class="vd" id="agentCount-v">6000</span></div></div>
+                <div class="sg"><label>Speed</label><div class="sl"><input type="range" id="speed" min="0.5" max="30.0" step="0.1" value="2.8" oninput="UL('speed',this.value)"><span class="vd" id="speed-v">2.8</span></div></div>
+                <div class="sg"><label>Sensor Distance</label><div class="sl"><input type="range" id="sensorDist" min="5" max="40" step="1" value="22" oninput="UL('sensorDist',this.value)"><span class="vd" id="sensorDist-v">22</span></div></div>
+                <div class="sg"><label>Sensor Angle</label><div class="sl"><input type="range" id="sensorAngle" min="10" max="80" step="1" value="40" oninput="UL('sensorAngle',this.value)"><span class="vd" id="sensorAngle-v">40</span></div></div>
+                <div class="sg"><label>Turn Speed</label><div class="sl"><input type="range" id="turnSpeed" min="5" max="60" step="1" value="20" oninput="UL('turnSpeed',this.value)"><span class="vd" id="turnSpeed-v">20</span></div></div>
             </div>
 
-            <div class="cs">
+            <div class="panel-section">
                 <h3>Chemistry</h3>
-                <div class="cg"><label>Deposit Strength</label><div class="sl"><input type="range" id="deposit" min="5" max="80" step="1" value="12" oninput="UL('deposit',this.value)"><span class="vd" id="deposit-v">12</span></div><div class="hint">Sweet spot 8–20 · invisible trails below, thick blobs above</div></div>
-                <div class="cg"><label>Decay Rate</label><div class="sl"><input type="range" id="decay" min="0.90" max="0.999" step="0.001" value="0.965" oninput="UL('decay',this.value)"><span class="vd" id="decay-v">0.965</span></div><div class="hint">Sweet spot 0.955–0.985 · trails vanish below, fill solid above</div></div>
-                <div class="cg"><label>Diffusion</label><div class="sl"><input type="range" id="diffusion" min="0.0" max="1.0" step="0.05" value="0.25" oninput="UL('diffusion',this.value)"><span class="vd" id="diffusion-v">0.25</span></div><div class="hint">Sweet spot 0.1–0.4 · pixel-sharp at 0, blurry mush above 0.6</div></div>
+                <div class="sg"><label>Deposit Strength</label><div class="sl"><input type="range" id="deposit" min="5" max="80" step="1" value="12" oninput="UL('deposit',this.value)"><span class="vd" id="deposit-v">12</span></div></div>
+                <div class="sg"><label>Decay Rate</label><div class="sl"><input type="range" id="decay" min="0.90" max="0.999" step="0.001" value="0.965" oninput="UL('decay',this.value)"><span class="vd" id="decay-v">0.965</span></div></div>
+                <div class="sg"><label>Diffusion</label><div class="sl"><input type="range" id="diffusion" min="0.0" max="1.0" step="0.05" value="0.25" oninput="UL('diffusion',this.value)"><span class="vd" id="diffusion-v">0.25</span></div></div>
             </div>
 
-            <div class="cs">
+            <div class="panel-section">
                 <h3>Environment</h3>
-                <div class="cg"><label>Nutrient Sources</label><div class="sl"><input type="range" id="foodCount" min="0" max="20" step="1" value="12" oninput="U('foodCount',this.value)"><span class="vd" id="foodCount-v">12</span></div><div class="hint">Sweet spot 6–15 · 0 = pure radial, too many = cluttered</div></div>
-                <div class="cg"><label>Nutrient Strength</label><div class="sl"><input type="range" id="foodStr" min="0" max="50" step="1" value="15" oninput="UL('foodStr',this.value)"><span class="vd" id="foodStr-v">15</span></div><div class="hint">Sweet spot 8–25 · too high and hyphae clump at sources</div></div>
-                <div class="cg"><label>Spawn Radius</label><div class="sl"><input type="range" id="spawnR" min="5" max="100" step="5" value="20" oninput="U('spawnR',this.value)"><span class="vd" id="spawnR-v">20</span></div><div class="hint">Sweet spot 5–25 · tight = clean burst, wide = diffuse start</div></div>
+                <div class="sg"><label>Nutrient Sources</label><div class="sl"><input type="range" id="foodCount" min="0" max="20" step="1" value="12" oninput="U('foodCount',this.value)"><span class="vd" id="foodCount-v">12</span></div></div>
+                <div class="sg"><label>Nutrient Strength</label><div class="sl"><input type="range" id="foodStr" min="0" max="50" step="1" value="15" oninput="UL('foodStr',this.value)"><span class="vd" id="foodStr-v">15</span></div></div>
+                <div class="sg"><label>Spawn Radius</label><div class="sl"><input type="range" id="spawnR" min="5" max="100" step="5" value="20" oninput="U('spawnR',this.value)"><span class="vd" id="spawnR-v">20</span></div></div>
             </div>
 
-            <div class="cs">
+            <div class="panel-section">
                 <h3>Rendering</h3>
-                <div class="cg"><label>Trail Brightness</label><div class="sl"><input type="range" id="trailBright" min="0.3" max="3.0" step="0.1" value="1.8" oninput="UL('trailBright',this.value)"><span class="vd" id="trailBright-v">1.8</span></div><div class="hint">Sweet spot 1.2–2.5 · too dim below, blown out above</div></div>
-                <div class="cg"><label>Agent Glow</label><div class="sl"><input type="range" id="agentGlow" min="0" max="2.0" step="0.1" value="0.5" oninput="UL('agentGlow',this.value)"><span class="vd" id="agentGlow-v">0.5</span></div><div class="hint">Sweet spot 0.2–0.8 · 0 = no dots, high = distracting sparkle</div></div>
-                <div class="cg"><label>Cursor Influence</label><div class="sl"><input type="range" id="cursorInf" min="0" max="500" step="10" value="0" oninput="UL('cursorInf',this.value)"><span class="vd" id="cursorInf-v">0</span></div><div class="hint">0 for recording · raise for interactive exploration</div></div>
+                <div class="sg"><label>Trail Brightness</label><div class="sl"><input type="range" id="trailBright" min="0.3" max="3.0" step="0.1" value="1.8" oninput="UL('trailBright',this.value)"><span class="vd" id="trailBright-v">1.8</span></div></div>
+                <div class="sg"><label>Agent Glow</label><div class="sl"><input type="range" id="agentGlow" min="0" max="2.0" step="0.1" value="0.5" oninput="UL('agentGlow',this.value)"><span class="vd" id="agentGlow-v">0.5</span></div></div>
+                <div class="sg"><label>Cursor Influence</label><div class="sl"><input type="range" id="cursorInf" min="0" max="500" step="10" value="0" oninput="UL('cursorInf',this.value)"><span class="vd" id="cursorInf-v">0</span></div></div>
             </div>
 
-            <div class="cs">
+            <div class="panel-section">
                 <h3>Colors</h3>
+                <h4>Presets</h4>
                 <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;">
-                    <button class="btn" onclick="applyPreset('gold')" style="flex:1;min-width:60px;font-size:10px;">Shumi Gold</button>
-                    <button class="btn" onclick="applyPreset('emerald')" style="flex:1;min-width:60px;font-size:10px;">Emerald</button>
-                    <button class="btn" onclick="applyPreset('violet')" style="flex:1;min-width:60px;font-size:10px;">Violet</button>
-                    <button class="btn" onclick="applyPreset('ice')" style="flex:1;min-width:60px;font-size:10px;">Ice</button>
-                    <button class="btn" onclick="applyPreset('ember')" style="flex:1;min-width:60px;font-size:10px;">Ember</button>
-                    <button class="btn" onclick="applyPreset('toxic')" style="flex:1;min-width:60px;font-size:10px;">Toxic</button>
-                    <button class="btn" onclick="applyPreset('rose')" style="flex:1;min-width:60px;font-size:10px;">Rose</button>
-                    <button class="btn" onclick="applyPreset('mono')" style="flex:1;min-width:60px;font-size:10px;">Mono</button>
+                    <button class="btn btn-preset" onclick="applyPreset('gold')">Gold</button>
+                    <button class="btn btn-preset" onclick="applyPreset('emerald')">Emerald</button>
+                    <button class="btn btn-preset" onclick="applyPreset('violet')">Violet</button>
+                    <button class="btn btn-preset" onclick="applyPreset('ice')">Ice</button>
+                    <button class="btn btn-preset" onclick="applyPreset('ember')">Ember</button>
+                    <button class="btn btn-preset" onclick="applyPreset('toxic')">Toxic</button>
+                    <button class="btn btn-preset" onclick="applyPreset('rose')">Rose</button>
+                    <button class="btn btn-preset" onclick="applyPreset('mono')">Mono</button>
                 </div>
+                <h4>Custom</h4>
                 <div class="clg"><label>Trail Base</label><div class="cpc"><input type="color" id="c1" value="#1A1408" onchange="UC('c1',this.value)"><span class="cv" id="c1-v">#1A1408</span></div></div>
                 <div class="clg"><label>Trail Bright</label><div class="cpc"><input type="color" id="c2" value="#D4A84B" onchange="UC('c2',this.value)"><span class="cv" id="c2-v">#D4A84B</span></div></div>
                 <div class="clg"><label>Hub / Hot</label><div class="cpc"><input type="color" id="c3" value="#D97757" onchange="UC('c3',this.value)"><span class="cv" id="c3-v">#D97757</span></div></div>
             </div>
 
-            <div class="cs">
-                <h3>Save</h3>
-                <div class="br">
-                    <button class="btn" onclick="exportImage()" style="font-weight:600;">Save PNG</button>
-                    <button class="btn" id="rec-btn" onclick="toggleRecord()" style="background:#1a1a1a;color:#e8e8e8;border-color:#333;font-weight:600;">● Record WebM</button>
-                </div>
-                <div style="margin-top:6px;">
-                    <button class="btn" onclick="resetParameters()" style="width:100%;">Reset All Parameters</button>
-                </div>
-                <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--lg);text-align:center;">
-                    <div style="font-size:11px;color:var(--mg);line-height:1.5;">Scroll down for batch recording, fullscreen 1080p capture, animated GIF export, and seed audition tools ↓</div>
-                </div>
-            </div>
-
-            <div class="cs">
+            <div class="panel-section">
                 <h3>Recording Studio</h3>
                 <div style="margin-bottom:8px;">
-                    <button class="btn" id="audition-btn" onclick="auditionSeeds()" style="width:100%;">⚡ Preview Seeds</button>
+                    <button class="btn btn-panel" id="audition-btn" onclick="auditionSeeds()">Preview Seeds</button>
                 </div>
-                <div class="sl" style="margin-bottom:6px;">
-                    <label style="font-size:11px;min-width:65px;">Clip Length</label>
-                    <input type="range" id="clipLen" min="5" max="60" step="5" value="15" oninput="document.getElementById('clipLen-v').textContent=this.value+'s'">
-                    <span class="vd" id="clipLen-v">15s</span>
-                </div>
+                <div class="sg"><label>Clip Length</label><div class="sl"><input type="range" id="clipLen" min="5" max="60" step="5" value="15" oninput="document.getElementById('clipLen-v').textContent=this.value+'s'"><span class="vd" id="clipLen-v">15s</span></div></div>
                 <div style="margin-bottom:6px;">
-                    <button class="btn" id="batch-btn" onclick="batchRecord()" style="width:100%;background:#0D0D0D;color:#39FF14;border-color:#39FF14;">🎬 Batch Record Bookmarks</button>
+                    <button class="btn btn-panel" id="batch-btn" onclick="batchRecord()" style="color:#39FF14;border-color:#39FF14;">Batch Record Bookmarks</button>
                 </div>
-                <div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--lg);">
-                    <button class="btn" id="fs-rec-btn" onclick="fullscreenRecord()" style="width:100%;background:#0D0D0D;color:#FFD700;border-color:#FFD700;font-weight:600;padding:10px 12px;">🖥 Fullscreen Record (1080p)</button>
-                    <div style="margin-top:4px;font-size:10px;color:var(--mg);text-align:center;">Hides UI, resizes to 1080x1080, records current seed</div>
+                <div style="margin-top:6px;padding-top:6px;border-top:1px solid #222;">
+                    <button class="btn btn-panel" id="fs-rec-btn" onclick="fullscreenRecord()" style="color:#FFD700;border-color:#FFD700;">Fullscreen 1080p Record</button>
+                    <div style="margin-top:4px;font-size:9px;color:#555;text-align:center;">Hides UI, resizes to 1920x1080, records current seed</div>
                 </div>
-                <div id="batch-status" style="margin-top:6px;font-size:11px;color:#39FF14;line-height:1.6;"></div>
-                <div id="audition-results" style="margin-top:6px;font-size:11px;color:var(--mg);line-height:1.6;"></div>
+                <div id="batch-status" style="margin-top:6px;font-size:10px;color:#39FF14;line-height:1.5;"></div>
+                <div id="audition-results" style="margin-top:6px;font-size:10px;color:#888;line-height:1.5;"></div>
             </div>
 
-            <div class="cs">
+            <div class="panel-section">
                 <h3>Export GIF</h3>
-                <div class="cg"><label>Size</label>
-                    <select id="gif-size" class="si" style="text-align:left;cursor:pointer;">
-                        <option value="128">128 x 128 — Favicon / Tiny</option>
+                <div class="sg"><label>Size</label>
+                    <select id="gif-size" class="si">
+                        <option value="128">128 x 128 — Favicon</option>
                         <option value="256" selected>256 x 256 — Avatar</option>
-                        <option value="480">480 x 480 — Profile Pic</option>
-                        <option value="720">720 x 720 — Social Post</option>
+                        <option value="480">480 x 480 — Profile</option>
+                        <option value="720">720 x 720 — Social</option>
                     </select>
                 </div>
-                <div class="cg"><label>Duration</label>
-                    <div class="sl">
-                        <input type="range" id="gifDur" min="2" max="15" step="1" value="4" oninput="document.getElementById('gifDur-v').textContent=this.value+'s'">
-                        <span class="vd" id="gifDur-v">4s</span>
-                    </div>
-                    <div class="hint">Shorter = smaller file · 3–5s loops best for avatars</div>
-                </div>
-                <div class="cg"><label>FPS</label>
-                    <div class="sl">
-                        <input type="range" id="gifFps" min="8" max="30" step="2" value="16" oninput="document.getElementById('gifFps-v').textContent=this.value">
-                        <span class="vd" id="gifFps-v">16</span>
-                    </div>
-                    <div class="hint">Sweet spot 12–20 · higher = smoother but larger file</div>
-                </div>
-                <button class="btn" id="gif-btn" onclick="exportGif()" style="width:100%;background:#1a1a1a;color:#FFD700;border-color:#FFD700;font-weight:600;padding:10px 12px;margin-top:4px;">✦ Export GIF</button>
-                <div id="gif-status" style="margin-top:6px;font-size:11px;color:#FFD700;line-height:1.6;text-align:center;"></div>
+                <div class="sg"><label>Duration</label><div class="sl"><input type="range" id="gifDur" min="2" max="15" step="1" value="4" oninput="document.getElementById('gifDur-v').textContent=this.value+'s'"><span class="vd" id="gifDur-v">4s</span></div></div>
+                <div class="sg"><label>FPS</label><div class="sl"><input type="range" id="gifFps" min="8" max="30" step="2" value="16" oninput="document.getElementById('gifFps-v').textContent=this.value"><span class="vd" id="gifFps-v">16</span></div></div>
+                <button class="btn btn-panel" id="gif-btn" onclick="exportGif()" style="color:#FFD700;border-color:#FFD700;margin-top:4px;">Export GIF</button>
+                <div id="gif-status" style="margin-top:6px;font-size:10px;color:#FFD700;line-height:1.5;text-align:center;"></div>
             </div>
 
-            <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--lg);text-align:center;">
-                <a href="https://coinrotator.gitbook.io/coinrotator-docs/physarum-generator/" target="_blank" rel="noopener" style="color:var(--mg);font-size:12px;text-decoration:none;display:inline-flex;align-items:center;gap:4px;" onmouseover="this.style.color='var(--o)'" onmouseout="this.style.color='var(--mg)'">? Docs & Help</a>
-                <span style="color:var(--lg);margin:0 6px;">·</span>
-                <a href="https://shumi.ai" target="_blank" rel="noopener" style="color:var(--mg);font-size:12px;text-decoration:none;" onmouseover="this.style.color='var(--o)'" onmouseout="this.style.color='var(--mg)'">shumi.ai</a>
+            <div class="panel-section">
+                <button class="btn btn-panel" onclick="resetParameters()">Reset All Parameters</button>
             </div>
-        </div>
 
-        <div class="ca">
-            <div id="cc">
-                <div class="ld">Spawning physarum colony...</div>
+            <div style="padding-top:10px;border-top:1px solid #222;text-align:center;">
+                <a href="https://coinrotator.gitbook.io/coinrotator-docs/physarum-generator/" target="_blank" rel="noopener" class="panel-link">Docs & Help</a>
+                <span style="color:#333;margin:0 6px;">·</span>
+                <a href="https://shumi.ai" target="_blank" rel="noopener" class="panel-link">shumi.ai</a>
             </div>
         </div>
+    </div>
+
+    <div id="controls">
+        <button class="btn" onclick="randomSeedAndUpdate()">New Seed</button>
+        <button class="btn" id="rec-btn" onclick="toggleRecord()">● Record</button>
+        <button class="btn" onclick="exportImage()">Save PNG</button>
+        <a href="https://coinrotator.gitbook.io/coinrotator-docs/physarum-generator/" target="_blank" rel="noopener" class="btn">? Docs</a>
     </div>
 
     <script>
@@ -219,6 +255,7 @@
     let agents = [];
     let trail;          // Float32Array — the chemical trail map
     let trailPrev;      // Double buffer for diffusion
+    let ndMap;          // Float32Array — precomputed normalized radial distance from center
     let foods = [];
     let W, H;           // canvas width, height
     let S;              // kept for compat — set to W inside init
@@ -431,7 +468,6 @@
         let bright = h2r(P.colors[1]);
         let hot = h2r(P.colors[2]);
         let tb = P.trailBright;
-        let maxDist = sqrt(W * W + H * H) * 0.5;
 
         loadPixels();
         for (let y = 0; y < H; y++) {
@@ -439,10 +475,7 @@
                 let idx = y * W + x;
                 let v = trail[idx] / 255;
 
-                let dx = x - cx, dy = y - cy;
-                let nd = sqrt(dx * dx + dy * dy) / maxDist;
-                nd = min(nd, 1);
-
+                let nd = ndMap[idx];
                 let centerW = pow(max(0, 1 - nd), 2) * 0.3;
                 let intensity = min(v * tb, 1);
 
@@ -528,26 +561,17 @@
     // ═══════════════════════════════════════════════════════════════
 
     function setup() {
-        // Fit a 16:9 rectangle in the available space
-        let availW = windowWidth - 360;
-        let availH = windowHeight - 40;
-        W = floor(min(availW, availH * (16/9)) / 2) * 2;
-        H = floor(W * 9 / 16 / 2) * 2;
-        W = max(W, 640); H = max(H, 360);
-        S = W; // compat alias for x-dimension in rendering
-        let c = createCanvas(W, H);
-        c.parent('cc');
-        document.querySelector('.ld').style.display = 'none';
+        W = windowWidth;
+        H = windowHeight;
+        S = W;
+        createCanvas(W, H);
         pixelDensity(1);
         init();
     }
 
     function windowResized() {
-        let availW = windowWidth - 360;
-        let availH = windowHeight - 40;
-        W = floor(min(availW, availH * (16/9)) / 2) * 2;
-        H = floor(W * 9 / 16 / 2) * 2;
-        W = max(W, 640); H = max(H, 360);
+        W = windowWidth;
+        H = windowHeight;
         S = W;
         resizeCanvas(W, H);
         pixelDensity(1);
@@ -566,6 +590,17 @@
         // Initialize trail buffers
         trail = new Float32Array(W * H);
         trailPrev = new Float32Array(W * H);
+
+        // Precompute radial distance map (avoids sqrt per pixel per frame in renderTrail)
+        ndMap = new Float32Array(W * H);
+        let maxDist = Math.sqrt(W * W + H * H) * 0.5;
+        for (let y = 0; y < H; y++) {
+            for (let x = 0; x < W; x++) {
+                let dx = x - cx, dy = y - cy;
+                let nd = Math.sqrt(dx * dx + dy * dy) / maxDist;
+                ndMap[y * W + x] = nd < 1 ? nd : 1;
+            }
+        }
 
         // Seed the center with a small trail deposit to get things started
         for (let dy = -P.spawnR; dy <= P.spawnR; dy++) {
@@ -794,9 +829,8 @@
         isRecording = true;
 
         let btn = document.getElementById('rec-btn');
-        btn.textContent = '■ Stop Recording';
-        btn.style.background = '#E74C3C';
-        btn.style.borderColor = '#E74C3C';
+        btn.textContent = '■ Stop';
+        btn.classList.add('active');
     }
 
     function stopRecord() {
@@ -806,9 +840,8 @@
         isRecording = false;
 
         let btn = document.getElementById('rec-btn');
-        btn.textContent = '● Record WebM';
-        btn.style.background = '#1a1a1a';
-        btn.style.borderColor = '#333';
+        btn.textContent = '● Record';
+        btn.classList.remove('active');
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -1143,15 +1176,10 @@
 
         let btn = document.getElementById('fs-rec-btn');
 
-        // Hide sidebar, expand canvas
-        let sidebar = document.querySelector('.sidebar');
-        let container = document.querySelector('.container');
-        let canvasArea = document.querySelector('.ca');
-
-        sidebar.style.display = 'none';
-        container.style.padding = '0';
-        container.style.gap = '0';
-        canvasArea.style.borderRadius = '0';
+        // Hide UI chrome for fullscreen recording
+        document.getElementById('toggle-panel').style.display = 'none';
+        document.getElementById('settings-panel').classList.remove('open');
+        document.getElementById('controls').style.display = 'none';
         document.body.style.overflow = 'hidden';
 
         // Resize to 1080
@@ -1160,7 +1188,8 @@
         pixelDensity(1);
         fsHideSeedLabel = true;
 
-        // Patch draw to hide seed label
+        // Save original draw and patch to hide seed label
+        _origDraw = window.draw;
         window.draw = function() {
             fc++;
             mxS = lerp(mxS, mouseX, 0.06);
@@ -1202,12 +1231,11 @@
 
     function processNextFsSeed() {
         if (fsSeedQueue.length === 0) {
-            // All done — restore UI
+            // All done — restore UI and original draw loop
             fsHideSeedLabel = false;
-            document.querySelector('.sidebar').style.display = '';
-            document.querySelector('.container').style.padding = '';
-            document.querySelector('.container').style.gap = '';
-            document.querySelector('.ca').style.borderRadius = '';
+            if (_origDraw) { window.draw = _origDraw; _origDraw = null; }
+            document.getElementById('toggle-panel').style.display = '';
+            document.getElementById('controls').style.display = '';
             document.body.style.overflow = '';
             windowResized();
 
