@@ -798,7 +798,7 @@ function initAll() {
     buildGhost();
 
     // BG sim
-    bgCx = VW / 2; bgCy = IS_LP ? VH * 0.32 : VH / 2; bgFc = 0;
+    bgCx = VW / 2; bgCy = IS_LP ? (IS_MOBILE ? VH * 0.25 : VH * 0.32) : VH / 2; bgFc = 0;
     bgAgents = [];
     bgTrail = new Float32Array(VW * VH);
     bgTrailPrev = new Float32Array(VW * VH);
