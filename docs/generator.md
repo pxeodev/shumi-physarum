@@ -1,4 +1,4 @@
-# The Generator — index.html
+# The Generator (index.html)
 
 The Generator is the full-control physarum laboratory. It exposes every parameter of the swarm simulation through a sidebar of sliders, giving you complete creative authority over cell behavior, signal chemistry, rendering, and color.
 
@@ -6,8 +6,8 @@ The Generator is the full-control physarum laboratory. It exposes every paramete
 
 ## Interface Layout
 
-- **Left sidebar** (300px) — All controls: seed navigation, swarm parameters, palette selection, and export tools
-- **Main canvas** (right) — The live swarm simulation at 16:9 aspect ratio
+- **Left sidebar** (300px): All controls: seed navigation, swarm parameters, palette selection, and export tools
+- **Main canvas** (right): The live swarm simulation at 16:9 aspect ratio
 
 ## Seed Navigation
 
@@ -18,11 +18,11 @@ The Generator is the full-control physarum laboratory. It exposes every paramete
 | Random | Jump to a random seed (1–999,999) |
 | Jump | Apply the seed currently typed in the input |
 
-Changing the seed resets the simulation — new cell positions, new attractor placement, and a fresh signal map.
+Changing the seed resets the simulation: new cell positions, new attractor placement, and a fresh signal map.
 
 ## Colony Parameters
 
-These control the swarm cells — how many, how fast, and how they navigate.
+These control the swarm cells: how many, how fast, and how they navigate.
 
 ### Cell Count
 - **Range:** 500 – 8,000 | **Default:** 6,000
@@ -97,7 +97,7 @@ These affect the visual output without changing the underlying swarm behavior.
 ### Cell Glow
 - **Range:** 0.0 – 2.0 | **Default:** 0.5
 - **Sweet spot:** 0.2 – 0.8
-- Brightness of individual cell dots. Cells glow brighter at the frontier — the unexplored edge of the swarm.
+- Brightness of individual cell dots. Cells glow brighter at the frontier, the unexplored edge of the swarm.
 
 ### Cursor Influence
 - **Range:** 0 – 500 | **Default:** 0 (off)

@@ -18,7 +18,7 @@
 
 ### Option 1: Live on GitHub Pages
 
-Click any link above — every simulator runs entirely in your browser.
+Click any link above. Every simulator runs entirely in your browser.
 
 ### Option 2: Run Locally
 
@@ -26,7 +26,7 @@ Clone or download the repository and open `index.html`, `stencil.html`, or `mask
 
 ## Quick Start: The Generator
 
-1. Open `index.html` — the swarm starts growing immediately with seed `12345`
+1. Open `index.html`. The swarm starts growing immediately with seed `12345`.
 2. Click **Random** to discover new patterns
 3. Adjust the sidebar sliders to shape the swarm's behavior
 4. Hit **Save PNG** or **Record WebM** to capture your pattern
@@ -49,21 +49,21 @@ Clone or download the repository and open `index.html`, `stencil.html`, or `mask
 
 ## Quick Start: The Stencil
 
-1. Open `stencil.html` — the swarm grows behind the mascot automatically
+1. Open `stencil.html`. The swarm grows behind the mascot automatically.
 2. Use **1 2 3 4** keys (or buttons, top-right) to switch formation modes
-3. Press and hold **Space** for a dramatic blast reveal
+3. Press and hold **Space** for a full-intensity blast reveal
 4. Open **☰ Settings** (top-left) to fine-tune parameters
 5. Click **Share** to copy a shareable URL
 
 ## Quick Start: The Masked
 
-1. Open `masked.html` — a random seed loads automatically
+1. Open `masked.html`. A random seed loads automatically.
 2. Click **New Seed** to explore different palette/texture combinations
-3. Each seed selects its own palette and texture — just keep clicking
+3. Each seed selects its own palette and texture, so just keep clicking
 4. Click **Save PNG** or **● Record** to capture
 
 ## Sharing Your Seed
 
 Every swarm is fully reproducible. In the Generator and Masked, share the seed number. In the Stencil, use the **Share** button to copy a URL that encodes the seed, formation mode, and key settings.
 
-The same seed number produces different (but related) visuals across the three simulators — the underlying random sequence is shared, but each version interprets it differently.
+The same seed number produces different (but related) visuals across the three simulators. The underlying random sequence is shared, but each version interprets it differently.

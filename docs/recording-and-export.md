@@ -10,10 +10,10 @@ All three simulators support PNG snapshots and WebM video recording. The Generat
 |---------|-----------|---------|--------|
 | **Save PNG** | Yes | Yes | Yes |
 | **Record WebM** | Yes | Yes | Yes |
-| **Export GIF** | Yes | — | — |
-| **Fullscreen 1080p** | Yes | — | — |
-| **Batch Record** | Yes | — | — |
-| **Share URL** | — | Yes | — |
+| **Export GIF** | Yes | No | No |
+| **Fullscreen 1080p** | Yes | No | No |
+| **Batch Record** | Yes | No | No |
+| **Share URL** | No | Yes | No |
 
 ---
 
@@ -29,7 +29,7 @@ Available in all three simulators via the **Save PNG** button.
 
 ### Stencil & Masked Compositing
 
-In the Stencil and Masked, PNG capture composites all visible layers (background swarm, ghost afterimage, mascot physarum) into a single image — what you see is what you get.
+In the Stencil and Masked, PNG capture composites all visible layers (background swarm, ghost afterimage, mascot physarum) into a single image. What you see is what you get.
 
 ---
 
@@ -62,7 +62,7 @@ The GIF exporter captures the live swarm, center-crops to a square, and encodes 
 
 | Setting | Range | Default | Notes |
 |---------|-------|---------|-------|
-| Size | 128 – 720 px | 256px | Square output — perfect for avatars |
+| Size | 128 – 720 px | 256px | Square output, suitable for avatars |
 | Duration | 2 – 15 seconds | 4s | Shorter = smaller file size |
 | FPS | 8 – 30 | 16 | Sweet spot 12–20 |
 
@@ -87,7 +87,7 @@ The GIF exporter captures the live swarm, center-crops to a square, and encodes 
 
 ## Fullscreen 1080p Recording (Generator Only)
 
-Click **Fullscreen Record (1080p)** for cinematic quality.
+Click **Fullscreen Record (1080p)** for 1080p output.
 
 - Hides the sidebar, resizes canvas to 1080 × 1080
 - Hub stays at 35% from top (designed for hero backgrounds)
@@ -103,7 +103,7 @@ Click **Fullscreen Record (1080p)** for cinematic quality.
 
 The fastest way to find your perfect swarm:
 
-1. Click **Preview Seeds** — random seeds cycle every 4 seconds
+1. Click **Preview Seeds**. Random seeds cycle every 4 seconds.
 2. Press **Space** to bookmark the current seed (max 10)
 3. Canvas border flashes green on bookmark
 4. Click **Stop Preview** when done

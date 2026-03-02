@@ -10,7 +10,7 @@ Parameter combinations and workflow tips across all three simulators.
 - Chrome gives the best canvas rendering performance
 - The Stencil's Web Worker architecture performs best in Chrome (requires `OffscreenCanvas`)
 - Cell counts above 7,000 in the Generator may slow down on older hardware
-- GIF encoding is CPU-intensive — larger sizes take longer
+- GIF encoding is CPU-intensive. Larger sizes take longer.
 - The simulation runs 4 physics steps per frame for visible growth speed
 
 ### Recording
@@ -29,7 +29,7 @@ Parameter combinations and workflow tips across all three simulators.
 ## Generator Recipes
 
 ### Dense Neural Web
-A tight, intricate network with fine branching — the classic Shumi look.
+A tight, intricate network with fine branching. The default Shumi look.
 
 | Parameter | Value |
 |-----------|-------|
@@ -59,7 +59,7 @@ Long, elegant reaching paths with minimal branching.
 | Attractors | 4 |
 
 ### Pure Radial Burst
-Clean explosion from center — symmetrical, meditative.
+Clean explosion from center, symmetrical and even.
 
 | Parameter | Value |
 |-----------|-------|
@@ -74,7 +74,7 @@ Clean explosion from center — symmetrical, meditative.
 | Attractors | 0 |
 
 ### Thick Luminous Vines
-Bold, bright paths — high-energy, maximum presence.
+Bold, bright paths with high deposit and slow decay.
 
 | Parameter | Value |
 |-----------|-------|
@@ -121,13 +121,13 @@ Optimized for small looping animated avatars.
 
 ## Stencil Recipes
 
-### Dramatic Entrance
+### High-Contrast Entrance
 Maximize the blast-on-load reveal effect.
 
 1. Set Master Opacity to **0.8** or higher
 2. Use Mode **1 (Ramp)** for maximum ASCII contrast
 3. Press **Space** to re-trigger the blast at any time
-4. Record during the blast for a dramatic reveal clip
+4. Record during the blast for a high-contrast reveal clip
 
 ### Sharp Edge Definition
 Make the mascot boundary crisp and well-defined.
@@ -212,5 +212,5 @@ The ghost layer appears on each new seed and fades over ~4 seconds. For the best
 | **PNG** | Static avatars, print, social posts | 1–3 MB | All three |
 | **WebM** | Hero backgrounds, looping video | 5–20 MB / 15s | All three |
 | **GIF** | Animated avatars, chat profiles | 0.5–5 MB | Generator only |
-| **Fullscreen 1080p** | Website hero sections, cinematic | 10–30 MB / 15s | Generator only |
-| **Share URL** | Reproducible compositions | — | Stencil only |
+| **Fullscreen 1080p** | Website hero sections, high resolution | 10–30 MB / 15s | Generator only |
+| **Share URL** | Reproducible compositions | N/A | Stencil only |

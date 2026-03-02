@@ -1,6 +1,6 @@
-# The Stencil — stencil.html
+# The Stencil (stencil.html)
 
-The Stencil layers the physarum swarm behind and through the Shumi mascot — creating compositions where organic signal networks grow around a centered image. This is the identity engine for Shumi agent avatars.
+The Stencil layers the physarum swarm behind and through the Shumi mascot, creating compositions where organic signal networks grow around a centered image. This is the identity engine for Shumi agent avatars.
 
 **[Open the Stencil →](https://haddencarpenter.github.io/shumi-physarum/stencil.html)**
 
@@ -8,8 +8,8 @@ The Stencil layers the physarum swarm behind and through the Shumi mascot — cr
 
 The Stencil runs two simultaneous physarum simulations:
 
-1. **Background network** — A full-viewport swarm that fills the canvas behind the mascot
-2. **Mascot physarum** — A second swarm constrained to the mascot's shape via edge detection and density mapping
+1. **Background network**: A full-viewport swarm that fills the canvas behind the mascot
+2. **Mascot physarum**: A second swarm constrained to the mascot's shape via edge detection and density mapping
 
 The mascot art fades in with a chromatic aberration entrance animation. A ghost afterimage (retinal-burn effect) provides depth, and the mascot "breathes" with a subtle scale pulse.
 
@@ -19,7 +19,7 @@ The Stencil offers four formation modes, selected via buttons in the top-right c
 
 ### Mode 1: Ramp *(Default)*
 
-ASCII art rendering. Trail intensity maps to a character ramp (`·:;=+*#%@`) — low density gets dots, high density gets dense characters. The result pulses with brightness oscillation. This is the classic Shumi stencil look.
+ASCII art rendering. Trail intensity maps to a character ramp (`·:;=+*#%@`). Low density gets dots, high density gets dense characters. The result pulses with brightness oscillation. This is the default Shumi stencil look.
 
 ### Mode 2: Code
 
@@ -81,13 +81,13 @@ If `OffscreenCanvas` isn't available, it falls back to a legacy single-thread pa
 
 ## Spacebar Blast
 
-Press and hold **Space** (or long-press/touch on mobile) to trigger a blast effect. This temporarily maxes out stencil opacity and trail brightness, creating a dramatic reveal of the mascot. Release to fade back to normal.
+Press and hold **Space** (or long-press/touch on mobile) to trigger a blast effect. This temporarily maxes out stencil opacity and trail brightness, creating a high-contrast reveal of the mascot. Release to fade back to normal.
 
 The blast also fires automatically on page load as an entrance effect.
 
 ## LP Mode
 
-Add `?lp` to the URL to enable Landing Page mode. This hides all UI controls (settings, mode buttons, bottom bar, watermark) and positions the mascot higher on the viewport — designed for embedding as an iframe hero background in landing pages (used by `demo.html`).
+Add `?lp` to the URL to enable Landing Page mode. This hides all UI controls (settings, mode buttons, bottom bar, watermark) and positions the mascot higher on the viewport. Designed for embedding as an iframe hero background in landing pages (used by `demo.html`).
 
 ## Share URL System
 
@@ -105,7 +105,7 @@ The URL updates automatically as you change settings. Recipients see the exact s
 
 ## Palettes & Textures
 
-The Stencil uses 8 palettes (Ember, Frost, Moss, Pearl, Bloom, Honey, Tide, Rust) and 8 texture profiles (standard, crystalline, smoke, coral, silk, electric, flow, spore). Both are selected deterministically by seed — see [Swarm Palettes & Modes](palettes-and-modes.md) for details.
+The Stencil uses 8 palettes (Ember, Frost, Moss, Pearl, Bloom, Honey, Tide, Rust) and 8 texture profiles (standard, crystalline, smoke, coral, silk, electric, flow, spore). Both are selected deterministically by seed. See [Swarm Palettes & Modes](palettes-and-modes.md) for details.
 
 ## Controls Summary
 

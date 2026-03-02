@@ -4,14 +4,14 @@ Each simulator has its own palette and mode system. This page is the unified ref
 
 ---
 
-## The Generator — 8 Color Presets
+## The Generator: 8 Color Presets
 
 The Generator uses a three-stop color system. Every pixel interpolates between these stops based on signal intensity and distance from the hub.
 
 | Stop | Purpose |
 |------|---------|
-| **Signal Base** | Darkest tone — faint trails, quiet zones |
-| **Signal Bright** | Primary network color — well-traveled paths |
+| **Signal Base** | Darkest tone, faint trails, quiet zones |
+| **Signal Bright** | Primary network color, well-traveled paths |
 | **Hub Accent** | Blended into the central hub and highest-intensity areas |
 
 ### Preset Table
@@ -30,14 +30,14 @@ The Generator uses a three-stop color system. Every pixel interpolates between t
 ### Custom Palettes
 
 Click any of the three color pickers to define custom colors. Tips:
-- Keep **Signal Base** very dark (near black) — it forms the void between trails
-- **Signal Bright** is the star — choose the most saturated, distinctive color first
-- **Hub Accent** appears only at the center — use it as a contrast pop
+- Keep **Signal Base** very dark (near black). It forms the void between trails.
+- **Signal Bright** is the primary color. Choose the most saturated, distinctive color first.
+- **Hub Accent** appears only at the center. Use it as a contrast pop.
 - High contrast between Base and Bright produces the most legible networks
 
 ---
 
-## The Stencil — 8 Palettes × 4 Formation Modes
+## The Stencil: 8 Palettes x 4 Formation Modes
 
 ### Palettes
 
@@ -82,7 +82,7 @@ Both the Stencil and the Masked share the same 8 texture profiles (selected by `
 
 ---
 
-## The Masked — Fully Automatic
+## The Masked: Fully Automatic
 
 The Masked has no manual palette or mode controls. Everything is seed-determined:
 
@@ -97,7 +97,7 @@ This gives 64 base combinations (8 palettes × 8 textures), each with infinite c
 
 ## Same Seed, Three Looks
 
-The same seed number will select the same palette and texture in the Stencil and the Masked — but the Generator uses its own independent color presets. The visual result differs because:
+The same seed number will select the same palette and texture in the Stencil and the Masked, but the Generator uses its own independent color presets. The visual result differs because:
 
 | | Generator | Stencil | Masked |
 |---|---|---|---|

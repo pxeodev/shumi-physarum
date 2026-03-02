@@ -1,6 +1,6 @@
-# The Masked — masked.html
+# The Masked (masked.html)
 
-The Masked is the minimal seed explorer. No sidebars, no sliders — just the swarm, the mascot, and three buttons. Each seed deterministically selects a palette and texture profile, with per-seed color drift creating infinite variation within each family.
+The Masked is the minimal seed explorer. No sidebars, no sliders: just the swarm, the mascot, and three buttons. Each seed deterministically selects a palette and texture profile, with per-seed color drift creating infinite variation within each family.
 
 **[Open the Masked →](https://haddencarpenter.github.io/shumi-physarum/masked.html)**
 
@@ -8,12 +8,12 @@ The Masked is the minimal seed explorer. No sidebars, no sliders — just the sw
 
 The Masked runs two physarum simulations (background + mascot), just like the Stencil, but with a fully automated parameter system. Instead of manual controls, the seed number determines everything:
 
-1. **Palette selection** — `seed % 8` picks from 8 color palettes
-2. **Texture selection** — `Math.floor(seed / 8) % 8` picks from 8 texture profiles
-3. **Color drift** — Per-seed PRNG applies subtle hue, saturation, and luminance shifts within the selected palette
-4. **Parameter jitter** — Each simulation parameter gets a ±10% seed-based variation within its texture profile
+1. **Palette selection**: `seed % 8` picks from 8 color palettes
+2. **Texture selection**: `Math.floor(seed / 8) % 8` picks from 8 texture profiles
+3. **Color drift**: Per-seed PRNG applies subtle hue, saturation, and luminance shifts within the selected palette
+4. **Parameter jitter**: Each simulation parameter gets a ±10% seed-based variation within its texture profile
 
-This means every seed has a unique personality — not just different positions, but different colors and behavioral character.
+This means every seed has a unique look, not just different positions, but different colors and behavioral character.
 
 ## The 8 Palettes
 
@@ -21,7 +21,7 @@ Each palette defines three color stops for the mascot trails and three for the b
 
 | Palette | Mascot Colors | Character |
 |---------|--------------|-----------|
-| **Ember** | Dark brown → Gold → Warm orange | The signature Shumi warmth |
+| **Ember** | Dark brown → Gold → Warm orange | Default Shumi warmth |
 | **Frost** | Dark blue → Sky blue → Ice blue | Ethereal, cold intelligence |
 | **Moss** | Dark green → Lime → Pale green | Organic, bioluminescent growth |
 | **Pearl** | Dark gray → Warm gray → Off-white | Minimal, elegant, neutral |
@@ -32,18 +32,18 @@ Each palette defines three color stops for the mascot trails and three for the b
 
 ## The 8 Textures
 
-Textures define the behavioral character — how fast cells move, how trails diffuse, and how much structure vs. haze the swarm produces.
+Textures define the behavioral character: how fast cells move, how trails diffuse, and how much structure vs. haze the swarm produces.
 
 | Texture | Character | Key Traits |
 |---------|-----------|-----------|
-| **Standard** | Warm, steady glow | Medium everything — the baseline |
-| **Crystalline** | Sharp defined veins | Low diffusion, high deposit — gem-like facets |
-| **Smoke** | Soft ghostly haze | High diffusion, low deposit — trails dissolve |
-| **Coral** | Dense branching networks | Slow speed, wide sensing — organic growth |
-| **Silk** | Thin delicate threads | Fast speed, quick fade — silk in water |
-| **Electric** | Long streaky paths | Very fast, tight sensors — lightning energy |
-| **Flow** | Wide flowing rivers | Heavy diffusion, low deposit — lava lamp |
-| **Spore** | Tight clusters with bright nodes | Short sensors, high deposit — constellation map |
+| **Standard** | Warm, steady glow | Medium everything (the baseline) |
+| **Crystalline** | Sharp defined veins | Low diffusion, high deposit, gem-like facets |
+| **Smoke** | Soft ghostly haze | High diffusion, low deposit, trails dissolve |
+| **Coral** | Dense branching networks | Slow speed, wide sensing, organic growth |
+| **Silk** | Thin delicate threads | Fast speed, quick fade, silk in water |
+| **Electric** | Long streaky paths | Very fast, tight sensors, lightning energy |
+| **Flow** | Wide flowing rivers | Heavy diffusion, low deposit, lava lamp |
+| **Spore** | Tight clusters with bright nodes | Short sensors, high deposit, constellation map |
 
 ## Per-Seed Color Drift
 
@@ -57,19 +57,19 @@ Background colors receive a dampened version of the drift (60% hue, 40% saturati
 
 ## Masking System
 
-The mascot physarum doesn't just overlay the swarm — it grows *through* the mascot shape using a multi-pass analysis:
+The mascot physarum doesn't just overlay the swarm. It grows *through* the mascot shape using a multi-pass analysis:
 
-1. **Luminance pass** — Converts mascot pixels to brightness values
-2. **Sobel edge detection** — Identifies sharp boundaries (cap outline, eyes, face border)
-3. **Density map** — Combines edge strength with luminance to guide where trails grow densest
-4. **Edge food sources** — High-contrast points become attractors, pulling cells toward structural features
-5. **Edge distance fade** — Trails fade near mask boundaries for clean edges
+1. **Luminance pass**: Converts mascot pixels to brightness values
+2. **Sobel edge detection**: Identifies sharp boundaries (cap outline, eyes, face border)
+3. **Density map**: Combines edge strength with luminance to guide where trails grow densest
+4. **Edge food sources**: High-contrast points become attractors, pulling cells toward structural features
+5. **Edge distance fade**: Trails fade near mask boundaries for clean edges
 
-The result is a swarm that traces the mascot's internal structure — concentrating along edges, eyes, and outlines.
+The result is a swarm that traces the mascot's internal structure, concentrating along edges, eyes, and outlines.
 
 ## Ghost Afterimage
 
-On each new seed, a ghost layer appears — a barely-perceptible retinal-burn echo of the original mascot. As the physarum trails build, the ghost fades over about 4 seconds. This creates a sense of the swarm "consuming" and replacing the original image.
+On each new seed, a ghost layer appears: a barely-perceptible retinal-burn echo of the original mascot. As the physarum trails build, the ghost fades over about 4 seconds, giving the appearance of the swarm replacing the original image.
 
 ## Chromatic Aberration
 

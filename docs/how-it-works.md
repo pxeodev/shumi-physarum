@@ -1,6 +1,6 @@
 # How the Swarm Works
 
-The Shumi Visual System uses a biomimetic intelligence engine inspired by *Physarum polycephalum* — a biological organism that solves complex routing and resource allocation problems without any central planner. Thousands of independent agents, following simple local rules, produce emergent network intelligence.
+The Shumi Visual System uses a biomimetic intelligence engine inspired by *Physarum polycephalum*, a biological organism that solves complex routing and resource allocation problems without any central planner. Thousands of independent agents, following simple local rules, produce emergent network structures.
 
 ## The Core Loop
 
@@ -15,9 +15,9 @@ Cells continuously emerge from a spawn point (50 per frame in the Generator) unt
 Each cell performs the **sense → turn → move → deposit** cycle four times per frame for visible growth speed.
 
 **Sense:** Each cell reads signal values at three positions ahead of it:
-- **Center** — Straight ahead at `sensorDist` pixels
-- **Left** — Offset by `-sensorAngle` degrees
-- **Right** — Offset by `+sensorAngle` degrees
+- **Center**: Straight ahead at `sensorDist` pixels
+- **Left**: Offset by `-sensorAngle` degrees
+- **Right**: Offset by `+sensorAngle` degrees
 
 **Turn:** Based on what it senses:
 - If center signal is strongest → keep going straight
@@ -37,8 +37,8 @@ Each cell performs the **sense → turn → move → deposit** cycle four times 
 ### 3. Signal Processing
 
 The signal map is processed every frame:
-- **Diffusion** — Each cell's signal blends with its 8 neighbors via box blur
-- **Decay** — All values multiply by the decay rate
+- **Diffusion**: Each cell's signal blends with its 8 neighbors via box blur
+- **Decay**: All values multiply by the decay rate
 
 This double-buffered operation creates the fading trail effect and prevents signal buildup.
 
@@ -54,13 +54,13 @@ The signal map is converted to visible pixels through the palette's color gradie
 
 The emergent network structure arises from simple feedback:
 
-- **Positive feedback** — Agents reinforce well-traveled pathways, strengthening the network's memory
-- **Negative feedback** — Signal memory fades over time, pruning unused routes
-- **Competition** — Multiple agents vying for the same signals creates branching and exploration
-- **Attractors** — External targets create directional growth, like nutrient nodes in a mycelial network
-- **Balance** — The tension between memory formation and memory fade determines network density
+- **Positive feedback.** Agents reinforce well-traveled pathways, strengthening the network's memory.
+- **Negative feedback.** Signal memory fades over time, pruning unused routes.
+- **Competition.** Multiple agents vying for the same signals creates branching and exploration.
+- **Attractors.** External targets create directional growth, like nutrient nodes in a mycelial network.
+- **Balance.** The tension between memory formation and memory fade determines network density.
 
-No agent knows the big picture. Each one just follows local signals. The intelligence emerges from the collective — the same principle that lets biological networks solve optimization problems without centralized control.
+No agent knows the big picture. Each one just follows local signals. The aggregate behavior of the collective produces coherent network structures, the same principle that lets biological networks solve optimization problems without centralized control.
 
 ## Architecture Differences
 
@@ -78,24 +78,24 @@ The Generator runs everything on the main thread using a single canvas and signa
 
 The Stencil runs a more complex architecture:
 
-1. **Main thread** — Handles UI, compositing, and recording
-2. **Web Worker** (`stencil-worker.js`) — Runs both simulations (background + mascot) using `OffscreenCanvas`
-3. **Dual simulations** — Background swarm fills the viewport; mascot swarm is constrained to the image shape
-4. **ASCII rendering** — In Ramp/Code/Hybrid modes, the mascot swarm renders as a character grid (8×14 cells) mapped to signal intensity
+1. **Main thread**: Handles UI, compositing, and recording
+2. **Web Worker** (`stencil-worker.js`): Runs both simulations (background + mascot) using `OffscreenCanvas`
+3. **Dual simulations**: Background swarm fills the viewport; mascot swarm is constrained to the image shape
+4. **ASCII rendering**: In Ramp/Code/Hybrid modes, the mascot swarm renders as a character grid (8×14 cells) mapped to signal intensity
 
-The worker communicates via `postMessage` — parameter updates, blast commands, and frame data flow between threads.
+The worker communicates via `postMessage`. Parameter updates, blast commands, and frame data flow between threads.
 
 ### Masked (Density-Guided Masking)
 
 The Masked adds image analysis to guide the mascot swarm:
 
-1. **Luminance pass** — Converts mascot image pixels to brightness values
-2. **Sobel edge detection** — Computes gradient magnitude at each pixel to find boundaries
-3. **Density map** — Combines `edge * 3 + luminance * 0.15` into a density guide
-4. **Edge food sources** — The 30 highest-density points (spatially filtered) become attractors
-5. **Edge distance fade** — Trail deposit fades near mask boundaries
+1. **Luminance pass**: Converts mascot image pixels to brightness values
+2. **Sobel edge detection**: Computes gradient magnitude at each pixel to find boundaries
+3. **Density map**: Combines `edge * 3 + luminance * 0.15` into a density guide
+4. **Edge food sources**: The 30 highest-density points (spatially filtered) become attractors
+5. **Edge distance fade**: Trail deposit fades near mask boundaries
 
-This means the swarm doesn't just fill the mascot shape — it traces its internal structure, concentrating along eyes, outlines, and high-contrast features.
+This means the swarm doesn't just fill the mascot shape. It traces the internal structure, concentrating along eyes, outlines, and high-contrast features.
 
 ## Data Flow
 
@@ -111,7 +111,7 @@ Masked:     Seed → PRNG → Palette + Texture → Edge Detect → Density Map 
 
 1. Signal intensity (0–1) interpolates between **Base → Bright** colors
 2. Distance from hub blends in the **Accent** color
-3. Cell glow uses additive blending — brighter at unexplored frontiers
+3. Cell glow uses additive blending, brighter at unexplored frontiers
 4. The hub pulses with micro-strokes
 
 ### Stencil (ASCII Modes)

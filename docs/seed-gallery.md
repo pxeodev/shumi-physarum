@@ -10,20 +10,20 @@ Intricate, tightly-woven networks with fine branching.
 
 | Seed | Character | Try It |
 |------|-----------|--------|
-| 12345 | The default — balanced radial growth | [Open →](https://haddencarpenter.github.io/shumi-physarum/index.html) |
+| 12345 | The default, balanced radial growth | [Open →](https://haddencarpenter.github.io/shumi-physarum/index.html) |
 | 7777 | Symmetrical burst pattern | [Open →](https://haddencarpenter.github.io/shumi-physarum/index.html) |
 | 42069 | Heavy branching with wide spread | [Open →](https://haddencarpenter.github.io/shumi-physarum/index.html) |
-| 31415 | Pi seed — elegant spiral tendencies | [Open →](https://haddencarpenter.github.io/shumi-physarum/index.html) |
+| 31415 | Pi seed, elegant spiral tendencies | [Open →](https://haddencarpenter.github.io/shumi-physarum/index.html) |
 
-### Dramatic Branches
+### Bold Branches
 
-Bold directional patterns pulled by attractor placement.
+High-contrast directional patterns pulled by attractor placement.
 
 | Seed | Character | Try It |
 |------|-----------|--------|
 | 88888 | Strong east-west branching | [Open →](https://haddencarpenter.github.io/shumi-physarum/index.html) |
 | 55555 | Three dominant arms | [Open →](https://haddencarpenter.github.io/shumi-physarum/index.html) |
-| 99999 | Asymmetric reach — one bold tendril | [Open →](https://haddencarpenter.github.io/shumi-physarum/index.html) |
+| 99999 | Asymmetric reach, one bold tendril | [Open →](https://haddencarpenter.github.io/shumi-physarum/index.html) |
 
 ### Minimal & Clean
 
@@ -31,9 +31,9 @@ Sparse, elegant topologies with lots of negative space.
 
 | Seed | Character | Try It |
 |------|-----------|--------|
-| 1 | The simplest seed — pure origin | [Open →](https://haddencarpenter.github.io/shumi-physarum/index.html) |
+| 1 | The simplest seed, pure origin | [Open →](https://haddencarpenter.github.io/shumi-physarum/index.html) |
 | 100 | Clean radial with even distribution | [Open →](https://haddencarpenter.github.io/shumi-physarum/index.html) |
-| 2025 | Current year — commemorative seed | [Open →](https://haddencarpenter.github.io/shumi-physarum/index.html) |
+| 2025 | Current year seed | [Open →](https://haddencarpenter.github.io/shumi-physarum/index.html) |
 
 ## Stencil Seeds
 
@@ -51,7 +51,7 @@ In the Stencil, seeds select palette + texture automatically. Try these in diffe
 
 ### Try Mode Combinations
 
-The same seed transforms dramatically across modes:
+The same seed looks distinctly different across modes:
 
 | Mode | Character | Try seed 10 |
 |------|-----------|-------------|
@@ -62,7 +62,7 @@ The same seed transforms dramatically across modes:
 
 ## Masked Seeds
 
-In the Masked, seeds control everything — palette, texture, and color drift. These showcase the range.
+In the Masked, seeds control everything: palette, texture, and color drift. These showcase the range.
 
 | Seed | Palette | Texture | Character | Try It |
 |------|---------|---------|-----------|--------|
@@ -80,7 +80,7 @@ The same seed looks completely different across the Generator's palettes. Try se
 
 | Palette | Mood |
 |---------|------|
-| **Shumi Gold** | Warm, organic, signature |
+| **Shumi Gold** | Warm, organic, default |
 | **Emerald** | Deep ocean intelligence |
 | **Violet** | Neural glow, synthetic |
 | **Ice** | Ethereal, minimal, cold |
@@ -94,7 +94,7 @@ The same seed looks completely different across the Generator's palettes. Try se
 ### In the Generator
 
 1. Click **Preview Seeds** in the Recording Studio
-2. Seeds cycle every 4 seconds — press **Space** to bookmark
+2. Seeds cycle every 4 seconds. Press **Space** to bookmark.
 3. Click any bookmarked seed to revisit
 4. Fine-tune parameters, then batch-record favorites
 
