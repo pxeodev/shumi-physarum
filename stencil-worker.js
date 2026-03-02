@@ -130,7 +130,8 @@ let ghostOffscreen, ghostOffCtx;
 
 // Palette state
 let IS_LP = false;
-let _lpBlastStart = false;
+let _blastOnLoad = false;
+let _blastTarget = 0.28;
 let activePalette = PALETTES[0];
 let activeTextureName = 'standard';
 let COLORS = [...activePalette.mascot];
@@ -181,12 +182,21 @@ let ghostFadeStart = -1;
 const GHOST_HOLD_FRAMES = 90;
 const GHOST_FADE_FRAMES = 180;
 
-// Persistent resurface — retinal burn base layer
-const RESURFACE_EARLY_PEAK = 0.28;
+// Persistent resurface — retinal burn base layer (damped breathing pulse)
+const RESURFACE_PEAK = 0.55;
 const RESURFACE_FLOOR = 0.06;
-const RESURFACE_FADE_UP = 90;
-const RESURFACE_SETTLE_START = 360;
-const RESURFACE_SETTLE_DUR = 600;
+const RESURFACE_FADE_UP = 90;        // 1.5s fade-in
+const RESURFACE_PULSE_PERIOD = 180;  // 3s per breath cycle
+const RESURFACE_DECAY = 360;         // exponential half-life ~6s (decays to ~0.37 at this frame)
+
+// LP resurface constants
+const LP_FADE_IN = 90;
+const LP_PEAK_DESKTOP = 0.55;
+const LP_PEAK_MOBILE = 0.60;
+const LP_PULSE_PERIOD = 210;         // 3.5s per breath (slightly slower for LP)
+const LP_DECAY = 420;                // ~7s half-life
+const LP_FLOOR_DESKTOP = 0.10;
+const LP_FLOOR_MOBILE = 0.15;
 
 // Mask data (received from main thread)
 let maskImageData = null; // ImageData of the mascot
@@ -275,6 +285,24 @@ function selectPalette(s) {
     BG.turnSpeed = jitter(bgTex.turnSpeed, 0.15) * Math.PI / 180;
     BG.trailBright = jitter(bgTex.trailBright, 0.10);
     BG.foodCount = Math.round(jitter(bgTex.foodCount, 0.20));
+
+    // LP mode: vein-first params — fewer agents + faster decay = visible corridors
+    if (IS_LP) {
+        BG.agentCount = IS_MOBILE ? 3000 : 4000;
+        BG.speed = 3.0;
+        BG.sensorDist = 28;
+        BG.turnSpeed = 30 * Math.PI / 180;
+        BG.sensorAngle = 45 * Math.PI / 180;
+        BG.deposit = 16;
+        BG.decay = 0.920;
+        BG.diffusion = 0.08;
+        BG.trailBright = 1.3;
+        BG.stepsPerFrame = 3;
+        BG.foodCount = 10;
+        BG.spawnRate = 100;
+        BG.initialBatch = 2000;
+        BG.hBias = true;
+    }
 
     MS.speed = jitter(msTex.speed, 0.15);
     MS.sensorDist = Math.round(jitter(msTex.sensorDist, 0.15));
@@ -526,6 +554,18 @@ class Agent {
         else if (sL > sR) { this.h -= P.turnSpeed; }
         else if (sR > sL) { this.h += P.turnSpeed; }
 
+        // Horizontal bias: pull agents toward nearest horizontal heading
+        if (P.hBias) {
+            let vert = Math.abs(Math.sin(this.h));
+            if (vert > 0.3) {
+                let target = Math.cos(this.h) > 0 ? 0 : Math.PI;
+                let diff = target - this.h;
+                if (diff > Math.PI) diff -= Math.PI * 2;
+                if (diff < -Math.PI) diff += Math.PI * 2;
+                this.h += diff * 0.08 * vert;
+            }
+        }
+
         this.x += Math.cos(this.h) * P.speed;
         this.y += Math.sin(this.h) * P.speed;
 
@@ -612,33 +652,49 @@ function renderTrail(ctx, trail, w, h, P, colors) {
     let brightMult = 1 + pulse * PULSE_BRIGHT;
     let rampShift = pulse * PULSE_RAMP;
 
+    // LP sanctuary: hard-cull below 45% of canvas, feather from 40-45%
+    let sanctuaryY = IS_LP ? Math.floor(h * 0.45) : h;
+    let featherTop = IS_LP ? Math.floor(h * 0.40) : h;
+
     for (let row = 0; row < rows; row++) {
         let py = row * cellH + Math.floor(cellH / 2);
+        if (py >= h || py >= sanctuaryY) continue;
         for (let col = 0; col < cols; col++) {
             let px = col * cellW + Math.floor(cellW / 2);
-            if (py >= h || px >= w) continue;
+            if (px >= w) continue;
             let v = trail[py * w + px] * P.trailBright;
-            if (v < 1) continue;
+            if (v < 5) continue;
 
-            let vPulsed = v * brightMult;
             let ch = CODE_BUF[(row * cols + col) % CODE_LEN];
             if (ch === ' ') ch = CODE_BUF[(row * cols + col + 7) % CODE_LEN];
 
-            let rawAlpha = Math.min(1, v / 50);
-            let alpha = rawAlpha * rawAlpha * rawAlpha;
+            let r, g, b, alpha;
 
-            let t = Math.min(vPulsed / 30, 1);
-            let t2 = Math.min(vPulsed / 80, 1);
-            let r, g, b;
-            if (t2 > 0.3) {
-                let ht = (t2 - 0.3) / 0.7;
-                r = bright.r + (hot.r - bright.r) * ht;
-                g = bright.g + (hot.g - bright.g) * ht;
-                b = bright.b + (hot.b - bright.b) * ht;
+            if (v > 20) {
+                let vPulsed = v * brightMult;
+                let rawAlpha = Math.min(1, v / 60);
+                alpha = rawAlpha * rawAlpha;
+
+                let t = Math.min(vPulsed / 40, 1);
+                let t2 = Math.min(vPulsed / 90, 1);
+                if (t2 > 0.3) {
+                    let ht = (t2 - 0.3) / 0.7;
+                    r = bright.r + (hot.r - bright.r) * ht;
+                    g = bright.g + (hot.g - bright.g) * ht;
+                    b = bright.b + (hot.b - bright.b) * ht;
+                } else {
+                    r = base.r + (bright.r - base.r) * t;
+                    g = base.g + (bright.g - base.g) * t;
+                    b = base.b + (bright.b - base.b) * t;
+                }
             } else {
-                r = base.r + (bright.r - base.r) * t;
-                g = base.g + (bright.g - base.g) * t;
-                b = base.b + (bright.b - base.b) * t;
+                r = 26; g = 22; b = 10;
+                alpha = 0.03;
+            }
+
+            // Feather near sanctuary edge
+            if (py > featherTop) {
+                alpha *= 1 - (py - featherTop) / (sanctuaryY - featherTop);
             }
 
             ctx.globalAlpha = alpha;
@@ -698,12 +754,21 @@ function renderTrailPixel(ctx, trail, w, h, P, colors) {
 function generateBgFoods() {
     bgFoods = [];
     let cx = VW / 2, cy = VH / 2;
-    let minR = MSIZE * 0.5;
-    let maxR = Math.max(VW, VH) * 0.55;
-    for (let i = 0; i < BG.foodCount; i++) {
-        let a = rng() * Math.PI * 2;
-        let r = minR + rng() * (maxR - minR);
-        bgFoods.push({ x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r, r: 100 + rng() * 140 });
+    if (IS_LP) {
+        let minR = MSIZE * 0.75;
+        for (let i = 0; i < BG.foodCount; i++) {
+            let a = rng() * Math.PI * 2;
+            let r = minR + rng() * Math.min(VW, VH) * 0.35;
+            bgFoods.push({ x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r, r: 80 + rng() * 120 });
+        }
+    } else {
+        let minR = MSIZE * 0.5;
+        let maxR = Math.max(VW, VH) * 0.55;
+        for (let i = 0; i < BG.foodCount; i++) {
+            let a = rng() * Math.PI * 2;
+            let r = minR + rng() * (maxR - minR);
+            bgFoods.push({ x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r, r: 100 + rng() * 140 });
+        }
     }
 }
 
@@ -733,16 +798,18 @@ function initAll() {
     buildGhost();
 
     // BG sim
-    bgCx = VW / 2; bgCy = IS_LP ? VH * 0.35 : VH / 2; bgFc = 0;
+    bgCx = VW / 2; bgCy = IS_LP ? VH * 0.32 : VH / 2; bgFc = 0;
     bgAgents = [];
     bgTrail = new Float32Array(VW * VH);
     bgTrailPrev = new Float32Array(VW * VH);
     generateBgFoods();
 
     let spawnRingR = MSIZE * 0.35;
-    for (let i = 0; i < 48; i++) {
-        let a = (i / 48) * Math.PI * 2;
-        seedTrail(bgTrail, bgCx + Math.cos(a) * spawnRingR, bgCy + Math.sin(a) * spawnRingR, VW, VH, 10);
+    let seedPts = IS_LP ? 24 : 48;
+    let seedR = IS_LP ? 8 : 10;
+    for (let i = 0; i < seedPts; i++) {
+        let a = (i / seedPts) * Math.PI * 2;
+        seedTrail(bgTrail, bgCx + Math.cos(a) * spawnRingR, bgCy + Math.sin(a) * spawnRingR, VW, VH, seedR);
     }
     for (let f of bgFoods) seedTrail(bgTrail, f.x, f.y, VW, VH, 8);
     for (let i = 0; i < BG.initialBatch; i++) {
@@ -776,29 +843,33 @@ function handleTick() {
     bgFc++; msFc++;
     pulsePhase += (_pulseSpeed || PULSE_SPEED);
 
-    // LP blast fade-down: hold blast briefly then ease to normal
-    if (_lpBlastStart) {
-        let LP_BLAST_HOLD = 60;
-        let LP_BLAST_FADE = 150;
-        let LP_TARGET_MASTER = 0.40;
-        let LP_TARGET_BOOST = 1.0;
-        if (msFc <= LP_BLAST_HOLD) {
+    // Blast-on-load fade-down: hold blast briefly then ease to normal
+    if (_blastOnLoad) {
+        let BLAST_HOLD = 60;
+        let BLAST_FADE = 150;
+        let TARGET_BOOST = 1.0;
+        if (msFc <= BLAST_HOLD) {
             // hold at blast
-        } else if (msFc <= LP_BLAST_HOLD + LP_BLAST_FADE) {
-            let t = (msFc - LP_BLAST_HOLD) / LP_BLAST_FADE;
+        } else if (msFc <= BLAST_HOLD + BLAST_FADE) {
+            let t = (msFc - BLAST_HOLD) / BLAST_FADE;
             let ease = t * t * (3 - 2 * t);
-            _stencilMaster = 3.0 + (LP_TARGET_MASTER - 3.0) * ease;
-            _trailBoost = 4.0 + (LP_TARGET_BOOST - 4.0) * ease;
+            _stencilMaster = 3.0 + (_blastTarget - 3.0) * ease;
+            _trailBoost = 4.0 + (TARGET_BOOST - 4.0) * ease;
         } else {
-            _stencilMaster = LP_TARGET_MASTER;
-            _trailBoost = LP_TARGET_BOOST;
-            _lpBlastStart = false;
+            _stencilMaster = _blastTarget;
+            _trailBoost = TARGET_BOOST;
+            _blastOnLoad = false;
         }
     }
 
     let stencilEnd = _stencilEnd || (IS_MOBILE ? 45 : STENCIL_END);
     let formationLinear = Math.min(1, Math.max(0, (msFc - STENCIL_START) / (stencilEnd - STENCIL_START)));
     let formation = formationLinear * formationLinear;
+
+    // ── Early-frame trail boost — exponential decay from 4x to 1x over ~2s ──
+    let earlyBoost = 1 + 3 * Math.exp(-msFc / 60);  // 4x at frame 0, ~2x at frame 60, ~1.1x at frame 120
+    let boostedBgSteps = Math.round(BG.stepsPerFrame * earlyBoost);
+    let boostedMsSteps = Math.round(MS.stepsPerFrame * earlyBoost);
 
     // ── BG sim step ──
     if (bgAgents.length < BG.agentCount) {
@@ -810,25 +881,40 @@ function handleTick() {
             bgAgents.push(new Agent(bgCx + Math.cos(a) * r, bgCy + Math.sin(a) * r, a + (rng() - 0.5) * 0.8));
         }
     }
-    for (let s = 0; s < BG.stepsPerFrame; s++) {
+    for (let s = 0; s < boostedBgSteps; s++) {
         for (let a of bgAgents) a.step(BG, bgTrail, bgFoods, VW, VH);
     }
     let bgD = diffuse(bgTrail, bgTrailPrev, VW, VH, BG.diffusion, BG.decay);
     bgTrail = bgD.trail; bgTrailPrev = bgD.trailPrev;
 
-    // Center suppression
-    let fadeR = MSIZE * 0.22;
+    // Center suppression — strategy selected once, no branching in hot loop
+    let fadeR = IS_LP ? MSIZE * 0.358 : MSIZE * 0.22;
     let fadeR2 = fadeR * fadeR;
     let yMin = Math.max(0, Math.floor(bgCy - fadeR)), yMax = Math.min(VH - 1, Math.ceil(bgCy + fadeR));
     let xMin = Math.max(0, Math.floor(bgCx - fadeR)), xMax = Math.min(VW - 1, Math.ceil(bgCx + fadeR));
-    for (let y = yMin; y <= yMax; y++) {
-        let dy = y - bgCy;
-        for (let x = xMin; x <= xMax; x++) {
-            let dx = x - bgCx;
-            let d2 = dx * dx + dy * dy;
-            if (d2 < fadeR2) {
-                let f = Math.sqrt(d2) / fadeR;
-                bgTrail[y * VW + x] *= 0.3 + f * 0.7;
+    if (IS_LP) {
+        for (let y = yMin; y <= yMax; y++) {
+            let dy = y - bgCy;
+            for (let x = xMin; x <= xMax; x++) {
+                let dx = x - bgCx;
+                let d2 = dx * dx + dy * dy;
+                if (d2 < fadeR2) {
+                    let f = Math.sqrt(d2) / fadeR;
+                    f = f * f;
+                    bgTrail[y * VW + x] *= f;
+                }
+            }
+        }
+    } else {
+        for (let y = yMin; y <= yMax; y++) {
+            let dy = y - bgCy;
+            for (let x = xMin; x <= xMax; x++) {
+                let dx = x - bgCx;
+                let d2 = dx * dx + dy * dy;
+                if (d2 < fadeR2) {
+                    let f = Math.sqrt(d2) / fadeR;
+                    bgTrail[y * VW + x] *= 0.3 + f * 0.7;
+                }
             }
         }
     }
@@ -838,7 +924,7 @@ function handleTick() {
         let n = Math.min(MS.spawnRate, MS.agentCount - msAgents.length);
         for (let i = 0; i < n; i++) spawnAgent(msAgents, msCx, msCy, MS.spawnR);
     }
-    for (let s = 0; s < MS.stepsPerFrame; s++) {
+    for (let s = 0; s < boostedMsSteps; s++) {
         for (let a of msAgents) a.step(MS, msTrail, msFoods, MSIZE, MSIZE, densityMap, edgeDistMap);
     }
     let msD = diffuse(msTrail, msTrailPrev, MSIZE, MSIZE, MS.diffusion, MS.decay);
@@ -999,8 +1085,8 @@ function handleTick() {
     }
 
     // ── Ghost opacity computation ──
-    let ghostOpacity = 1;
-    let ghostVisible = true;
+    let ghostOpacity = IS_LP ? 0 : 1;
+    let ghostVisible = !IS_LP;
     if (ghostFadeStart < 0 && msFc > GHOST_HOLD_FRAMES) ghostFadeStart = msFc;
     if (ghostFadeStart > 0) {
         let elapsed = msFc - ghostFadeStart;
@@ -1009,20 +1095,29 @@ function handleTick() {
         if (ghostOpacity <= 0.001) { ghostVisible = false; ghostOpacity = 0; }
     }
 
-    // ── Resurface opacity (separate full-color layer) ──
+    // ── Resurface opacity — damped breathing pulse ──
     let resurfaceOpacity = 0;
     {
-        if (msFc < RESURFACE_FADE_UP) {
+        if (IS_LP) {
+            let lpPeak = IS_MOBILE ? LP_PEAK_MOBILE : LP_PEAK_DESKTOP;
+            let lpFloor = IS_MOBILE ? LP_FLOOR_MOBILE : LP_FLOOR_DESKTOP;
+            if (msFc < LP_FADE_IN) {
+                let t = msFc / LP_FADE_IN;
+                resurfaceOpacity = lpPeak * t * t * (3 - 2 * t);
+            } else {
+                let age = msFc - LP_FADE_IN;
+                let envelope = Math.exp(-age / LP_DECAY);
+                let breath = 0.5 + 0.5 * Math.cos(age * 2 * Math.PI / LP_PULSE_PERIOD);
+                resurfaceOpacity = lpFloor + (lpPeak - lpFloor) * envelope * breath;
+            }
+        } else if (msFc < RESURFACE_FADE_UP) {
             let t = msFc / RESURFACE_FADE_UP;
-            resurfaceOpacity = RESURFACE_EARLY_PEAK * t * t * (3 - 2 * t);
-        } else if (msFc < RESURFACE_SETTLE_START) {
-            resurfaceOpacity = RESURFACE_EARLY_PEAK;
-        } else if (msFc < RESURFACE_SETTLE_START + RESURFACE_SETTLE_DUR) {
-            let t = (msFc - RESURFACE_SETTLE_START) / RESURFACE_SETTLE_DUR;
-            let ease = t * t * (3 - 2 * t);
-            resurfaceOpacity = RESURFACE_EARLY_PEAK + (RESURFACE_FLOOR - RESURFACE_EARLY_PEAK) * ease;
+            resurfaceOpacity = RESURFACE_PEAK * t * t * (3 - 2 * t);
         } else {
-            resurfaceOpacity = RESURFACE_FLOOR;
+            let age = msFc - RESURFACE_FADE_UP;
+            let envelope = Math.exp(-age / RESURFACE_DECAY);
+            let breath = 0.5 + 0.5 * Math.cos(age * 2 * Math.PI / RESURFACE_PULSE_PERIOD);
+            resurfaceOpacity = RESURFACE_FLOOR + (RESURFACE_PEAK - RESURFACE_FLOOR) * envelope * breath;
         }
     }
 
@@ -1076,6 +1171,13 @@ self.onmessage = function(e) {
                 _darkThresh = msg.params.darkThresh ?? 0.12;
                 _nearDarkBoost = msg.params.nearDarkBoost ?? 2.5;
                 _fillDensity = msg.params.fillDensity ?? 3;
+                _blastTarget = msg.params.blastTarget ?? 0.28;
+            }
+
+            // Detect blast-on-load (stencilMaster > 1.0 means main thread set blast)
+            if (_stencilMaster > 1.0) {
+                _blastOnLoad = true;
+                _trailBoost = 4.0;
             }
 
             // Apply LP scaling — full BG for rich filaments, lean mascot
@@ -1085,15 +1187,10 @@ self.onmessage = function(e) {
                 MS.stepsPerFrame = Math.max(2, Math.round(5 * 0.50));
                 MS.spawnRate = Math.round(70 * 0.40);
                 MS.initialBatch = Math.round(1400 * 0.40);
-                BG.initialBatch = 8000;
-                BG.spawnRate = Math.round(140 * 1.5);
-                BG.trailBright = 1.3 * 2.2;
                 MS.trailBright = 2.4 * 1.4;
-                // Keep blast start value (3.0) if set, otherwise use LP default
-                if (_stencilMaster > 1.0) {
-                    _lpBlastStart = true;
-                } else if (_stencilMaster === 0.28) {
-                    _stencilMaster = 0.40;
+                // Mobile LP: pixel mold instead of chunky ASCII
+                if (IS_MOBILE) {
+                    formationMode = 3;
                 }
             } else if (IS_MOBILE) {
                 BG.agentCount = Math.round(8000 * 0.60);
@@ -1135,7 +1232,7 @@ self.onmessage = function(e) {
             break;
 
         case 'blast':
-            _lpBlastStart = false; // manual blast cancels LP fade
+            _blastOnLoad = false; // manual blast cancels LP fade
             if (msg.active) {
                 _stencilMaster = 3.0;
                 _trailBoost = 4.0;
