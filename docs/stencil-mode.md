@@ -1,53 +1,58 @@
 # Stencil Mode
 
-Stencil mode (`stencil.html`) is a separate page that layers the physarum simulation behind artwork, creating masked compositions where the mycelial network grows behind and around a centered image.
+Stencil mode layers the swarm behind artwork — creating compositions where the network grows behind and around a centered image. This is how the Shumi agent avatars get their signature look.
 
-## What is Stencil Mode?
+## What It Does
 
-Instead of showing the raw simulation, stencil mode:
+![Shumi Stencil](https://raw.githubusercontent.com/haddencarpenter/shumi-physarum/main/shumi.webp)
 
-1. Runs the physarum simulation as a fullscreen background
-2. Overlays a centered mascot/artwork image on top
-3. Adds chromatic aberration effects and subtle animations
-4. Creates a ghost/afterimage "retinal burn" effect
+Instead of showing the raw swarm, stencil mode:
 
-The result is an animated landing page where organic mycelial networks grow behind your branding or artwork.
+1. Runs the swarm simulation as a fullscreen background
+2. Centers your artwork (mascot, logo, avatar) on top
+3. Adds chromatic aberration effects and breathing animation
+4. Creates a ghost afterimage — a retinal-burn echo of the image
+
+The result is an animated composition where organic signal networks grow behind your visual identity.
 
 ## How to Use
 
 1. Open `stencil.html` in a browser
-2. The physarum simulation starts automatically in the background
-3. The mascot artwork fades in with an entrance animation
-4. The simulation seed is randomized on each load
+2. The swarm starts automatically in the background
+3. The artwork fades in with an entrance animation
+4. Seed is randomized on each load
 
 ## Customizing
 
 ### Changing the Artwork
 
-Replace the `shumi.webp` file with your own image. The image is centered on the viewport and displayed at a fixed size.
+Replace `shumi.webp` with your own image. The image is centered on the viewport at a fixed size.
 
-### Simulation Parameters
+### Swarm Parameters
 
-The stencil worker (`stencil-worker.js`) runs the physarum simulation off the main thread for smooth performance. Parameters are configured in the worker file.
+The stencil worker (`stencil-worker.js`) runs the swarm off the main thread for smooth 60fps performance. Parameters are configured within the worker.
 
 ### Visual Effects
 
-Stencil mode includes several CSS-driven effects:
+Stencil mode includes several CSS-driven layers:
 
-- **Chromatic orbit** — RGB channel separation that rotates around the artwork
-- **Breathing animation** — Subtle scale pulsing
-- **Ghost layer** — A faded afterimage that appears and disappears
-- **Resurface layer** — A persistent full-color base image
+| Effect | Description |
+|--------|-------------|
+| **Chromatic orbit** | RGB channel separation that rotates around the artwork |
+| **Breathing** | Subtle scale pulse animation |
+| **Ghost layer** | Faded afterimage that appears and disappears |
+| **Resurface layer** | Persistent full-color base image beneath the animation |
 
-Mobile devices get lighter effects (smaller offsets, no background chromatic) for performance.
+Mobile devices automatically get lighter effects (smaller offsets, no background chromatic) for performance.
 
 ## Use Cases
 
-- **Landing pages** — Hero section with animated mycelial background
+- **Agent avatars** — The primary way Shumi agents are visualized
+- **Landing pages** — Hero section with animated swarm background
 - **Profile pages** — Animated avatar with organic backdrop
 - **Presentations** — Full-screen animated title slides
-- **Social media** — Record the page for animated content
+- **Social content** — Record the page for animated posts
 
 ## Demo Page
 
-The `demo.html` file shows a complete landing page layout that embeds the physarum simulation as a hero background via an iframe. This demonstrates how to integrate the generator into a real website design.
+`demo.html` shows a complete landing page that embeds the swarm as a hero background via iframe — a working example of how to integrate the generator into a real website.

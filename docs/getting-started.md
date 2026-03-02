@@ -2,50 +2,56 @@
 
 ## Requirements
 
-- A modern web browser (Chrome, Firefox, Edge, Safari)
+- A modern web browser (Chrome recommended, Firefox/Edge/Safari also work)
 - No installation or build step required
 
 ## Opening the Generator
 
-### Option 1: Local File
+### Option 1: Live on GitHub Pages
 
-Download or clone the repository, then open `index.html` directly in your browser.
+Visit the published URL directly — the generator runs entirely in your browser.
 
-### Option 2: GitHub Pages
+### Option 2: Run Locally
 
-Visit the published URL if GitHub Pages is enabled on the repository.
+Clone or download the repository and open `index.html` in your browser.
 
 ## Interface Layout
 
-The interface is split into two areas:
+![Shumi Generator Interface](https://raw.githubusercontent.com/haddencarpenter/shumi-physarum/main/shumi.webp)
 
-- **Left sidebar** (300px) — All controls, sliders, and export buttons
-- **Main canvas** (right) — The live physarum simulation at 16:9 aspect ratio
+The interface has two areas:
 
-## Your First Simulation
+- **Left sidebar** (300px) — All controls: seed navigation, swarm parameters, palette selection, and export tools
+- **Main canvas** (right) — The live swarm simulation at 16:9 aspect ratio
 
-When you open the generator, it immediately starts running with these defaults:
+## Your First Swarm
+
+When you open the generator, it immediately begins growing a swarm with these defaults:
 
 | Parameter | Default Value |
 |-----------|--------------|
 | Seed | 12345 |
-| Agent Count | 6,000 |
+| Cell Count | 6,000 |
 | Speed | 2.8 |
 | Sensor Distance | 22 |
-| Sensor Angle | 40 |
-| Turn Speed | 20 |
-| Deposit Strength | 12 |
-| Decay Rate | 0.968 |
+| Sensor Angle | 40° |
+| Turn Speed | 20° |
+| Signal Deposit | 12 |
+| Signal Decay | 0.968 |
 | Diffusion | 0.25 |
-| Nutrient Sources | 12 |
-| Color Preset | Shumi Gold |
+| Attractors | 12 |
+| Palette | Shumi Gold |
 
-The colony spawns from a single point at 35% from the top of the canvas and grows outward. New agents continuously birth from the hub until the agent count cap is reached.
+The swarm spawns from a central intelligence hub positioned at 35% from the top of the canvas and grows outward. New cells continuously emerge from the hub until the population cap is reached.
 
 ## Basic Workflow
 
-1. **Explore seeds** — Click Random or use Prev/Next to browse patterns
-2. **Tweak parameters** — Adjust sliders to change the colony's behavior
-3. **Change colors** — Pick a preset or use custom color pickers
-4. **Export** — Save as PNG snapshot, record WebM video, or export animated GIF
-5. **Preview & batch** — Use the seed preview carousel to audition many seeds, bookmark favorites, then batch record them all
+1. **Explore seeds** — Click **Random** or use **Prev/Next** to browse unique patterns
+2. **Shape the swarm** — Adjust sliders to change cell behavior, signal chemistry, and rendering
+3. **Choose a palette** — Pick a preset or define your own color identity
+4. **Export** — Save as PNG, record WebM video, or export an animated GIF
+5. **Preview & batch** — Use the seed preview carousel to audition many seeds, bookmark favorites, then batch-record them all
+
+## Sharing Your Seed
+
+Every swarm is fully reproducible. Share your seed number and parameter settings with others — they'll see the exact same pattern. This is how Shumi agents will be identified: by their unique seed.

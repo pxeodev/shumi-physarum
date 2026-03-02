@@ -1,87 +1,104 @@
 # Recording & Export
 
-The generator supports multiple export formats for different use cases.
+Capture your swarm pattern in multiple formats — for avatars, hero backgrounds, profile pictures, or social content.
 
 ## PNG Snapshot
 
-Click **Save PNG** to capture the current canvas frame as a PNG image.
+Click **Save PNG** to capture the current frame.
 
-- File name: `shumi-physarum-{seed}.png`
-- Resolution matches the current canvas size
-- Best for: static backgrounds, social media posts, print
+- **File:** `shumi-physarum-{seed}.png`
+- **Resolution:** Matches current canvas size
+- **Best for:** Static backgrounds, social posts, print-ready assets
 
-## WebM Video Recording
+**Tip:** Let the swarm grow for 3–5 seconds before capturing for a fully developed network.
 
-Click **Record WebM** to start recording the live simulation.
+## WebM Video
 
-- Records at 60 FPS with VP9 codec (falls back to VP8 if unsupported)
-- Bitrate: 8 Mbps for high quality
-- Click **Stop Recording** to end and download the file
-- File name: `shumi-physarum-{seed}.webm`
-- Best for: hero backgrounds, looping videos, social media content
+Click **Record WebM** to start recording the live swarm.
 
-**Tip:** Set **Cursor Influence** to 0 before recording to avoid accidental mouse effects.
+- **Codec:** VP9 at 60 FPS (falls back to VP8 if unsupported)
+- **Bitrate:** 8 Mbps for high-quality output
+- **File:** `shumi-physarum-{seed}.webm`
+- **Best for:** Hero backgrounds, looping videos, social content
 
-## Animated GIF Export
+Click **Stop Recording** to end and download.
 
-The GIF exporter captures frames from the live simulation, center-crops to a square, and encodes them into a looping GIF.
+**Important:** Set **Cursor Influence** to 0 before recording to avoid accidental mouse interference.
+
+### Converting WebM to MP4
+
+```bash
+ffmpeg -i shumi-physarum-12345.webm -c:v libx264 -crf 18 output.mp4
+```
+
+## Animated GIF
+
+The GIF exporter captures the live swarm, center-crops to a square, and encodes a looping animation.
 
 ### Settings
 
 | Setting | Range | Default | Notes |
 |---------|-------|---------|-------|
-| Size | 128 – 720 px | 256px | Square output |
-| Duration | 2 – 15 seconds | 4s | Shorter = smaller file |
+| Size | 128 – 720 px | 256px | Square output — perfect for avatars |
+| Duration | 2 – 15 seconds | 4s | Shorter = smaller file size |
 | FPS | 8 – 30 | 16 | Sweet spot 12–20 |
 
-### Size Presets
+### Size Guide
 
-- **128 x 128** — Favicon or tiny embeds
-- **256 x 256** — Avatar or profile picture
-- **480 x 480** — Profile picture (high res)
-- **720 x 720** — Social media post
+| Size | Use Case |
+|------|----------|
+| **128 x 128** | Favicon, tiny embed, chat avatar |
+| **256 x 256** | Standard avatar, profile picture |
+| **480 x 480** | High-res profile, thumbnail |
+| **720 x 720** | Social media post, full-size asset |
 
-### Usage
+### How to Export
 
-1. Get the simulation to a frame you like (let it grow a few seconds)
-2. Set your desired size, duration, and FPS
+1. Let the swarm grow to a frame you like
+2. Set size, duration, and FPS
 3. Click **Export GIF**
-4. Wait for frame capture, then GIF encoding
-5. The file downloads automatically
-
-The GIF is center-cropped from the canvas, so the spawn hub will be visible in the frame.
+4. Wait for capture + encoding (progress shown)
+5. File downloads automatically
 
 ## Fullscreen 1080p Recording
 
-Click **Fullscreen Record (1080p)** for professional-quality output.
+Click **Fullscreen Record (1080p)** for cinematic quality.
 
-- Hides the sidebar and resizes to 1080 x 1080
-- Spawn point stays at 35% from top (designed for landing page hero backgrounds)
-- Uses the clip length set in the Recording Studio section
-- When finished, the UI restores and the file downloads
-- Best for: website hero sections, presentation backgrounds
+- Hides the sidebar, resizes canvas to 1080 x 1080
+- Hub stays at 35% from top (designed for hero backgrounds)
+- Uses the clip length from the Recording Studio section
+- UI restores automatically when done
+- **Best for:** Website hero sections, presentations, brand assets
 
 ## Recording Studio
 
-The Recording Studio section provides advanced recording workflows.
-
 ### Seed Preview (Audition)
 
-1. Click **Preview Seeds** to start cycling through random seeds
-2. Each seed plays for 4 seconds, then auto-advances
-3. Press **Space** to bookmark the current seed (max 10)
-4. The canvas border flashes green when a seed is bookmarked
-5. Click **Stop Preview** when done
-6. Bookmarked seeds appear as clickable links below
+The fastest way to find your perfect swarm:
+
+1. Click **Preview Seeds** — random seeds cycle every 4 seconds
+2. Press **Space** to bookmark the current seed (max 10)
+3. Canvas border flashes green on bookmark
+4. Click **Stop Preview** when done
+5. Bookmarked seeds appear as clickable links
 
 ### Batch Recording
 
-After bookmarking seeds via Preview:
+After bookmarking seeds:
 
-1. Set the desired **Clip Length** (5–60 seconds per seed)
+1. Set **Clip Length** (5–60 seconds per seed)
 2. Click **Batch Record Bookmarks**
-3. Each bookmarked seed is recorded sequentially in fullscreen 1080p
+3. Each seed records sequentially in fullscreen 1080p
 4. Files download one by one as each clip finishes
-5. Status updates show progress
 
-This workflow is ideal for producing multiple hero background videos in one session.
+This workflow produces multiple hero backgrounds in a single session — ideal for content creators or for choosing between several candidate swarm identities.
+
+## Browser Compatibility
+
+| Feature | Chrome | Firefox | Safari | Edge |
+|---------|--------|---------|--------|------|
+| Live swarm | Yes | Yes | Yes | Yes |
+| WebM recording | Yes | Yes | No* | Yes |
+| GIF export | Yes | Yes | Yes | Yes |
+
+*Safari doesn't support MediaRecorder with WebM. Use GIF export or screen recording instead.
