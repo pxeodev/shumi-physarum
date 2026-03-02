@@ -847,7 +847,7 @@ function handleTick() {
     if (_blastOnLoad) {
         let BLAST_HOLD = 60;
         let BLAST_FADE = 150;
-        let TARGET_BOOST = IS_LP ? (IS_MOBILE ? 1.5 : 2.5) : 1.0;
+        let TARGET_BOOST = IS_LP ? (IS_MOBILE ? 1.0 : 2.5) : 1.0;
         if (msFc <= BLAST_HOLD) {
             // hold at blast
         } else if (msFc <= BLAST_HOLD + BLAST_FADE) {
