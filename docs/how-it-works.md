@@ -1,6 +1,6 @@
 # How the Swarm Works
 
-The Shumi Visual System uses an agent-based simulation inspired by biological transport networks — specifically *Physarum polycephalum* (slime mold). Thousands of simple cells, following basic rules, produce complex emergent intelligence.
+The Shumi Visual System uses a biomimetic intelligence engine inspired by *Physarum polycephalum* — a biological organism that solves complex routing and resource allocation problems without any central planner. Thousands of independent agents, following simple local rules, produce emergent network intelligence.
 
 ## The Core Loop
 
@@ -54,13 +54,13 @@ The signal map is converted to visible pixels through the palette's color gradie
 
 The emergent network structure arises from simple feedback:
 
-- **Positive feedback** — Cells follow existing signals, reinforcing popular paths
-- **Negative feedback** — Signals decay over time, pruning unused routes
-- **Competition** — Multiple cells vying for the same signals creates branching
-- **Attractors** — External targets create directional growth
-- **Balance** — The tension between deposit rate and decay rate determines network density
+- **Positive feedback** — Agents reinforce well-traveled pathways, strengthening the network's memory
+- **Negative feedback** — Signal memory fades over time, pruning unused routes
+- **Competition** — Multiple agents vying for the same signals creates branching and exploration
+- **Attractors** — External targets create directional growth, like nutrient nodes in a mycelial network
+- **Balance** — The tension between memory formation and memory fade determines network density
 
-No cell knows the big picture. Each one just follows local signals. The intelligence emerges from the collective.
+No agent knows the big picture. Each one just follows local signals. The intelligence emerges from the collective — the same principle that lets biological networks solve optimization problems without centralized control.
 
 ## Architecture Differences
 

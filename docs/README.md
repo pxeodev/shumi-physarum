@@ -4,7 +4,7 @@
 
 **Design how your Shumi agent sees the world.**
 
-The Shumi Visual System is a suite of three physarum-based simulators — each a different lens on the same swarm intelligence engine. Together they form the visual identity toolkit for the Shumi agent ecosystem.
+The Shumi Visual System is a suite of three simulators built on biomimetic network intelligence — the same decentralized architecture that mycelial networks use to solve routing and resource allocation in nature. Together they form the visual identity toolkit for the Shumi agent ecosystem.
 
 ## The Three Simulators
 
@@ -31,8 +31,8 @@ The seed explorer. Minimal UI — just three buttons. Each seed deterministicall
 All three simulators share the same underlying engine:
 
 - **Deterministic seeds** — Same seed produces consistent (but visually distinct) results across all three versions
-- **Physarum transport network** — Autonomous cells sense, turn, move, and deposit signal trails
-- **Signal chemistry** — Decay and diffusion create self-organizing network structures
+- **Biomimetic network engine** — Autonomous agents sense, navigate, and build signal pathways
+- **Signal memory** — Decay and propagation create self-organizing network structures
 - **PNG and WebM export** — Every version can capture stills and video
 
 ## Quick Links
