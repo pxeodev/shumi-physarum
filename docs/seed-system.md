@@ -1,13 +1,13 @@
 ---
 title: "Seed System"
-description: "How deterministic seeds control swarm patterns, palettes, and agent identity."
+description: "How deterministic seeds control swarm patterns, palettes, and agent identity. Includes URL API reference for deep-linking."
 ---
 
 Every Shumi agent is identified by a unique seed. Seeds are deterministic: the same seed always produces the same swarm pattern in a given simulator. Your seed is your agent's visual identity.
 
 ## How Seeds Work
 
-A seed is a positive integer that initializes the swarm's random number generator. It controls:
+A seed is a positive integer (1–999,999) that initializes the swarm's random number generator. It controls:
 
 - **Cell spawn positions**: Where each cell emerges
 - **Cell headings**: The initial direction each cell faces
@@ -30,6 +30,88 @@ The same seed number produces **related but distinct** visuals in each simulator
 
 Think of the seed as a genome: the same DNA expressed differently in each environment.
 
+## Seed-to-Palette-to-Texture Mapping
+
+In the Stencil and Masked, the seed fully determines the visual style. Here's the exact mapping:
+
+**Palette** = `seed % 8`
+
+| Index | Palette | Example seeds |
+|-------|---------|---------------|
+| 0 | Ember | 8, 16, 24, 32, 40 |
+| 1 | Frost | 1, 9, 17, 25, 33 |
+| 2 | Moss | 2, 10, 18, 26, 34 |
+| 3 | Pearl | 3, 11, 19, 27, 35 |
+| 4 | Bloom | 4, 12, 20, 28, 36 |
+| 5 | Honey | 5, 13, 21, 29, 37 |
+| 6 | Tide | 6, 14, 22, 30, 38 |
+| 7 | Rust | 7, 15, 23, 31, 39 |
+
+**Texture** = `Math.floor(seed / 8) % 8`
+
+| Index | Texture | Seed range (first cycle) |
+|-------|---------|--------------------------|
+| 0 | Standard | 1–7 |
+| 1 | Crystalline | 8–15 |
+| 2 | Smoke | 16–23 |
+| 3 | Coral | 24–31 |
+| 4 | Silk | 32–39 |
+| 5 | Electric | 40–47 |
+| 6 | Flow | 48–55 |
+| 7 | Spore | 56–63 |
+
+This gives **64 base combinations** (8 palettes × 8 textures). The cycle repeats every 64 seeds, but per-seed color drift (±8° hue, ±5 saturation, ±3 luminance) means no two seeds look identical even within the same palette+texture pair.
+
+**To find a specific combination**: pick the texture row, then pick the palette column within it. For example, Frost + Crystalline = seed 9 (Crystalline starts at 8, Frost is index 1, so 8 + 1 = 9).
+
+## URL Deep-Linking
+
+All three simulators support `?seed=` URL parameters for deep-linking to a specific seed.
+
+**Base URL**: `https://haddencarpenter.github.io/shumi-physarum/`
+
+### Generator (`index.html`)
+
+| Parameter | Key | Example | Notes |
+|-----------|-----|---------|-------|
+| Seed | `seed` | `?seed=42069` | Integer 1–999,999. Defaults to 12345 if omitted. |
+
+```
+https://haddencarpenter.github.io/shumi-physarum/index.html?seed=42069
+```
+
+The Generator does not encode other parameters in the URL. Palette and sliders are controlled manually in the sidebar.
+
+### Stencil (`stencil.html`)
+
+| Parameter | Key | Example | Default | Notes |
+|-----------|-----|---------|---------|-------|
+| Seed | `seed` | `seed=42069` | Random | Integer 1–999,999 |
+| Formation mode | `mode` | `mode=3` | `1` | 1=Ramp, 2=Code, 3=Mold, 4=Hybrid |
+| Master opacity | `master` | `master=0.50` | `0.28` | Float 0–1.5 |
+| Edge strong | `es` | `es=0.35` | `0.30` | Float, edge detection strength |
+| Edge weak | `ew` | `ew=0.15` | `0.12` | Float, subtle edge threshold |
+| Landing page mode | `lp` | `lp` | off | Hides all UI for iframe embedding |
+| Legacy rendering | `legacy` | `legacy` | off | Forces single-thread (no Web Worker) |
+
+```
+https://haddencarpenter.github.io/shumi-physarum/stencil.html?seed=10&mode=3&master=0.50&es=0.35
+```
+
+The Stencil's **Share** button auto-generates a URL with the current settings. Only non-default values are included.
+
+### Masked (`masked.html`)
+
+| Parameter | Key | Example | Notes |
+|-----------|-----|---------|-------|
+| Seed | `seed` | `?seed=37` | Integer 1–999,999. Random if omitted. |
+
+```
+https://haddencarpenter.github.io/shumi-physarum/masked.html?seed=37
+```
+
+The Masked has no other URL parameters. Palette, texture, and all simulation parameters are determined entirely by the seed.
+
 ## Seed Controls by Simulator
 
 ### Generator
@@ -37,6 +119,7 @@ Think of the seed as a genome: the same DNA expressed differently in each enviro
 | Action | How |
 |--------|-----|
 | Enter a specific seed | Type in the seed field, press Enter or click Jump |
+| Deep-link to a seed | Add `?seed=X` to the URL |
 | Step forward | Click **Next** (seed + 1) |
 | Step backward | Click **Prev** (seed - 1, minimum 1) |
 | Random seed | Click **Random** (picks 1–999,999) |
@@ -47,15 +130,15 @@ Think of the seed as a genome: the same DNA expressed differently in each enviro
 |--------|-----|
 | Random seed | Click **New Seed** |
 | Specific seed | Open **☰ Settings**, type in seed field, click **Jump** |
-| Share seed + settings | Click **Share** (copies URL) |
+| Deep-link to a seed | Add `?seed=X` to the URL (plus optional `&mode=`, `&master=`, `&es=`, `&ew=`) |
+| Share seed + settings | Click **Share** (copies URL with all non-default params) |
 
 ### Masked
 
 | Action | How |
 |--------|-----|
 | Random seed | Click **New Seed** |
-
-The Masked has no manual seed input. It's designed for exploration through random discovery.
+| Deep-link to a seed | Add `?seed=X` to the URL |
 
 ## What Changes Between Seeds
 
@@ -74,7 +157,7 @@ In addition to layout differences, the seed also changes:
 1. **Palette**: Cycling through the 8 palettes (Ember, Frost, Moss, Pearl, Bloom, Honey, Tide, Rust)
 2. **Texture profile**: Cycling through 8 textures (standard, crystalline, smoke, coral, silk, electric, flow, spore)
 3. **Color drift**: Subtle hue/saturation/luminance shifts within the palette family
-4. **Parameter jitter**: +/-10% variation in simulation parameters
+4. **Parameter jitter**: ±10% variation in simulation parameters
 
 ## What Stays Constant
 
