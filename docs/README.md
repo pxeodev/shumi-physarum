@@ -51,3 +51,7 @@ These swarm patterns are the visual identity system for the Shumi agent collecti
 The Stencil is the current form — the evolving bridge between raw swarm simulation and the agent's final visual identity. It takes the organic physics of the Generator and shapes them around the mascot, creating compositions where intelligence grows through form.
 
 No installation. No build step. No dependencies. Just open and explore.
+
+## Shumi AI
+
+The visual system is part of the broader [Shumi](https://shumi.ai) ecosystem — an AI-powered crypto analysis platform. The swarm patterns you create here become the visual identity layer for Shumi agents.
