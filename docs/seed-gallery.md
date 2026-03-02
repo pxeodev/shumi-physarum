@@ -3,6 +3,8 @@ title: "Seed Gallery"
 description: "Curated seeds showcasing distinctive swarm topologies across all simulators."
 ---
 
+![Seed Gallery](/og-thumbnail.png)
+
 A curated collection of seeds that produce distinctive swarm topologies. Click any link to load it directly.
 
 ## Generator Seeds

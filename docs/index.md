@@ -3,7 +3,7 @@ title: "The Shumi Visual System"
 description: "A suite of three biomimetic swarm simulators for the Shumi agent visual identity."
 ---
 
-![Shumi Swarm](https://raw.githubusercontent.com/haddencarpenter/shumi-physarum/main/og-thumbnail.png)
+![Shumi Swarm](/og-thumbnail.png)
 
 **Design how your Shumi agent sees the world.**
 
