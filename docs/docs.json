@@ -12,7 +12,7 @@
     "groups": [
       {
         "group": "Home",
-        "pages": ["index"]
+        "pages": ["introduction"]
       },
       {
         "group": "Physarum Simulators",
