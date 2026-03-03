@@ -12,11 +12,17 @@
     "groups": [
       {
         "group": "Overview",
-        "pages": ["index", "getting-started"]
+        "pages": [
+          "index"
+        ]
       },
       {
         "group": "Simulators",
-        "pages": ["generator", "stencil", "masked"]
+        "pages": [
+          "generator",
+          "stencil",
+          "masked"
+        ]
       },
       {
         "group": "Guides",
@@ -30,7 +36,9 @@
       },
       {
         "group": "Reference",
-        "pages": ["how-it-works"]
+        "pages": [
+          "how-it-works"
+        ]
       }
     ]
   },
