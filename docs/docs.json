@@ -1,44 +1,41 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "maple",
-  "name": "Shumi Physarum",
+  "name": "Shumi Docs",
   "colors": {
     "primary": "#D4A843",
     "dark": "#1A1A1A"
   },
-  "logo": "/og-thumbnail.png",
-  "favicon": "/og-thumbnail.png",
+  "logo": "/physarum/og-thumbnail.png",
+  "favicon": "/physarum/og-thumbnail.png",
   "navigation": {
     "groups": [
       {
-        "group": "Overview",
-        "pages": [
-          "index"
-        ]
+        "group": "Home",
+        "pages": ["index"]
       },
       {
-        "group": "Simulators",
+        "group": "Physarum Simulators",
         "pages": [
-          "generator",
-          "stencil",
-          "masked"
+          "physarum/overview",
+          "physarum/generator",
+          "physarum/stencil",
+          "physarum/masked"
         ]
       },
       {
         "group": "Guides",
         "pages": [
-          "palettes-and-modes",
-          "recording-and-export",
-          "seed-system",
-          "seed-gallery",
-          "tips-and-recipes"
+          "physarum/palettes-and-modes",
+          "physarum/recording-and-export",
+          "physarum/seed-system",
+          "physarum/seed-gallery",
+          "physarum/tips-and-recipes"
         ]
       },
       {
         "group": "Reference",
-        "pages": [
-          "how-it-works"
-        ]
+        "pages": ["physarum/how-it-works"]
       }
     ]
   },
@@ -51,4 +48,3 @@
     "indexing": "all"
   }
 }
-

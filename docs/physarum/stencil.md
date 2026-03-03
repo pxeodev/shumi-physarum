@@ -3,7 +3,7 @@ title: "The Stencil"
 description: "The identity engine that layers physarum behind the Shumi mascot in four formation modes."
 ---
 
-![The Stencil](/og-thumbnail.png)
+![The Stencil](/physarum/og-thumbnail.png)
 
 The Stencil layers the physarum swarm behind and through the Shumi mascot, creating compositions where organic signal networks grow around a centered image. This is the identity engine for Shumi agent avatars.
 

@@ -3,7 +3,7 @@ title: "How the Swarm Works"
 description: "The biomimetic intelligence engine: sense-turn-move-deposit loop and architecture details."
 ---
 
-![Swarm Simulation](/og-thumbnail.png)
+![Swarm Simulation](/physarum/og-thumbnail.png)
 
 The Shumi Visual System uses a biomimetic intelligence engine inspired by *Physarum polycephalum*, a biological organism that solves complex routing and resource allocation problems without any central planner. Thousands of independent agents, following simple local rules, produce emergent network structures.
 

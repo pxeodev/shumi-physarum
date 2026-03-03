@@ -3,7 +3,7 @@ title: "The Generator"
 description: "Full-control physarum laboratory with 14 sliders, 8 palettes, and a recording studio."
 ---
 
-![The Generator](/og-thumbnail.png)
+![The Generator](/physarum/og-thumbnail.png)
 
 The Generator is the full-control physarum laboratory. It exposes every parameter of the swarm simulation through a sidebar of sliders, giving you complete creative authority over cell behavior, signal chemistry, rendering, and color.
 
