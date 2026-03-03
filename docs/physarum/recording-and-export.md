@@ -125,7 +125,7 @@ After bookmarking seeds:
 
 ## Share URL (Stencil Only)
 
-The Stencil's **Share** button copies a URL to clipboard that encodes the current seed, formation mode, and key stencil settings. See [The Stencil](stencil) for details on which parameters are encoded.
+The Stencil's **Share** button copies a URL to clipboard that encodes the current seed, formation mode, and key stencil settings. See [The Stencil](/physarum/stencil) for details on which parameters are encoded.
 
 ---
 

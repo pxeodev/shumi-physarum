@@ -110,7 +110,7 @@ The URL updates automatically as you change settings. Recipients see the exact s
 
 ## Palettes & Textures
 
-The Stencil uses 8 palettes (Ember, Frost, Moss, Pearl, Bloom, Honey, Tide, Rust) and 8 texture profiles (standard, crystalline, smoke, coral, silk, electric, flow, spore). Both are selected deterministically by seed. See [Swarm Palettes & Modes](palettes-and-modes) for details.
+The Stencil uses 8 palettes (Ember, Frost, Moss, Pearl, Bloom, Honey, Tide, Rust) and 8 texture profiles (standard, crystalline, smoke, coral, silk, electric, flow, spore). Both are selected deterministically by seed. See [Swarm Palettes & Modes](/physarum/palettes-and-modes) for details.
 
 ## Controls Summary
 

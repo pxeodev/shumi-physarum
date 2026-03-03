@@ -111,7 +111,7 @@ These affect the visual output without changing the underlying swarm behavior.
 
 ## Color Presets
 
-The Generator includes 8 curated palettes. See [Swarm Palettes & Modes](palettes-and-modes) for full color details.
+The Generator includes 8 curated palettes. See [Swarm Palettes & Modes](/physarum/palettes-and-modes) for full color details.
 
 | Preset | Character |
 |--------|-----------|
@@ -128,7 +128,7 @@ Custom colors can be set via three color pickers: Signal Base, Signal Bright, an
 
 ## Export Options
 
-The Generator has the most complete export toolkit. See [Recording & Export](recording-and-export) for full details.
+The Generator has the most complete export toolkit. See [Recording & Export](/physarum/recording-and-export) for full details.
 
 | Feature | Description |
 |---------|-------------|

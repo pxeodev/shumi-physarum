@@ -111,4 +111,4 @@ Click **New Seed** repeatedly, or enter specific seeds via **☰ Settings**. The
 
 Just keep clicking **New Seed**. The fast restart and auto-palette selection makes the Masked ideal for rapid seed browsing.
 
-See [Seed System](seed-system) for the full technical explanation.
+See [Seed System](/physarum/seed-system) for the full technical explanation.
