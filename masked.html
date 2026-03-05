@@ -920,7 +920,7 @@ function frame() {
             compCtx.drawImage(ghostCanvas, mx, my, MSIZE, MSIZE);
             compCtx.globalAlpha = 1;
         }
-        compCtx.drawImage(mascotCanvas, mx, my);
+        compCtx.drawImage(mascotCanvas, mx, my, MSIZE, MSIZE);
     }
 
     if (msFc === 1) {
@@ -1001,7 +1001,7 @@ function savePNG() {
     compCtx.drawImage(bgCanvas, 0, 0);
     let mx = (VW - MSIZE) / 2;
     let my = (VH - MSIZE) / 2;
-    compCtx.drawImage(mascotCanvas, mx, my);
+    compCtx.drawImage(mascotCanvas, mx, my, MSIZE, MSIZE);
     let a = document.createElement('a');
     a.download = `shumi-masked-${seed}.png`;
     a.href = compositeCanvas.toDataURL('image/png');

@@ -1873,7 +1873,7 @@ function frame() {
             compCtx.drawImage(ghostCanvas, mx, my, MSIZE, MSIZE);
             compCtx.globalAlpha = 1;
         }
-        compCtx.drawImage(mascotCanvas, mx, my);
+        compCtx.drawImage(mascotCanvas, mx, my, MSIZE, MSIZE);
         // Include resurface layer on top (z-index 3 in DOM)
         let rOp = parseFloat(resurfaceCanvas.style.opacity) || 0;
         if (rOp > 0.001) {
@@ -2395,7 +2395,7 @@ function onWorkerFrame(msg) {
             compCtx.drawImage(ghostCanvas, mx, my, MSIZE, MSIZE);
             compCtx.globalAlpha = 1;
         }
-        compCtx.drawImage(mascotCanvas, mx, my);
+        compCtx.drawImage(mascotCanvas, mx, my, MSIZE, MSIZE);
         // Include resurface layer on top (z-index 3 in DOM)
         if (msg.resurfaceOpacity > 0.001) {
             compCtx.globalAlpha = msg.resurfaceOpacity;
