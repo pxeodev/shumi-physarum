@@ -1,51 +1,23 @@
-# AGENTS.md — Session Handoff & Debugging Guide
+# AGENTS.md
 
-For architecture constraints and ranked priorities, see `.council-goals`.
+Read `.council-goals` before starting work.
 
-## Repo Context
+Active files: `stencil.html` + `stencil-worker.js`. Everything else is legacy. Client-side only — no backend.
 
-Active development is on `stencil.html` + `stencil-worker.js`. The p5.js paths (`index.html`, `masked.html`) are legacy/unmaintained. This is a client-side-only project — no backend, no database, no cron jobs.
+## Failure Modes
 
-## Common Failure Modes
+- **Load glitch** — Race between mask image load, ghost pre-render, and first worker frame. Check init sequence and `postMessage` ordering. Test both LP and normal mode.
+- **FPS drop** — Zero allocations in `updateAgents()`, `diffuseAndDecay()`, `renderTrailPixels()`. No DOM touches in worker. Profile mobile Safari.
+- **Worker desync** — Message protocol is a contract. Adding fields is safe, changing semantics breaks silently. Never swap `transferToImageBitmap()` for `toDataURL()`/`getImageData()`.
+- **LP/normal drift** — LP overrides bake at init, not per-frame. Resurface overlay has two codepaths (OffscreenCanvas vs regular) that can diverge. Never break seed determinism.
 
-### Visual Glitch on Load
+## Handoff
 
-Race conditions between mask image loading, ghost pre-render, and first visible frame are the #1 class of bugs. If you see a white flash, half-drawn mascot, or ghost layer popping:
-1. Check the initialization sequence in `stencil.html` — is the mask image `onload` firing before the worker posts its first frame?
-2. Check `postMessage` ordering — does the worker receive `init` before the main thread expects `frame` responses?
-3. Test in both LP mode and normal mode — they have different init paths.
-
-### Frame Rate Drop
-
-Performance is priority #1 (see `.council-goals`). If fps drops below 60:
-1. Check for allocations in the hot loop — `updateAgents()`, `diffuseAndDecay()`, `renderTrailPixels()` must be zero-alloc.
-2. Check for DOM touches or branching on hot paths in the worker.
-3. Profile in mobile Safari specifically — that is the target constraint.
-
-### Worker/Main-Thread Desync
-
-The message protocol (`init`, `tick`, `frame`, `restart`, `resize`, `updateParams`, `setMode`, `blast`) is a contract. If behavior is wrong after a change:
-1. Verify both sides agree on the message format — adding fields is safe, changing semantics breaks silently.
-2. Check `transferToImageBitmap()` usage — never replace with `toDataURL()` or `getImageData()` in the frame loop.
-
-### LP Mode vs Normal Mode Drift
-
-LP-specific overrides (food placement, core suppression, agent counts) are baked in at init, not branched per-frame. If LP mode looks wrong but normal mode is fine:
-1. Check whether the LP override was applied at init time, not per-frame.
-2. Check the resurface/mascot overlay — it uses OffscreenCanvas in the worker and regular canvas in the fallback. Two codepaths that can drift if only one is updated.
-
-**Do NOT:** Add per-frame branching for LP vs normal mode. Do not break seed determinism — a given seed must always produce the same visual.
-
-## Session Handoff Rules
-
-1. **If a previous session left uncommitted changes**, read the diff before continuing. Do not discard work.
-2. **If you hit a context limit mid-task**, summarize progress and next steps in a commit message so the next session can pick up cleanly.
-3. **LP mode is production; normal mode is dev tooling.** Both must work, but LP mode regressions are production incidents.
-4. **Check "Session-Discovered Failure Modes" below.** If any entry has appeared 2+ times or matches a bug you're working on, promote it into "Common Failure Modes" with full triage steps, then remove the raw entry.
+1. Uncommitted changes from a prior session? Read the diff first. Do not discard.
+2. Context limit mid-task? Summarize next steps in the commit message.
+3. LP mode = production. Normal mode = dev tooling.
+4. Promote any recurring entry from below into "Failure Modes", then remove it.
 
 ## Session-Discovered Failure Modes
 
-<!-- Appended automatically by the Stop hook when a session resolves a novel failure -->
-<!-- mode not already in "Common Failure Modes". Each entry is committed inline so the -->
-<!-- global Stop hook (stop-hook-git-check.sh) sees a clean working tree. -->
-<!-- Promote recurring entries into "Common Failure Modes" per handoff rule #4. -->
+<!-- Appended by Stop hook when a session resolves a novel failure mode. -->
