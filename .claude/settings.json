@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Review this session's conversation. Did you encounter and resolve a failure mode, bug pattern, or debugging insight that is NOT already documented in AGENTS.md under 'Common Failure Modes'? If yes, append a concise entry (title + 1-3 line description) to the '## Session-Discovered Failure Modes' section at the bottom of AGENTS.md using the Edit tool. Use the format: '### <Title>' followed by a brief description of the symptom, root cause, and fix. Do NOT duplicate anything already in the file. If nothing novel was learned, do nothing. If you do append an entry, stage and commit AGENTS.md with the message 'docs: capture session-discovered failure mode'."
+          }
+        ]
+      }
+    ]
+  }
+}
