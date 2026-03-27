@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shumi — Mechanical Trading</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0A0A0A;
+            color: #fff;
+            font-family: 'Inter', -apple-system, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── Nav ── */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 40px;
+            background: rgba(10,10,10,0.85); backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .nav-logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; }
+        .nav-logo img { width: 36px; height: 36px; border-radius: 8px; }
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: #999; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover { color: #fff; }
+        .nav-cta {
+            padding: 8px 18px; border: 1px solid #333; border-radius: 8px;
+            color: #fff; font-size: 13px; font-weight: 600; text-decoration: none;
+            background: rgba(255,255,255,0.05); transition: all 0.2s;
+        }
+        .nav-cta:hover { border-color: #555; background: rgba(255,255,255,0.1); }
+
+        /* ── Hero Section ── */
+        .hero {
+            position: relative;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 100vh; padding: 120px 20px 60px;
+            text-align: center;
+        }
+
+        /* ASCII Mascot Layer — behind hero text */
+        .mascot-ascii-wrap {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -55%);
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1.2s ease-out;
+        }
+        .mascot-ascii-wrap.loaded { opacity: 1; }
+        .mascot-ascii-wrap pre {
+            font-family: 'Geist Mono', 'Courier New', monospace;
+            font-size: 5px;
+            line-height: 6px;
+            letter-spacing: 0.3px;
+            user-select: none;
+            animation: breathe 5s ease-in-out infinite;
+        }
+        .mascot-ascii-wrap s { text-decoration: none; }
+        @keyframes breathe {
+            0%, 100% { filter: brightness(1.0); }
+            50% { filter: brightness(1.35); }
+        }
+
+        /* Hero text — on top of mascot */
+        .hero-content {
+            position: relative; z-index: 2;
+        }
+        .hero-label {
+            font-family: 'Geist Mono', 'Courier New', monospace;
+            font-size: 12px; letter-spacing: 4px; text-transform: uppercase;
+            color: #D4A84B; margin-bottom: 24px; opacity: 0.8;
+        }
+        .hero h1 {
+            font-size: clamp(36px, 5.5vw, 72px);
+            font-weight: 800; line-height: 1.1;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 40px rgba(0,0,0,0.8), 0 0 80px rgba(0,0,0,0.6);
+        }
+        .hero h1 .gold { color: #D4A84B; }
+        .hero .subtitle {
+            font-size: clamp(14px, 1.5vw, 18px);
+            color: #888; font-weight: 400; margin-bottom: 48px;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+        }
+
+        /* ── Ask Shumi Box ── */
+        .ask-box {
+            position: relative; z-index: 2;
+            width: 100%; max-width: 680px;
+            background: rgba(15,15,15,0.9); border: 1px solid #222;
+            border-radius: 16px; padding: 28px; backdrop-filter: blur(8px);
+        }
+        .ask-box-label {
+            font-family: 'Geist Mono', 'Courier New', monospace;
+            font-size: 11px; letter-spacing: 3px; color: #666; margin-bottom: 16px;
+        }
+        .ask-input-row { display: flex; gap: 10px; margin-bottom: 14px; }
+        .ask-input-row input {
+            flex: 1; padding: 12px 16px; background: #111; border: 1px solid #333;
+            border-radius: 10px; color: #ccc; font-size: 14px; outline: none;
+            font-family: inherit;
+        }
+        .ask-input-row input::placeholder { color: #555; }
+        .ask-input-row input:focus { border-color: #D4A84B; }
+        .ask-btn {
+            padding: 12px 22px; background: #D4A84B; border: none; border-radius: 10px;
+            color: #0A0A0A; font-weight: 700; font-size: 14px; cursor: pointer;
+            display: flex; align-items: center; gap: 6px; white-space: nowrap;
+            transition: background 0.2s;
+        }
+        .ask-btn:hover { background: #e0b85c; }
+        .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+        .chip {
+            padding: 6px 14px; border: 1px solid #333; border-radius: 20px;
+            font-size: 12px; color: #999; cursor: pointer; transition: all 0.2s;
+            background: transparent;
+        }
+        .chip:hover { border-color: #D4A84B; color: #D4A84B; }
+
+        /* ── Background code fragments ── */
+        .ascii-bg {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 0; pointer-events: none; overflow: hidden;
+            font-family: 'Geist Mono', 'Courier New', monospace;
+            font-size: 12px;
+            animation: breathe 5s ease-in-out infinite;
+        }
+        .ascii-bg span {
+            position: absolute; color: #fff; white-space: nowrap;
+        }
+
+        /* ── Ticker ── */
+        .ticker {
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+            padding: 12px 40px; display: flex; justify-content: space-between; align-items: center;
+            font-family: 'Geist Mono', 'Courier New', monospace; font-size: 12px;
+            background: rgba(10,10,10,0.9); border-top: 1px solid rgba(255,255,255,0.06);
+            color: #555;
+        }
+        .ticker-right a { color: #D4A84B; text-decoration: none; font-weight: 600; }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            nav { padding: 12px 16px; }
+            .nav-links { display: none; }
+            .hero { padding: 100px 16px 60px; }
+            .mascot-ascii-wrap pre { font-size: 3px; line-height: 3.6px; }
+            .ask-box { padding: 20px; }
+            .ask-input-row { flex-direction: column; }
+            .ticker { padding: 10px 16px; font-size: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+    <div class="nav-logo">
+        <img src="shumi.webp" alt="Shumi">
+        <span>Shumi</span>
+    </div>
+    <div class="nav-links">
+        <a href="#">Query</a>
+        <a href="#">Modes</a>
+        <a href="#">Studies</a>
+        <a href="#">Developers</a>
+    </div>
+    <a href="#" class="nav-cta">Open App</a>
+</nav>
+
+<!-- Background code fragments -->
+<div class="ascii-bg">
+    <span style="top:8%;left:3%;opacity:0.08">const signal = await cr.getScore('ETH');</span>
+    <span style="top:14%;left:68%;opacity:0.06">,vs r  .eeo.        e=gEeirktc_-xt .</span>
+    <span style="top:22%;left:2%;opacity:0.07">if (regime === 'UP') confluence++;</span>
+    <span style="top:18%;left:75%;opacity:0.05">r  :aslnrnals    +t'd)=a</span>
+    <span style="top:35%;left:72%;opacity:0.06">$SHUMI.subscribe(alerts.funding);</span>
+    <span style="top:30%;left:5%;opacity:0.05">i          ehraks  ht unn</span>
+    <span style="top:42%;left:80%;opacity:0.07">a=sd        <.  e</span>
+    <span style="top:55%;left:4%;opacity:0.06">rp        _,o.  dn</span>
+    <span style="top:60%;left:78%;opacity:0.05">l)nmo=nfirmbe]p</span>
+    <span style="top:70%;left:3%;opacity:0.07">const decay = Math.exp(-lambda * dt);</span>
+    <span style="top:75%;left:70%;opacity:0.06">.idei0i2ok(0gt  m .</span>
+    <span style="top:82%;left:5%;opacity:0.05">return { score, regime, confluence };</span>
+    <span style="top:85%;left:65%;opacity:0.07">i:rritPG</span>
+    <span style="top:48%;left:85%;opacity:0.06">Te*he(;Tiona</span>
+    <span style="top:52%;left:2%;opacity:0.05">e c         r</span>
+    <span style="top:65%;left:82%;opacity:0.06">*/isei</span>
+    <span style="top:25%;left:82%;opacity:0.05">7iptgm     alh</span>
+    <span style="top:12%;left:30%;opacity:0.04">gutPg        +t</span>
+    <span style="top:90%;left:15%;opacity:0.05">// momentum regime classifier v3.2</span>
+    <span style="top:45%;left:12%;opacity:0.04">+t           u</span>
+</div>
+
+<!-- Hero -->
+<div class="hero">
+    <!-- ASCII Mascot behind text -->
+    <div class="mascot-ascii-wrap" id="mascot-wrap">
+        <pre id="mascot-pre">
+        </pre>
+    </div>
+
+    <!-- Hero text on top -->
+    <div class="hero-content">
+        <div class="hero-label">SIGNAL SYNTHESIS</div>
+        <h1>Mechanical trading,<br><span class="gold">not magical thinking.</span></h1>
+        <p class="subtitle">Robust models. Reliable signals. Repeatable edge.</p>
+
+        <!-- Ask box -->
+        <div class="ask-box">
+            <div class="ask-box-label">ASK SHUMI</div>
+            <div class="ask-input-row">
+                <input type="text" placeholder="Ask a market question">
+                <button class="ask-btn">Run query &rarr;</button>
+            </div>
+            <div class="chips">
+                <button class="chip">How's the market?</button>
+                <button class="chip">$BTC</button>
+                <button class="chip">$ETH</button>
+                <button class="chip">$SOL</button>
+                <button class="chip">Which large caps are still bullish?</button>
+                <button class="chip">One signal right now</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ticker -->
+<div class="ticker">
+    <span>$SHUMI $0.000211 +0.00%&nbsp;&nbsp;|&nbsp;&nbsp;NPM SHUMI@0.2.0&nbsp;&nbsp;|&nbsp;&nbsp;BASE NETWORK</span>
+    <span class="ticker-right"><a href="#">BUY $SHUMI ↗</a></span>
+</div>
+
+<script>
+// ── ASCII Mascot Generator ──
+const COLS = 200;
+const CHARS = "$#@%&*+=!?/|(){}[]<>:;,.~^-_abcdefghijklmnopqrstuvwxyz0123456789";
+const THRESHOLD = 10;
+
+const img = new Image();
+img.crossOrigin = 'anonymous';
+img.onload = () => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const aspect = img.height / img.width;
+    const rows = Math.round(COLS * aspect * 0.5);
+    canvas.width = COLS;
+    canvas.height = rows;
+    ctx.drawImage(img, 0, 0, COLS, rows);
+    const data = ctx.getImageData(0, 0, COLS, rows).data;
+
+    let html = '';
+    for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < COLS; x++) {
+            const i = (y * COLS + x) * 4;
+            let r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
+            const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+
+            if (lum < THRESHOLD || a < 30) {
+                html += ' ';
+                continue;
+            }
+
+            let boost = 1.3;
+            if (lum < 100) {
+                boost = Math.min(120 / lum, 3.0);
+            }
+            const fr = Math.min(255, Math.round(r * boost));
+            const fg = Math.min(255, Math.round(g * boost));
+            const fb = Math.min(255, Math.round(b * boost));
+
+            const ch = CHARS[Math.floor(Math.random() * CHARS.length)];
+            html += `<s style="color:rgb(${fr},${fg},${fb})">${ch}</s>`;
+        }
+        html += '\n';
+    }
+
+    document.getElementById('mascot-pre').innerHTML = html;
+    document.getElementById('mascot-wrap').classList.add('loaded');
+
+    // Character cycling
+    const spans = document.querySelectorAll('#mascot-pre s');
+    const arr = Array.from(spans);
+    setInterval(() => {
+        const n = Math.floor(arr.length * 0.08);
+        for (let i = 0; i < n; i++) {
+            arr[Math.floor(Math.random() * arr.length)].textContent = CHARS[Math.floor(Math.random() * CHARS.length)];
+        }
+    }, 900);
+};
+img.src = 'shumi.webp';
+</script>
+</body>
+</html>
