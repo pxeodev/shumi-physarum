@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHUMI — Mycelial ASCII Mascot</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0A0A0A;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        .wrap { position: relative; }
+        pre {
+            font-family: 'Geist Mono', 'Courier New', monospace;
+            font-size: 5px;
+            line-height: 6px;
+            letter-spacing: 0.3px;
+            user-select: none;
+            animation: breathe 7s ease-in-out infinite;
+        }
+        s {
+            text-decoration: none;
+            transition: text-shadow 0.5s ease;
+        }
+
+        /* Eyes — pulsing glow halo, no color override */
+        s.eye {
+            text-shadow: 0 0 6px #D4A044, 0 0 12px rgba(212,160,68,0.5), 0 0 20px rgba(212,160,68,0.2);
+            animation: eye-pulse 3s ease-in-out infinite;
+        }
+        @keyframes eye-pulse {
+            0%, 100% { text-shadow: 0 0 5px #D4A044, 0 0 10px rgba(212,160,68,0.4); }
+            50% { text-shadow: 0 0 8px #E8C06A, 0 0 16px rgba(212,160,68,0.6), 0 0 24px rgba(212,160,68,0.3); }
+        }
+
+        /* Growth tips — these ARE transient, so bright color override is fine */
+        s.t0 { color: #F5EED8 !important; text-shadow: 0 0 5px #F5EED8, 0 0 10px rgba(212,160,68,0.5); }
+        s.t1 { color: #E8D8A8 !important; text-shadow: 0 0 4px #E8D8A8, 0 0 8px rgba(212,160,68,0.4); }
+        s.t2 { color: #D4A044 !important; text-shadow: 0 0 3px #D4A044, 0 0 6px rgba(212,160,68,0.3); }
+        s.t3 { color: #B08030 !important; text-shadow: 0 0 2px rgba(176,128,48,0.4); }
+
+        /* Trail — transient bright, fades to glow-only */
+        s.fresh { text-shadow: 0 0 4px rgba(212,160,68,0.6), 0 0 8px rgba(212,160,68,0.3); }
+        s.mid   { text-shadow: 0 0 3px rgba(212,160,68,0.4), 0 0 6px rgba(212,160,68,0.15); }
+
+        /* Permanent settled filament — glow only, original color preserved */
+        s.set {
+            text-shadow: 0 0 3px rgba(212,160,68,0.35), 0 0 7px rgba(212,160,68,0.15);
+        }
+
+        @keyframes breathe {
+            0%, 100% { filter: brightness(0.82); }
+            50% { filter: brightness(1.08); }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+<pre id="m">
+<!--
+  NOTE FROM HANDOFF: The original v8.html contains ~6800 pixel-sampled <s>
+  spans here (one per visible character of the ASCII mascot, each with an
+  inline RGB color sampled from shumi.webp at the v8 grid resolution).
+  Likewise, the `treePaths` array below was ~170 entries of pre-traced
+  hyphal walks from each eye.
+
+  The full grid + path data was pasted into the handoff thread but is
+  omitted from this committed copy to keep the file under the project's
+  <50 KB asset budget (.council-goals).
+
+  To restore: regenerate the spans from shumi.webp per the spec
+  (docs/physarum/shumi-roots-spec.md, "Architecture" section) — Node
+  + node-canvas at build time, or offscreen canvas at runtime. Any
+  luminance-blind random walk constrained to the visibility mask will
+  produce equivalent `treePaths`. The engine logic below (Hypha class,
+  spawn loop, four-stage tip rendering) is the part to study; the
+  grid + paths are deterministic outputs of the spec.
+-->
+</pre>
+</div>
+<script>
+const charset = "$#@%&*+=!?/|(){}[]<>:;,.~^-_abcdefghijklmnopqrstuvwxyz0123456789";
+const allSpans = document.querySelectorAll('s');
+const spanArr = Array.from(allSpans);
+
+setInterval(() => {
+    const n = Math.floor(spanArr.length * 0.04);
+    for (let i = 0; i < n; i++) {
+        const idx = Math.floor(Math.random() * spanArr.length);
+        if (!spanArr[idx].className) {
+            spanArr[idx].textContent = charset[Math.floor(Math.random() * charset.length)];
+        }
+    }
+}, 1100);
+
+// ── Eye cells ──
+// Coordinates derived from pixel-sampling shumi.webp at the v8 grid resolution.
+// Regenerate if the source image or column count changes.
+const leftEyeCells = [4606, 4607, 4608, 4609, 4610, 4611, 4612, 4613, 4614, 4717, 4718, 4719, 4720, 4721, 4722, 4723, 4724, 4725, 4827, 4828, 4829, 4830, 4831, 4832, 4833, 4834, 4932, 4933, 4934, 4935, 4936, 4937, 4938, 4939, 5026, 5027, 5028, 5029, 5030, 5031, 5032, 5033, 5106, 5107, 5108, 5109, 5110, 5111, 5183, 5184, 5185, 5186, 5187, 5188];
+const rightEyeCells = [4643, 4644, 4645, 4646, 4647, 4648, 4649, 4650, 4651, 4753, 4754, 4755, 4756, 4757, 4758, 4759, 4760, 4761, 4862, 4863, 4864, 4865, 4866, 4867, 4868, 4869, 4967, 4968, 4969, 4970, 4971, 4972, 4973, 4974, 5060, 5061, 5062, 5063, 5064, 5065, 5066, 5067, 5134, 5135, 5136, 5137, 5138, 5139, 5140, 5210, 5211, 5212];
+for (const id of [...leftEyeCells, ...rightEyeCells]) {
+    const el = document.getElementById('c' + id);
+    if (el) el.className = 'eye';
+}
+
+// ── Tree data ──
+// Original v8 had ~170 pre-traced paths here. Regenerate per spec.
+const treePaths = [];
+const leftPaths = treePaths.filter(p => p.eye === 'L');
+const rightPaths = treePaths.filter(p => p.eye === 'R');
+
+class Hypha {
+    constructor(path, depth, startDelay) {
+        this.path = path;
+        this.depth = depth;
+        this.pos = 0;
+        this.alive = true;
+        this.startTime = performance.now() + startDelay;
+        this.started = false;
+        this.speed = 0.6 + depth * 0.1;
+        this.tipClass = 't' + Math.min(depth, 3);
+        this.freshDur = 400 - depth * 60;
+        this.midDur = 900 - depth * 100;
+        this.trailTimers = {};
+        this.litCells = new Set();
+    }
+
+    update(now) {
+        if (!this.alive) return;
+        if (now < this.startTime) return;
+        if (!this.started) { this.started = true; this.lastTick = now; }
+
+        const dt = now - this.lastTick;
+        this.lastTick = now;
+        this.pos += this.speed * (dt / 50);
+        const tipIdx = Math.floor(this.pos);
+
+        if (tipIdx >= this.path.length) { this.alive = false; return; }
+
+        const tipId = this.path[tipIdx];
+        const tipEl = document.getElementById('c' + tipId);
+        if (tipEl && tipEl.className !== 'eye') {
+            tipEl.className = this.tipClass;
+            this.trailTimers[tipId] = now;
+            this.litCells.add(tipId);
+        }
+
+        for (const cellId of this.litCells) {
+            if (cellId === tipId) continue;
+            const el = document.getElementById('c' + cellId);
+            if (!el || el.className === 'eye') continue;
+            const age = now - (this.trailTimers[cellId] || now);
+            if (age < this.freshDur) {
+                if (el.className !== 'fresh') el.className = 'fresh';
+            } else if (age < this.midDur) {
+                if (el.className !== 'mid') el.className = 'mid';
+            } else {
+                if (el.className !== 'set') el.className = 'set';
+            }
+        }
+    }
+
+    cleanup() {
+        for (const cellId of this.litCells) {
+            const el = document.getElementById('c' + cellId);
+            if (el && el.className !== 'set' && el.className !== 'eye') {
+                el.className = 'set';
+            }
+        }
+    }
+}
+
+let hyphae = [];
+let leftIdx = 0, rightIdx = 0;
+
+function spawnFromEye(eyePaths, idxRef) {
+    if (eyePaths.length === 0) return 0;
+    const trunks = eyePaths.filter(p => p.depth === 0);
+    if (trunks.length === 0) return idxRef;
+    const trunk = trunks[idxRef % trunks.length];
+    hyphae.push(new Hypha(trunk.ids, trunk.depth, 0));
+    const subs = eyePaths.filter(p => p.depth > 0);
+    const numSubs = Math.min(5 + Math.floor(Math.random() * 4), subs.length);
+    for (let i = 0; i < numSubs; i++) {
+        const sub = subs[Math.floor(Math.random() * subs.length)];
+        const delay = 200 + sub.depth * 200 + Math.random() * 500;
+        hyphae.push(new Hypha(sub.ids, sub.depth, delay));
+    }
+    return idxRef + 1;
+}
+
+function tick() {
+    const now = performance.now();
+    for (let i = hyphae.length - 1; i >= 0; i--) {
+        hyphae[i].update(now);
+        if (!hyphae[i].alive) {
+            hyphae[i].cleanup();
+            hyphae.splice(i, 1);
+        }
+    }
+    requestAnimationFrame(tick);
+}
+
+let useLeft = true;
+function spawnWave() {
+    if (useLeft) { leftIdx = spawnFromEye(leftPaths, leftIdx); }
+    else { rightIdx = spawnFromEye(rightPaths, rightIdx); }
+    useLeft = !useLeft;
+    setTimeout(spawnWave, 1200 + Math.random() * 1000);
+}
+
+setTimeout(() => {
+    tick();
+    leftIdx = spawnFromEye(leftPaths, leftIdx);
+    setTimeout(() => { rightIdx = spawnFromEye(rightPaths, rightIdx); }, 300);
+    setTimeout(() => { leftIdx = spawnFromEye(leftPaths, leftIdx); }, 600);
+    setTimeout(spawnWave, 1000);
+}, 200);
+</script>
+</body>
+</html>
