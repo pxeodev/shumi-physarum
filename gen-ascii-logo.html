@@ -29,10 +29,10 @@
   <label>BG darken: <input type="range" id="bgDarken" min="0" max="100" value="40"> <span id="darkenVal">40%</span></label>
   <label>Color:
     <select id="colorMode">
+      <option value="tinted" selected>Image-tinted (V2 cream cap + gold roots)</option>
       <option value="gold">Gold (physarum)</option>
       <option value="hot">Hot gold/white</option>
       <option value="mono">Monochrome</option>
-      <option value="tinted">Image-tinted</option>
     </select>
   </label>
   <label>Ramp:
@@ -60,7 +60,7 @@ const RAMPS = { code: CODE_CHARS, density: DENSITY_RAMP, braille: BRAILLE_RAMP }
 const img = new Image();
 img.crossOrigin = 'anonymous';
 img.onload = () => render();
-img.src = 'shumi.webp';
+img.src = 'shumi-v2.png';
 
 function renderToCanvas(ctx, SIZE, cellScale) {
   cellScale = cellScale || 1;
@@ -73,18 +73,20 @@ function renderToCanvas(ctx, SIZE, cellScale) {
   const rampMode = document.getElementById('rampMode').value;
   const ramp = RAMPS[rampMode];
 
-  // Step 1: Draw original image and darken opaque pixels (preserve alpha)
+  // V2 source is opaque (black background, no alpha), so we key the silhouette
+  // off luminance instead of the alpha channel. Anything darker than BG_THRESH
+  // is treated as background and stays empty.
+  const BG_THRESH = 0.16;
+
+  // Step 1: Sample the source pixels, then paint a pure black background.
+  // (Pure black beats warm-black for the ASCII/code-rain look — max glyph contrast.)
   ctx.drawImage(img, 0, 0, SIZE, SIZE);
-  const baseData = ctx.getImageData(0, 0, SIZE, SIZE);
-  const origData = new Uint8ClampedArray(baseData.data); // copy for luminance sampling
-  const darkMult = 1 - bgDarken;
-  for (let i = 0; i < baseData.data.length; i += 4) {
-    baseData.data[i]   = Math.floor(baseData.data[i] * darkMult);
-    baseData.data[i+1] = Math.floor(baseData.data[i+1] * darkMult);
-    baseData.data[i+2] = Math.floor(baseData.data[i+2] * darkMult);
-    // alpha unchanged — transparency preserved
-  }
-  ctx.putImageData(baseData, 0, 0);
+  const srcData = ctx.getImageData(0, 0, SIZE, SIZE);
+  const origData = new Uint8ClampedArray(srcData.data); // source copy for luminance + color sampling
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, SIZE, SIZE);
+  // bgDarken slider left wired for the label; base is intentionally pure black.
+  void bgDarken;
 
   // Step 3: Draw ASCII onto temp canvas, then mask by original alpha
   const asciiCanvas = document.createElement('canvas');
@@ -106,10 +108,9 @@ function renderToCanvas(ctx, SIZE, cellScale) {
       if (sx >= SIZE || sy >= SIZE) continue;
       const i = (sy * SIZE + sx) * 4;
 
-      const r = origData[i], g = origData[i+1], b = origData[i+2], a = origData[i+3];
-      if (a < 30) continue;
-
+      const r = origData[i], g = origData[i+1], b = origData[i+2];
       const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      if (lum < BG_THRESH) continue; // skip black background (V2 has no alpha channel)
 
       let ch;
       if (rampMode === 'code') {
@@ -158,11 +159,11 @@ function renderToCanvas(ctx, SIZE, cellScale) {
   }
   aCtx.globalAlpha = 1;
 
-  // Mask ASCII layer by original alpha — clip to silhouette
+  // Mask ASCII layer to the silhouette by luminance (V2 has no alpha channel)
   const asciiData = aCtx.getImageData(0, 0, SIZE, SIZE);
   for (let i = 0; i < asciiData.data.length; i += 4) {
-    const origAlpha = origData[i + 3];
-    asciiData.data[i + 3] = Math.min(asciiData.data[i + 3], origAlpha);
+    const lum = (0.299 * origData[i] + 0.587 * origData[i+1] + 0.114 * origData[i+2]) / 255;
+    if (lum < BG_THRESH) asciiData.data[i + 3] = 0;
   }
   aCtx.putImageData(asciiData, 0, 0);
 
